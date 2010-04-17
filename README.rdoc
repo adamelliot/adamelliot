@@ -1,0 +1,7 @@
+= Adam Elliot
+
+Blah!
+
+== Copyright
+
+Copyright (c) 2010 Adam Elliot. See LICENSE for details.

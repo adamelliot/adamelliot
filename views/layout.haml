@@ -1,0 +1,17 @@
+!!!
+%html{:xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "en", :lang => "en"}
+  %head
+    %title Adam Elliot
+    %link{:rel => 'stylesheet', :href => '/application.css', :media => 'screen,projection'}
+
+    %meta{:"http-equiv" => "Content-Type", :content => "text/html; charset=utf-8" } 
+    %meta{:name => "keywords", :content => "ruby, javascript, poi, web, tech, iphone" } 
+    %meta{:name => "description", :content => "Sugar Plumps and Fire Stars" }  
+  %body
+    = yield
+
+    %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"}
+    %script{:src => "javascripts/pure_packed.js"}
+    %script{:src => "javascripts/fluff.js"}
+    %script{:src => "javascripts/menu.js"}
+    %script{:src => "javascripts/application.js"}

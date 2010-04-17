@@ -1,0 +1,41 @@
+=menu-text
+  :display inline-block
+  :cursor pointer
+  :position fixed
+  :font-size 20pt
+  :font-family Gill Sans
+  :text-shadow 0px 2px 0px #000
+  :color #fff
+  :font-weight bold
+  &:first-letter
+    :color #fb1258
+  &:hover
+    :color #fb1258
+
+#adamelliot, #blog, #pics, #bio
+  +menu-text
+
+#adamelliot
+  font-size: 64pt
+  left: 170px
+  top: 240px
+  &:hover
+    :color #fff
+  span:first-letter
+    :color #fb1258 !important
+
+#blog
+  font-size: 32pt
+  left: 486px
+  top: 315px
+  
+#pics
+  font-size: 18pt
+  left: 461px
+  top: 225px
+  
+#bio
+  font-size: 16pt
+  left: 445px
+  top: 326px
+  
