@@ -6,6 +6,115 @@
 
 window.AdamElliot = window.AdamElliot || {};
 
+/**
+ * Map any element into the router to create browser history and map into
+ * the desired controller.
+ * 
+ * Assumes AdamElliot.Router statically points to the router.
+ */
+(function($) {
+  $.fn.linkTo = function(route) {
+    this.click(function() {
+      var base = location.href.split("#")[0];
+//      var current = location.href.split("#")[1];
+//      if (route == current) return false;
+
+      location.href = base + "#" + route;
+      AdamElliot.Router.route();
+    });
+  };
+})(jQuery);
+
+
+/**
+ * Operates similar to other routers on ruby backends, maps url paths after
+ * the hash into controllers.
+ * 
+ * Route matching is very basic, there's static matching and resource style
+ * matching. That's all I need right now.
+ */
+AdamElliot.Router = (function() {
+  var Klass = function() {
+    var mappings = {};
+    var resources = {};
+
+    /**
+     * Pull out the params in the path into an object.
+     */
+    var getParams = function(route) {
+      var p = route.split("?").pop();
+      var pairs = p.split("&");
+      var params = {};
+      for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split("=");
+        params[pair[0]] = pair[1];
+      }
+      return params;
+    };
+
+    // Creates static mappings.
+    this.map = function(path, controller, action) {
+      mappings[path] = {controller:controller, action:action};
+    };
+    
+    // Maps basic routes
+    this.resource = function(path, controller) {
+      var target = path.pluralize().capitalize() + "Controller";
+      resources[path] = controller || AdamElliot[target];
+    };
+
+    /**
+     * Causes the router to read the path and execute the route if one a
+     * route exists. If routed returns true, otherwise returns false.
+     */
+    this.route = function() {
+      var route = location.href.split("#")[1];
+      if (!route) return false;
+
+      var params = getParams(route);
+      route = route.split("?")[0];
+
+      // First check static mappings, if nothing matches, then check resources
+      var target = mappings[route];
+      if (target) {
+        // Short cut for static routes to templates
+        if (!target.action) return false;
+
+        target.action.call(target.controller);
+        return true;
+      }
+
+      var parts = route.split("/");
+      var controller = parts[0].singularize();
+      var action = parts[1]; // May be the id
+
+      var resource = resources[controller];
+      if (!resource) return false;
+
+      if (parts[0] == controller.pluralize())
+        action = "index";
+      else switch (action) {
+        case "update":
+        case "delete":
+          id = parts[2];
+        case "create":
+          break;
+        default:
+          action = 'show';
+          id = parts[1];
+          break;
+      }
+
+      if (id) params["id"] = id;
+      action = resource[action];
+      if (action) action.call(resource, params);
+
+      return true;
+    }
+  };
+  
+  return Klass;
+})();
 
 /**
  * Template manage, compiles the templates at load, and handles the binding
@@ -16,7 +125,10 @@ AdamElliot.TemplatManager = (function() {
 
     // = = = = Template Compilation = = = = 
 
-   this.frame = $('#templates .frame').compile({
+    this.login = $("#templates .login").compile();
+    this.bio = $("#templates .bio").compile();
+
+    this.frame = $('#templates .frame').compile({
       '.block': 'block'
     });
 
@@ -37,15 +149,28 @@ AdamElliot.FrameManager = (function() {
   var Klass = function() {
     var currentFrame;
     var collection;
-    
+
+    var addButtonsToFrame = function(frame, buttons) {
+      if (!buttons) return;
+      var toolbar = frame.find(".toolbar");
+
+      for (var key in buttons) {
+        var button = $("<div class='button'>" + key + "</div>");
+        button.click(buttons[key]);
+        toolbar.append(button);
+      }
+    };
+
     // TODO: Frame queuing and dismissal
-    this.showFrame = function(block, toolbar, bindings) {
+    this.showFrame = function(block, buttons) {
       AdamElliot.Menu.moveToTop();
       var frame = $(AdamElliot.TemplatManager.frame({block:block}));
+      addButtonsToFrame(frame, buttons);
       $("body").append(frame);
 
       var self = this;
       frame.find(".close").click(function() {
+        location.href = location.href.split("#")[0] + "#";
         self.closeFrame(function() {
           AdamElliot.Menu.moveToCenter();
         });
@@ -67,13 +192,22 @@ AdamElliot.FrameManager = (function() {
     var dir = 1;
     this.closeFrame = function(callback) {
       dir *= -1;
-      var w = $(window).width() / 2 * dir;
-      currentFrame.animate({left:w, opacity:0}, 300, function() {
+      var w = $(window).width() / 4 * dir;
+      currentFrame.animate({left:"+=" + w, opacity:0}, 300, function() {
         $(this).remove();
         if (callback) callback();
       });
       currentFrame = null;
     };
+
+    $(window).resize(function() {
+      if (!currentFrame) return;
+      var w = ($(window).width() - currentFrame.width()) / 2;
+      var h = $(window).height() - 200;
+      currentFrame.css("left", w);
+      currentFrame.css("maxHeight", h);
+    });
+
   };
   
   return Klass;
@@ -84,42 +218,28 @@ AdamElliot.FrameManager = (function() {
  */
 AdamElliot.Application = (function() {
   var Klass = function() {
-    
-    // Blog posts, should be ordered by time
-    var posts = [{
-      title: "First Post!",
-      body: "Some text<h2>Blah</h2>test",
-      date: "April 17, 2010"
-    }];
-    var postIndex = 0;
-
-    /**
-     * Handles blog clicks 
-     */
-    this.showBlog = function() {
-      var postBlock = AdamElliot.TemplatManager.post(posts[postIndex]);
-      AdamElliot.FrameManager.showFrame(postBlock, null, {
-        '.next': function() {
-          console.log("Next Clicked");
-        }
-      });
-    };
-    
-    var hookUpMenuButtons = function() {
-      var self = this;
-      $("#blog").click(function() { self.showBlog(); });
-    };
-
-    hookUpMenuButtons.call(this);
   };
   
   return Klass;
 })();
 
 $(function() {
+  AdamElliot.PostsController = new AdamElliot.PostsController;
+  AdamElliot.GeneralController = new AdamElliot.GeneralController;
+
+  AdamElliot.Router = new AdamElliot.Router;
+
+  AdamElliot.Router.map("login", AdamElliot.GeneralController, AdamElliot.GeneralController.login);
+  AdamElliot.Router.resource("post");
+
   AdamElliot.TemplatManager = new AdamElliot.TemplatManager;
   AdamElliot.FrameManager = new AdamElliot.FrameManager;
-  var app = new AdamElliot.Application;
+
+  AdamElliot.Menu = new AdamElliot.Menu;
+  AdamElliot.Dashboard = new AdamElliot.Dashboard;
+
+  AdamElliot.Router.route();
+
 
 /*  setTimeout(function() {
     app.showBlog();

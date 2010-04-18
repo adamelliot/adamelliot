@@ -1,5 +1,25 @@
 
 #application
+  #dashbaord
+    #admin
+      #login.button login
+      #login.button.hidden create post
+      #login.button.hidden create toy
+      #login.button.hidden logout
+    #tweet
+    #social
+      %img{:src => "/images/social/twitter.png"}
+      %img{:src => "/images/social/flickr.png"}
+      %img{:src => "/images/social/facebook.png"}
+      %img{:src => "/images/social/youtube.png"}
+      /%img{:src => "/images/social/vimeo.png"}
+      /%img{:src => "/images/social/digg.png"}
+      %img{:src => "/images/social/reddit.png"}
+      %img{:src => "/images/social/lastfm.png"}
+      %img{:src => "/images/social/linkedin.png"}
+      /%img{:src => "/images/social/feed.png"}
+      %img{:src => "/images/social/email.png"}
+
   #menu
     #adamelliot
       adamelliot
@@ -12,7 +32,7 @@
 
 #templates
   .frame
-    .close close
+    .close.button close
     .block
     .toolbar
 
@@ -20,3 +40,19 @@
     .date
     .title
     .body
+
+  .postForm
+    %form
+      %h3 title:
+      %input{:type => 'text'}
+      %h3 body:
+      %textarea
+
+  .login
+    %form
+      %h3 username:
+      %input{:type => 'text'}
+      %h3 password:
+      %input{:type => 'password'}
+
+  .bio
