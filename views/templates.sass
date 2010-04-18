@@ -20,12 +20,21 @@
       padding: 8px 10px
       background-color: rgba(0, 0, 0, 0.4)
       
-    
 
-.login
+.loginForm, .postForm
   +rounded
   +box-shadow
   margin: 10px
-  padding: 20px
+  padding: 8px 14px 14px 14px
   background-color: rgba(64, 64, 64, 0.6)
+
+.loginForm
   width: 200px
+
+.postForm
+  width: 600px
+  input.title
+    width: 460px
+  textarea
+    width: 580px
+    min-height: 240px

@@ -1,5 +1,37 @@
 
 /**
+ * Template manage, compiles the templates at load, and handles the binding
+ * of data and how they display.
+ */
+AdamElliot.TemplatManager = (function() {
+  var Klass = function () {
+
+    // = = = = Template Compilation = = = = 
+
+    this.loginForm = $("#templates .loginForm").compile();
+    this.postForm = $("#templates .postForm").compile({
+      'input.title@value': 'title',
+      '.body': 'body'
+    });
+
+
+    this.bio = $("#templates .bio").compile();
+
+    this.frame = $('#templates .frame').compile({
+      '.block': 'block'
+    });
+
+    this.post = $('#templates .post').compile({
+      '.title': 'title',
+      '.body': 'body',
+      '.date': 'date'
+    });
+  };
+
+  return Klass;
+})();
+
+/**
  * Controllers, handle each of the modes of the application.
  */
 AdamElliot.PostsController = (function () {
@@ -48,9 +80,7 @@ AdamElliot.PostsController = (function () {
       
       var block = AdamElliot.TemplatManager.post(post);
       AdamElliot.FrameManager.showFrame(block, {
-        'create': function() {
-          performCreate();
-        },
+        'create': "post/create",
         'prev': function() {
           console.log("Prev Clicked");
         },
@@ -65,7 +95,10 @@ AdamElliot.PostsController = (function () {
     };
 
     this.create = function(params) {
-      
+      var block = AdamElliot.TemplatManager.postForm();
+      AdamElliot.FrameManager.showFrame(block, {
+        'post': performCreate
+      });
     };
     
     this.update = function(params) {
@@ -94,7 +127,7 @@ AdamElliot.GeneralController = (function() {
     };
 
     this.login = function() {
-      var block = AdamElliot.TemplatManager.login();
+      var block = AdamElliot.TemplatManager.loginForm();
       AdamElliot.FrameManager.showFrame(block, {
         'login': function() {
           performLogin();

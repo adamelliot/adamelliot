@@ -25,6 +25,12 @@ window.AdamElliot = window.AdamElliot || {};
   };
 })(jQuery);
 
+/**
+ * Interupt form submission so we don't leave the page.
+ */
+$(function() {
+  $("form").submit(function(e) { return false; });
+});
 
 /**
  * Operates similar to other routers on ruby backends, maps url paths after
@@ -117,32 +123,6 @@ AdamElliot.Router = (function() {
 })();
 
 /**
- * Template manage, compiles the templates at load, and handles the binding
- * of data and how they display.
- */
-AdamElliot.TemplatManager = (function() {
-  var Klass = function () {
-
-    // = = = = Template Compilation = = = = 
-
-    this.login = $("#templates .login").compile();
-    this.bio = $("#templates .bio").compile();
-
-    this.frame = $('#templates .frame').compile({
-      '.block': 'block'
-    });
-
-    this.post = $('#templates .post').compile({
-      '.title': 'title',
-      '.body': 'body',
-      '.date': 'date'
-    });
-  };
-
-  return Klass;
-})();
-
-/**
  * Handles blocks returned from the TemplatManager
  */
 AdamElliot.FrameManager = (function() {
@@ -156,7 +136,10 @@ AdamElliot.FrameManager = (function() {
 
       for (var key in buttons) {
         var button = $("<div class='button'>" + key + "</div>");
-        button.click(buttons[key]);
+        
+        if (typeof buttons[key] == "string")
+          button.linkTo(buttons[key]);
+        else button.click(buttons[key]);
         toolbar.append(button);
       }
     };
@@ -167,6 +150,8 @@ AdamElliot.FrameManager = (function() {
       var frame = $(AdamElliot.TemplatManager.frame({block:block}));
       addButtonsToFrame(frame, buttons);
       $("body").append(frame);
+      // Any forms added should not obey submit policy
+      frame.find("form").submit(function(e) { return false; });
 
       var self = this;
       frame.find(".close").click(function() {

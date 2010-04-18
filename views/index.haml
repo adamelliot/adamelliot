@@ -35,24 +35,28 @@
     .close.button close
     .block
     .toolbar
+  
+  .error
+    %h3 Something went wrong =/
+    .message 
 
   .post
     .date
-    .title
+    %h1.title
     .body
 
   .postForm
     %form
       %h3 title:
-      %input{:type => 'text'}
+      %input.title{:type => 'text', :value => ''}
       %h3 body:
-      %textarea
+      %textarea.body
 
-  .login
+  .loginForm
     %form
       %h3 username:
-      %input{:type => 'text'}
+      %input.username{:type => 'text'}
       %h3 password:
-      %input{:type => 'password'}
+      %input.password{:type => 'password'}
 
   .bio
