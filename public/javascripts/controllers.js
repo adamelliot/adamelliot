@@ -75,7 +75,7 @@ AdamElliot.PostsController = (function () {
     };
 
     var performCreate = function() {
-      $(this).disable();
+//      $(this).disable();
       $.ajax({
         url: '/post.json',
         type: 'POST',
