@@ -3,9 +3,9 @@
   #dashbaord
     #admin
       #login.button login
-      #login.button.hidden create post
-      #login.button.hidden create toy
-      #login.button.hidden logout
+      #createPost.button.hidden create post
+      #createToy.button.hidden create toy
+      #logout.button.hidden logout
     #tweet
     #social
       %img{:src => "/images/social/twitter.png"}
@@ -48,15 +48,16 @@
   .postForm
     %form
       %h3 title:
-      %input.title{:type => 'text', :value => ''}
+      %input.title{:type => 'text', :name => 'title', :value => ''}
       %h3 body:
-      %textarea.body
+      %textarea.body{:name => 'body'}
 
   .loginForm
     %form
       %h3 username:
-      %input.username{:type => 'text'}
+      %input.username{:type => 'text', :name => 'username'}
       %h3 password:
-      %input.password{:type => 'password'}
+      %input.password{:type => 'password', :name => 'password'}
 
   .bio
+    ME!

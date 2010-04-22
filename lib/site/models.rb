@@ -1,6 +1,5 @@
 require 'dm-core'
 require 'dm-types'
-require 'dm-paperclip'
 require 'nokogiri'
 require 'dm-serializer'
 require 'date'
@@ -16,6 +15,16 @@ module Site
       property :id,     Serial
       property :title,  String
       property :body,   Text
+    end
+  end
+
+  class Auth
+    def all
+      {}
+    end
+
+    def find(username, password)
+      
     end
   end
 end

@@ -26,13 +26,6 @@ window.AdamElliot = window.AdamElliot || {};
 })(jQuery);
 
 /**
- * Interupt form submission so we don't leave the page.
- */
-$(function() {
-  $("form").submit(function(e) { return false; });
-});
-
-/**
  * Operates similar to other routers on ruby backends, maps url paths after
  * the hash into controllers.
  * 
@@ -93,6 +86,7 @@ AdamElliot.Router = (function() {
       var parts = route.split("/");
       var controller = parts[0].singularize();
       var action = parts[1]; // May be the id
+      var id;
 
       var resource = resources[controller];
       if (!resource) return false;
@@ -127,8 +121,21 @@ AdamElliot.Router = (function() {
  */
 AdamElliot.FrameManager = (function() {
   var Klass = function() {
+
+    var frames = {};
+    var frameStack = [];
+
     var currentFrame;
-    var collection;
+    var collection = $();
+    var dir = 1;
+    // Frames start at 100 and keep moving up on show to keep them forward
+    var zIndex = 100;
+
+    var getCurrentRoute = function() { return location.href.split("#")[1]; };
+    var setRoute = function(path) {
+      location.href = location.href.split("#")[0] + "#" + path;
+    }
+    var clearRoute = function() { setRoute(""); };
 
     var addButtonsToFrame = function(frame, buttons) {
       if (!buttons) return;
@@ -144,45 +151,135 @@ AdamElliot.FrameManager = (function() {
       }
     };
 
-    // TODO: Frame queuing and dismissal
-    this.showFrame = function(block, buttons) {
-      AdamElliot.Menu.moveToTop();
-      var frame = $(AdamElliot.TemplatManager.frame({block:block}));
-      addButtonsToFrame(frame, buttons);
-      $("body").append(frame);
-      // Any forms added should not obey submit policy
-      frame.find("form").submit(function(e) { return false; });
+    var pushFrame = function(callback) {
+      if (!currentFrame) return callback();
 
-      var self = this;
-      frame.find(".close").click(function() {
-        location.href = location.href.split("#")[0] + "#";
-        self.closeFrame(function() {
-          AdamElliot.Menu.moveToCenter();
-        });
-      });
-
-      var h = $(window).height();
-      var x = ($(window).width() - frame.width()) / 2;
-      frame.css({top:h, left:x});
-      if (currentFrame) {
-        this.closeFrame(function() {
-          frame.animate({top:160}, 300);
-        });
-      } else
-        frame.animate({top:160}, 300);
-
-      currentFrame = frame;
-    };
-
-    var dir = 1;
-    this.closeFrame = function(callback) {
       dir *= -1;
       var w = $(window).width() / 4 * dir;
       currentFrame.animate({left:"+=" + w, opacity:0}, 300, function() {
+        if (callback) callback();
+      });
+      currentFrame = null;
+    };
+
+    var dequeueFrame = function(route) {
+      if (!frames[route]) return null;
+
+      var frame = frames[route];
+
+      if (frameStack[frameStack.length - 1] != route) {
+        var w = $(window).width() / 4 * dir;
+        var left = (($(window).width() - frame.width()) / 2) - w;
+        frame.css({left:left, opacity:0});
+      } else currentFrame = null; // FIXME: Prevent push from doing anything (HACK)
+      
+      for (var i = 0; i < frameStack.length; i++)
+        if (frameStack[i] == route) {
+          frameStack.splice(i, 1);
+          i--;
+        }
+
+      return frame;
+    };
+
+    var popFrame = function(callback) {
+      if (currentFrame) console.error("Frame in way, poping anyway.");
+
+      if (frameStack.length <= 0) {
+        if (callback) callback();
+        return false;
+      }
+      var route = frameStack[frameStack.length - 1];
+      var frame = frames[route];
+
+      if (!frame) {
+        if (callback) callback();
+        return false;
+      }
+      currentFrame = frame;
+
+      dir *= -1;
+      var w = $(window).width() / 4 * dir;
+      var left = (($(window).width() - frame.width()) / 2) - w;
+      currentFrame.css({left:left, opacity:0});
+      currentFrame.animate({left:"+=" + w, opacity:1}, 300, function() {
+        if (callback) callback();
+      });
+
+      setRoute(route);
+
+      return true;
+    };
+
+    var destroyFrame = function(callback) {
+      if (!currentFrame) return callback();
+
+      var route = getCurrentRoute();
+      for (var i = 0; i < frameStack.length; i++)
+        if (frameStack[i] == route) {
+          frameStack.splice(i, 1);
+          i--;
+        }
+      delete frames[route];
+
+      currentFrame.animate({top:"+=60", opacity:0}, 300, function() {
         $(this).remove();
         if (callback) callback();
       });
       currentFrame = null;
+    };
+
+    // Shake the current frame a bit
+    this.shakeFrame = function() {
+      
+    };
+
+    this.showFrame = function(block, buttons) {
+      AdamElliot.Menu.moveToTop();
+
+      var route = getCurrentRoute();
+      var frame = dequeueFrame(route);
+      var left;
+
+      if (!frame) {
+        var frame = $(AdamElliot.TemplatManager.frame({block:block}));
+        collection.add(frame);
+        addButtonsToFrame(frame, buttons);
+
+        $("body").append(frame);
+        frame.find(".close").click(function() {
+          AdamElliot.FrameManager.closeFrame();
+        });
+
+        var h = $(window).height();
+        left = ($(window).width() - frame.width()) / 2;
+        frame.css({top:h, left:left});
+      } else {
+        frame.find('.block').empty().append(block);
+        left = ($(window).width() - frame.width()) / 2;
+      }
+
+      // Any forms added should not obey submit policy
+      frame.find("form").submit(function(e) { return false; });
+      frame.css("zIndex", zIndex++);
+
+      frames[route] = frame;
+      frameStack.push(route);
+
+      pushFrame(function() {
+        frame.animate({top:160, left:left, opacity:1}, 300);
+      });
+
+      currentFrame = frame;
+    };
+
+    this.closeFrame = function(callback) {
+      destroyFrame(function() {
+        if (!popFrame(callback)) {
+          clearRoute();
+          AdamElliot.Menu.moveToCenter();
+        }
+      });
     };
 
     $(window).resize(function() {
@@ -190,7 +287,7 @@ AdamElliot.FrameManager = (function() {
       var w = ($(window).width() - currentFrame.width()) / 2;
       var h = $(window).height() - 200;
       currentFrame.css("left", w);
-      currentFrame.css("maxHeight", h);
+      currentFrame.find(".block").css("maxHeight", h);
     });
 
   };

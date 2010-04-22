@@ -127,8 +127,11 @@ AdamElliot.Dashboard = (function() {
       }, 2500);
     };
     
-    this.showAdminPanel = function() {
-      
+    this.toggleAdminPanel = function() {
+      $("#admin").animate({top:"-=100px"}, 300, function() {
+        $("#admin .button").toggleClass("hidden");
+        $(this).animate({top:"+=100px"}, 300);
+      });
     };
     
     this.showLoginPanel = function() {
@@ -140,6 +143,8 @@ AdamElliot.Dashboard = (function() {
     
     // Link up buttons
     $("#login").linkTo("login");
+    $("#createPost").linkTo("post/create");
+    $("#logout").linkTo("logout");
   };
 
   return Klass;

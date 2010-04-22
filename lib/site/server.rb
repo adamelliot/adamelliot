@@ -3,6 +3,7 @@ require 'haml'
 require 'sass'
 require 'active_support'
 require 'yaml'
+require 'sinatra_more'
 
 module Site
   class Server < Sinatra::Base
@@ -10,6 +11,7 @@ module Site
     set :root, APP_ROOT
 
     configure do
+      enable :sessions
       set :haml, {:format => :html5}
 
       # Load configuration (just stores password for now)
@@ -30,15 +32,12 @@ module Site
     helpers do
       def protected!
         unless authorized?
-          response['WWW-Authenticate'] = %(Basic realm="Site Upload HTTP Auth")
           throw(:halt, [401, "Not authorized\n"])
         end
       end
 
       def authorized?
-        @auth ||= Rack::Auth::Basic::Request.new(request.env)
-        @auth.provided? && @auth.basic? && @auth.credentials &&
-          @auth.credentials == [ENV['username'], ENV['password']]
+        session[:authenticate] == true
       end
     end
 
@@ -59,7 +58,40 @@ module Site
 
     # Data routes
 
-    # BLAH
+    # Post resource routes
+
+    get '/posts.json' do
+      @posts = Site::Models::Post.all
+      @posts.to_json
+    end
+    
+    get '/post/:id.json' do |id|
+      @post = Site::Models::Post.find(id)
+      @post.to_json
+    end
+
+    post '/post.json' do
+#      protected!
+      @post = Site::Models::Post.new(params)
+      halt 500, "Something went wrong..." unless @post.save
+      @post.to_json
+    end
+    
+#    get '/post/:id' do |id|
+#    end
+    
+#    get '/post/:id' do |id|
+#    end
+
+    # General Routes
+
+    post '/auth.json' do
+      halt 401, "Nope." unless ENV['username'] == params[:username] && ENV['password'] == params[:password]
+    end
+    
+    delete '/auth.json' do
+    end
+    
 
   end
 end

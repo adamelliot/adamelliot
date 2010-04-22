@@ -1,4 +1,3 @@
-
 /**
  * Template manage, compiles the templates at load, and handles the binding
  * of data and how they display.
@@ -11,9 +10,8 @@ AdamElliot.TemplatManager = (function() {
     this.loginForm = $("#templates .loginForm").compile();
     this.postForm = $("#templates .postForm").compile({
       'input.title@value': 'title',
-      '.body': 'body'
+      'textarea.body': 'body'
     });
-
 
     this.bio = $("#templates .bio").compile();
 
@@ -36,30 +34,66 @@ AdamElliot.TemplatManager = (function() {
  */
 AdamElliot.PostsController = (function () {
   var Klass = function() {
-    var posts = {
-      1: {
-        title: "First Post!",
-        body: "Some text<h2>Blah</h2>test",
-        date: "April 17, 2010"
-      }
+    var posts = [];
+
+    // Returns the index of the post
+    var locate = function(id) {
+      for (var i = 0; i < posts.length; i++)
+        if (id == posts[i].id) return i;
+
+      return null;
+    };
+
+    var insert = function(data) {
+      for (var i = 0; i < posts.length; i++)
+        if (data.id == posts[i].id) {
+          posts[i] = data;
+          return;
+        }
+      posts.push(data);
     };
 
     var loadPosts = function() {
-      
+      $.ajax({
+        url: '/posts.json',
+        dataType: 'json',
+        success: function(data) {
+          for (var i = 0; i < data.length; i++) insert(data[i]);
+        }
+      });
     };
-    
+    loadPosts();
+
     var loadPost = function(id) {
-      
+      $.ajax({
+        url: '/post/' + id + '.json',
+        dataType: 'json',
+        success: function(data) {
+          console.log("Loaded post!", data);
+        }
+      });
     };
 
     var performCreate = function() {
-      
+      $(this).disable();
+      $.ajax({
+        url: '/post.json',
+        type: 'POST',
+        dataType: 'json',
+        data: $("form:visible").serialize(),
+        success: function(data) {
+          insert(data);
+        },
+        failure: function() {
+          console.log("Error postinng");
+        }
+      });
     };
-    
+
     var performDelete = function() {
       
     };
-    
+
     var performUpdate = function() {
       
     };
@@ -70,28 +104,20 @@ AdamElliot.PostsController = (function () {
 
     this.show = function(params) {
       var post;
-      // Dig out the first post.
-      if (!params["id"]) 
-        for (var key in posts) {
-          post = posts[key];
-          break;
-        }
-      else post = posts[params["id"]];
-      
-      var block = AdamElliot.TemplatManager.post(post);
-      AdamElliot.FrameManager.showFrame(block, {
-        'create': "post/create",
-        'prev': function() {
-          console.log("Prev Clicked");
-        },
-        'next': function() {
-          console.log("Next Clicked");
-        }
-      });
-    };
 
-    var performCreate = function() {
-      
+      if (params["id"]) index = locate(params["id"]);
+      else index = 0;
+
+      post = posts[index];
+      buttons = {};
+
+      // TODO: Check admin
+      if (true) buttons['new post'] = 'post/create';
+      if (index > 0) buttons['prev'] = "post/" + posts[index - 1].id;
+      if (posts[index + 1]) buttons['next'] = "post/" + posts[index + 1].id;
+
+      var block = AdamElliot.TemplatManager.post(post);
+      AdamElliot.FrameManager.showFrame(block, buttons);
     };
 
     this.create = function(params) {
@@ -123,15 +149,25 @@ AdamElliot.GeneralController = (function() {
   var Klass = function() {
 
     var performLogin = function() {
-      console.log("Run login, check response...");
+//      $(this).disable();
+      $.ajax({
+        url: '/login.json',
+        type: 'POST',
+        dataType: 'json',
+        data: $("form:visible").serialize(),
+        success: function() {
+          AdamElliot.Dashboard.toggleAdminPanel();
+        },
+        failure: function() {
+          console.log("Error logging in");
+        }
+      });
     };
 
     this.login = function() {
       var block = AdamElliot.TemplatManager.loginForm();
       AdamElliot.FrameManager.showFrame(block, {
-        'login': function() {
-          performLogin();
-        }
+        'login': performLogin
       });
     };
 
