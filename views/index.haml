@@ -2,10 +2,10 @@
 #application
   #dashbaord
     #admin
-      #login.button login
-      #createPost.button.hidden create post
-      #createToy.button.hidden create toy
-      #logout.button.hidden logout
+      .button{'data-route' => 'session/create'} login
+      .button.hidden{'data-route' => 'post/create'} create post
+      .button.hidden{'data-route' => 'toy/create'} create toy
+      .button.hidden{'data-route' => 'session/remove'} logout
     #tweet
     #social
       %a{:href => 'http://twitter.com/adam_elliot', :target => '_blank'}
@@ -29,11 +29,11 @@
   #menu
     #adamelliot
       adamelliot
-    #blog
+    #blog{'data-route' => 'post'}
       blog
-    #pics
+    #pics{'data-route' => 'pics'}
       pics
-    #bio
+    #bio{'data-route' => 'bio'}
       bio
 
 #templates
@@ -42,14 +42,6 @@
       .close.button close
       .block
       .toolbar
-
-    .list
-      %h2.title
-    
-    .listItem
-      %h3.title
-      .date
-      .description
 
     .error
       %h2.title Error
@@ -60,7 +52,6 @@
       .message Are you sure you want to eat that?
 
   .post.index.scroll
-    %h1.title
     .row
       .date
       %h1.title

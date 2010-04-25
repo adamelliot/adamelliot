@@ -78,13 +78,8 @@ AdamElliot.Menu = (function() {
       }, 250);
     };
 
-    // Hook up buttons to routes
-    blog.linkTo("post");
-    pics.linkTo("pics");
-    bio.linkTo("bio");
-
     // Setup and run the intro sequence
-    if (location.href.split("#")[1] == null) {
+    if (location.hash == "") {
       setup.call(this);
       introSequence.call(this);
     } else
@@ -149,11 +144,6 @@ AdamElliot.Dashboard = (function() {
 
     loadDashboard.call(this);
     showDashboard.call(this);
-    
-    // Link up buttons
-    $("#login").linkTo("session/create");
-    $("#createPost").linkTo("post/create");
-    $("#logout").linkTo("session/remove");
   };
 
   return Klass;

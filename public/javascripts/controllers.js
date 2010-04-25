@@ -349,7 +349,7 @@ AdamElliot.PostsController = function() {
   this.index = function(params) {
     this.remoteIndex();
     this.afterData = (function(data) {
-      this.render('index', {posts:data});
+      this.render('index', {'title':'Post Listing', posts:data});
     });
   };
 

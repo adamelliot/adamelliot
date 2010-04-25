@@ -18,6 +18,19 @@ window.AdamElliot = window.AdamElliot || {};
       location.hash = route;
     });
   };
+
+  $.fn.targetBlank = function() {
+    $(this).find("a").each(function() {
+      $(this).attr('target', '_blank');
+    });
+  };
+  
+  $.fn.bindDataRoute = function() {
+    $(this).find("[data-route]").each(function() {
+      $(this).linkTo($(this).attr('data-route'));
+    });
+  };
+
 })(jQuery);
 
 /**
@@ -243,6 +256,7 @@ AdamElliot.FrameManager = (function() {
       var ih = currentFrame.find(".post").innerHeight();
       if (ih < h) h = "";
       currentFrame.find(".block > .post").css("height", h);
+//      currentFrame.css("top", 100);
     };
 
     // Shake the current frame a bit
@@ -292,10 +306,8 @@ AdamElliot.FrameManager = (function() {
 
       // Any forms added should not obey submit policy
       frame.find("form").submit(function(e) { return false; });
-      
-      frame.find("[data-route]").each(function(index) {
-        $(this).linkTo($(this).attr('data-route'));
-      });
+      frame.bindDataRoute();
+      frame.targetBlank();
       frame.css("zIndex", zIndex++);
 
       frames[route] = frame;
@@ -356,8 +368,6 @@ AdamElliot.FrameManager = (function() {
       this.closeFrame();
     };
 
-    
-
     $(window).resize(function() {
       if (!currentFrame) return;
       var w = ($(window).width() - currentFrame.width()) / 2;
@@ -371,6 +381,10 @@ AdamElliot.FrameManager = (function() {
 })();
 
 $(function() {
+  // Bind basic html to routes and targets
+  $("body").bindDataRoute();
+  $("body").targetBlank();
+
   AdamElliot.router = new AdamElliot.Router;
 
   AdamElliot.router.resource("session", new AdamElliot.SessionController);
