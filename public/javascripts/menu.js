@@ -21,10 +21,10 @@ AdamElliot.Menu = (function() {
     // Set initial placement and settings for the intro sequence
     var setup = function() {
       this.centerMenu();
-      adamelliot.animate({opacity: 0}, 0);
-      blog.animate({opacity: 0, left:"+=600px"}, 0);
-      pics.animate({opacity: 0, left:"-=600px"}, 0);
-      bio.animate({opacity: 0, top:"+=600px"}, 0);
+      adamelliot.animate({opacity: 0}, 1);
+      blog.animate({opacity: 0, left:"+=600px"}, 1);
+      pics.animate({opacity: 0, left:"-=600px"}, 1);
+      bio.animate({opacity: 0, top:"+=600px"}, 1);
     };
 
     // Run the intro sequence
