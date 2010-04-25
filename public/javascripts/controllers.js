@@ -108,11 +108,15 @@ AdamElliot.ResourceController = (function() {
       AdamElliot.frameManager.closeFrameByRoute(modelName + "/" + id);
     };
 
-    var triggerOnce = function(func) {
+    this.triggerOnce = function(func) {
       var triggered = false;
 
       return function() {
-        if (!triggered) func.call(self);
+        if (!triggered) {
+          var args = Array.prototype.slice.call(arguments);
+          args.shift();
+          func.apply(self, args);
+        }
         triggered = true;
       };
     };
@@ -242,7 +246,7 @@ AdamElliot.ResourceController = (function() {
     this.showFirst = function(params) {
       if (dataIndex.length == 0) {
         if (!params._noFetch) {
-          self.afterData = triggerOnce(function() { self.show({_noFetch:true}); });
+          self.afterData = self.triggerOnce(function() { self.show({_noFetch:true}); });
           self.remoteIndex();
         } else
           console.log("No data to be had!");
@@ -267,7 +271,7 @@ AdamElliot.ResourceController = (function() {
       if (!params[self.dataKey]) return self.showFirst(params);
       var obj = null, id = params[self.dataKey];
       if (!(obj = data[id])) {
-        self.afterData = triggerOnce(function() { self.show(params); });
+        self.afterData = this.triggerOnce(function() { self.show(params); });
         self.remoteShow(id);
         return null;
       }
@@ -311,6 +315,25 @@ AdamElliot.PostsController = function() {
   var _super = new AdamElliot.ResourceController("post", this);
   $.extend(this, _super);
 
+  this.templateManager.defineTemplate('index', {
+    '.row': {
+      'post<-posts': {
+        '@data-route': function(arg) {
+          var post = arg.item;
+          return 'post/' + post.id;
+        },
+        '.title': 'post.title',
+        '.date': 'post.date',
+        '.description': function(arg) {
+          var post = arg.item;
+          var firstChunk = post.body.match(/>([^<]*)</)[1];
+          var firstWords = firstChunk.match(/([^\s]+\s){0,34}[^\s]+/)[0];
+          return firstWords + "...";
+        }
+      }
+    }
+  });
+
   this.templateManager.defineTemplate('show', {
     '.title': 'title',
     '.body': 'body',
@@ -323,6 +346,13 @@ AdamElliot.PostsController = function() {
     'textarea.markdown': 'markdown'
   });
 
+  this.index = function(params) {
+    this.remoteIndex();
+    this.afterData = (function(data) {
+      this.render('index', {posts:data});
+    });
+  };
+
   this.show = function(params) {
     var post = null;
     if (!(post = _super.show(params))) return null;
@@ -330,10 +360,11 @@ AdamElliot.PostsController = function() {
     var buttons = {};
 
     if (AdamElliot.session.authenticated) {
-      buttons['new post'] = 'post/create';
       buttons['edit'] = 'post/update/' + post.id;
       buttons['delete'] = 'post/remove/' + post.id;
     }
+
+    buttons['index'] = 'posts';
 
     if (post._index > 0)
       buttons['prev'] = "post/" + this.getDataByIndex(post._index - 1)[this.dataKey];
@@ -357,16 +388,23 @@ AdamElliot.SessionController = (function() {
 
     this.templateManager.defineTemplate('form');
 
+    var enableAdmin = function() {
+      if (AdamElliot.session.authenticated) return;
+      AdamElliot.session.authenticated = true;
+      AdamElliot.dashboard.showAdminPanel();
+      AdamElliot.frameManager.closeFrame();
+    };
+    
+    var disableAdmin = function() {
+      if (!AdamElliot.session.authenticated) return;
+      AdamElliot.session.authenticated = false;
+      AdamElliot.dashboard.hideAdminPanel();
+      AdamElliot.frameManager.closeAllFrames();
+    };
+
     var setAdminOnResponse = function(data) {
-      if (data && data.authenticated) {
-        AdamElliot.session.authenticated = true;
-        AdamElliot.dashboard.showAdminPanel();
-        AdamElliot.frameManager.closeFrame();
-      } else {
-        AdamElliot.session.authenticated = false;
-        AdamElliot.dashboard.hideAdminPanel();
-        AdamElliot.frameManager.closeAllFrames();
-      }
+      if (data && data.authenticated) enableAdmin();
+      else disableAdmin();
     };
 
     this.afterRemove = this.afterData = this.afterCreate = setAdminOnResponse;

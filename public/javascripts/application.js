@@ -238,6 +238,13 @@ AdamElliot.FrameManager = (function() {
       currentFrame = null;
     };
 
+    var adjustFrameForWindow = function() {
+      var h = $(window).height() - 310;
+      var ih = currentFrame.find(".post").innerHeight();
+      if (ih < h) h = "";
+      currentFrame.find(".block > .post").css("height", h);
+    };
+
     // Shake the current frame a bit
     this.shakeFrame = function() {
       if (!currentFrame) return;
@@ -285,6 +292,10 @@ AdamElliot.FrameManager = (function() {
 
       // Any forms added should not obey submit policy
       frame.find("form").submit(function(e) { return false; });
+      
+      frame.find("[data-route]").each(function(index) {
+        $(this).linkTo($(this).attr('data-route'));
+      });
       frame.css("zIndex", zIndex++);
 
       frames[route] = frame;
@@ -294,7 +305,10 @@ AdamElliot.FrameManager = (function() {
         frame.animate({top:160, left:left, opacity:1}, 300);
       });
 
-      return currentFrame = frame;
+      currentFrame = frame;
+      adjustFrameForWindow();
+
+      return currentFrame;
     };
 
     this.closeFrameByRoute = function(route, callback) {
@@ -338,15 +352,17 @@ AdamElliot.FrameManager = (function() {
       }
       frames = {};
       frameStack = [];
+      console.log("close all frames");
       this.closeFrame();
     };
+
+    
 
     $(window).resize(function() {
       if (!currentFrame) return;
       var w = ($(window).width() - currentFrame.width()) / 2;
-      var h = $(window).height() - 200;
       currentFrame.css("left", w);
-      currentFrame.find(".block").css("maxHeight", h);
+      adjustFrameForWindow();
     });
 
   };

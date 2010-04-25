@@ -1,12 +1,12 @@
 default_run_options[:pty] = true
 
 set :application, "adamelliot"
-set :repository, "git@github.com:adamelliot-v2.git"
+set :repository, "git@git.warptube.com:adamelliot.git"
 set :user, 'deploy'
 set :scm, 'git'
 
 set :server_name, "#{application}.com"
-set :server_alias, "*.#{application}.*, astrobombastic.com"
+set :server_alias, "*.#{application}.* astrobombastic.com"
 
 #set :branch, "origin/master"
 
@@ -109,7 +109,7 @@ namespace :config do
   desc "Update the config.yml"
   task :create_config_yaml do
     set(:auth_username) do
-      Capistrano::CLI.prompt("Site username: ")
+      Capistrano::CLI.ui.ask("Site username: ")
     end unless exists?(:auth_password)
     set(:auth_password) do
       Capistrano::CLI.password_prompt("Site password: ")
