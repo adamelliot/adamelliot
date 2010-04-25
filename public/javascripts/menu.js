@@ -92,7 +92,7 @@ AdamElliot.Menu = (function() {
   };
 
   $(window).resize(function() {
-    AdamElliot.Menu.centerMenu();
+    AdamElliot.menu.centerMenu();
   });
 
   return Klass;
@@ -126,25 +126,34 @@ AdamElliot.Dashboard = (function() {
         dashboard.animate({opacity:1}, 1500);
       }, 2500);
     };
-    
-    this.toggleAdminPanel = function() {
+
+    var showingAdminPanel = false;
+    var toggleAdminPanel = function() {
       $("#admin").animate({top:"-=100px"}, 300, function() {
         $("#admin .button").toggleClass("hidden");
         $(this).animate({top:"+=100px"}, 300);
       });
     };
+
+    this.showAdminPanel = function() {
+      if (showingAdminPanel) return;
+      showingAdminPanel = true;
+      toggleAdminPanel();
+    };
     
-    this.showLoginPanel = function() {
-      
+    this.hideAdminPanel = function() {
+      if (!showingAdminPanel) return;
+      showingAdminPanel = false;
+      toggleAdminPanel();
     };
 
     loadDashboard.call(this);
     showDashboard.call(this);
     
     // Link up buttons
-    $("#login").linkTo("login");
+    $("#login").linkTo("session/create");
     $("#createPost").linkTo("post/create");
-    $("#logout").linkTo("logout");
+    $("#logout").linkTo("session/remove");
   };
 
   return Klass;

@@ -8,17 +8,23 @@
       #logout.button.hidden logout
     #tweet
     #social
-      %img{:src => "/images/social/twitter.png"}
-      %img{:src => "/images/social/flickr.png"}
-      %img{:src => "/images/social/facebook.png"}
-      %img{:src => "/images/social/youtube.png"}
-      /%img{:src => "/images/social/vimeo.png"}
-      /%img{:src => "/images/social/digg.png"}
-      %img{:src => "/images/social/reddit.png"}
-      %img{:src => "/images/social/lastfm.png"}
-      %img{:src => "/images/social/linkedin.png"}
+      %a{:href => 'http://twitter.com/adam_elliot', :target => '_blank'}
+        %img{:src => "/images/social/twitter.png"}
+      %a{:href => 'http://www.flickr.com/photos/30782515@N02/', :target => '_blank'}
+        %img{:src => "/images/social/flickr.png"}
+      %a{:href => 'http://www.facebook.com/adamelliot', :target => '_blank'}
+        %img{:src => "/images/social/facebook.png"}
+      %a{:href => 'http://www.youtube.com/user/astrobombastic', :target => '_blank'}
+        %img{:src => "/images/social/youtube.png"}
+      %a{:href => 'http://www.reddit.com/user/astro_bombastic/', :target => '_blank'}
+        %img{:src => "/images/social/reddit.png"}
+      %a{:href => 'http://www.last.fm/user/adamelliot', :target => '_blank'}
+        %img{:src => "/images/social/lastfm.png"}
+      %a{:href => 'http://ca.linkedin.com/pub/adam-elliot/1/690/899', :target => '_blank'}
+        %img{:src => "/images/social/linkedin.png"}
       /%img{:src => "/images/social/feed.png"}
-      %img{:src => "/images/social/email.png"}
+      %a{:href => 'mailto:adam@adamelliot.com?subject=Hello', :target => '_blank'}
+        %img{:src => "/images/social/email.png"}
 
   #menu
     #adamelliot
@@ -31,28 +37,44 @@
       bio
 
 #templates
-  .frame
-    .close.button close
-    .block
-    .toolbar
-  
-  .error
-    %h3 Something went wrong =/
-    .message 
+  .shared
+    .frame
+      .close.button close
+      .block
+      .toolbar
 
-  .post
+    .list
+      %h2.title
+    
+    .listItem
+      %h3.title
+      .date
+      .description
+
+    .error
+      %h2.title Error
+      .message Uh oh...
+
+    .notice
+      %h2.title Warning
+      .message Are you sure you want to eat that?
+
+  .post.index
+
+  .post.show
     .date
     %h1.title
     .body
 
-  .postForm
+  .post.form
     %form
+      %input.id{:type => 'hidden', :name => 'id'}
       %h3 title:
       %input.title{:type => 'text', :name => 'title', :value => ''}
       %h3 body:
-      %textarea.body{:name => 'body'}
+      %textarea.markdown{:name => 'markdown'}
 
-  .loginForm
+  .session.form
     %form
       %h3 username:
       %input.username{:type => 'text', :name => 'username'}

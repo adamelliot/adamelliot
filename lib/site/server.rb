@@ -3,7 +3,8 @@ require 'haml'
 require 'sass'
 require 'active_support'
 require 'yaml'
-require 'sinatra_more'
+#require 'sinatra_more'
+require 'net/http'
 
 module Site
   class Server < Sinatra::Base
@@ -37,7 +38,7 @@ module Site
       end
 
       def authorized?
-        session[:authenticate] == true
+        session[:authenticated] == true
       end
     end
 
@@ -66,30 +67,54 @@ module Site
     end
     
     get '/post/:id.json' do |id|
-      @post = Site::Models::Post.find(id)
+      @post = Site::Models::Post.get(id)
       @post.to_json
+    end
+
+    def brighten(markdown, theme = 'idle')
+      Net::HTTP.post_form(URI.parse("http://brightly.warptube.com/brighten"), {:markdown => markdown, :theme => theme}).body
     end
 
     post '/post.json' do
-#      protected!
+      protected!
+      params.delete("id")
+      params[:body] = brighten(params[:markdown])
       @post = Site::Models::Post.new(params)
-      halt 500, "Something went wrong..." unless @post.save
+      halt 400, "Something went wrong..." unless @post.save
+      @post.to_json
+    end
+
+    put '/post/:id.json' do |id|
+      protected!
+      params.delete("id")
+      params[:body] = brighten(params[:markdown])
+      @post = Site::Models::Post.get(id)
+      @post.attributes = params
+      halt 400, "Something went wrong..." unless @post.save
       @post.to_json
     end
     
-#    get '/post/:id' do |id|
-#    end
-    
-#    get '/post/:id' do |id|
-#    end
+    delete '/post/:id.json' do |id|
+      protected!
+      @post = Site::Models::Post.get(id)
+      halt 404, "Nothing to delete." if @post.nil?
+      halt 401, "Something went wrong..." unless @post.destroy
+    end
 
     # General Routes
 
-    post '/auth.json' do
+    get '/sessions.json' do
+      session[:authenticated] ? '{"authenticated":"true", "username":"astro"}' : "{}"
+    end
+
+    post '/session.json' do
       halt 401, "Nope." unless ENV['username'] == params[:username] && ENV['password'] == params[:password]
+      session[:authenticated] = true
+      '{"authenticated":"true", "username":"astro"}'
     end
     
-    delete '/auth.json' do
+    delete '/session/:id.json' do
+      session[:authenticated] = false
     end
     
 

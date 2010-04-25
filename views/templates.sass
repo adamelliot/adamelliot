@@ -19,19 +19,39 @@
       margin: 0 4px
       padding: 8px 10px
       background-color: rgba(0, 0, 0, 0.4)
-      
 
-.loginForm, .postForm
-  +rounded
-  +box-shadow
-  margin: 10px
+.form
+  +frame-content
   padding: 8px 14px 14px 14px
-  background-color: rgba(64, 64, 64, 0.6)
 
-.loginForm
+.session.form
   width: 200px
 
-.postForm
+.post.show
+  +frame-content
+  width: 600px
+  font-size: 11pt
+
+  left: 100px
+  top: 190px
+  .title
+    font-size: 18pt
+  .date
+    text-shadow: 0px 1px 0px #000
+    float: right
+    color: #666
+    font-size: 9pt
+  .body
+    color: #fff
+
+    pre
+      +rounded
+      :overflow auto
+      :text-shadow none
+      :padding 6px
+      :max-width 588px
+
+.post.form
   width: 600px
   input.title
     width: 460px

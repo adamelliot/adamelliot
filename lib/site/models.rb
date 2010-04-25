@@ -12,9 +12,10 @@ module Site
     class Post
       include DataMapper::Resource
 
-      property :id,     Serial
-      property :title,  String
-      property :body,   Text
+      property :id,       Serial
+      property :title,    String
+      property :markdown, Text
+      property :body,     Text
     end
   end
 

@@ -15,12 +15,7 @@ window.AdamElliot = window.AdamElliot || {};
 (function($) {
   $.fn.linkTo = function(route) {
     this.click(function() {
-      var base = location.href.split("#")[0];
-//      var current = location.href.split("#")[1];
-//      if (route == current) return false;
-
-      location.href = base + "#" + route;
-      AdamElliot.Router.route();
+      location.hash = route;
     });
   };
 })(jQuery);
@@ -67,8 +62,11 @@ AdamElliot.Router = (function() {
      * route exists. If routed returns true, otherwise returns false.
      */
     this.route = function() {
-      var route = location.href.split("#")[1];
-      if (!route) return false;
+      var route = location.hash.split("#")[1];
+      if (!route) {
+        AdamElliot.frameManager.hideFrame();
+        return false;
+      }
 
       var params = getParams(route);
       route = route.split("?")[0];
@@ -77,7 +75,10 @@ AdamElliot.Router = (function() {
       var target = mappings[route];
       if (target) {
         // Short cut for static routes to templates
-        if (!target.action) return false;
+        if (!target.action) {
+          AdamElliot.frameManager.hideFrame();
+          return false;
+        }
 
         target.action.call(target.controller);
         return true;
@@ -89,13 +90,16 @@ AdamElliot.Router = (function() {
       var id;
 
       var resource = resources[controller];
-      if (!resource) return false;
+      if (!resource) {
+        AdamElliot.frameManager.hideFrame();
+        return false;
+      }
 
       if (parts[0] == controller.pluralize())
         action = "index";
       else switch (action) {
         case "update":
-        case "delete":
+        case "remove":
           id = parts[2];
         case "create":
           break;
@@ -108,6 +112,7 @@ AdamElliot.Router = (function() {
       if (id) params["id"] = id;
       action = resource[action];
       if (action) action.call(resource, params);
+      else AdamElliot.frameManager.hideFrame();
 
       return true;
     }
@@ -131,15 +136,16 @@ AdamElliot.FrameManager = (function() {
     // Frames start at 100 and keep moving up on show to keep them forward
     var zIndex = 100;
 
-    var getCurrentRoute = function() { return location.href.split("#")[1]; };
+    var getCurrentRoute = function() { return location.hash.split("#")[1]; };
     var setRoute = function(path) {
-      location.href = location.href.split("#")[0] + "#" + path;
+      location.hash = path || "";
     }
     var clearRoute = function() { setRoute(""); };
 
     var addButtonsToFrame = function(frame, buttons) {
       if (!buttons) return;
       var toolbar = frame.find(".toolbar");
+      toolbar.find(".button").remove();
 
       for (var key in buttons) {
         var button = $("<div class='button'>" + key + "</div>");
@@ -152,7 +158,10 @@ AdamElliot.FrameManager = (function() {
     };
 
     var pushFrame = function(callback) {
-      if (!currentFrame) return callback();
+      if (!currentFrame) {
+        if (callback) callback();
+        return;
+      }
 
       dir *= -1;
       var w = $(window).width() / 4 * dir;
@@ -231,33 +240,48 @@ AdamElliot.FrameManager = (function() {
 
     // Shake the current frame a bit
     this.shakeFrame = function() {
-      
+      if (!currentFrame) return;
+
+      var right, left, times = 2;
+      right = function() {
+        currentFrame.animate({left:"+=30"}, 100, left);
+      };
+      left = function() {
+        if (times-- > 0)
+          currentFrame.animate({left:"-=30"}, 100, right);
+        else
+          currentFrame.animate({left:"-=15"}, 50);
+      };
+
+      currentFrame.animate({left:"+=15"}, 50, left);
     };
 
-    this.showFrame = function(block, buttons) {
-      AdamElliot.Menu.moveToTop();
+    this.showFrame = function(block, buttons, preserveBlock) {
+      AdamElliot.menu.moveToTop();
 
       var route = getCurrentRoute();
       var frame = dequeueFrame(route);
       var left;
 
       if (!frame) {
-        var frame = $(AdamElliot.TemplatManager.frame({block:block}));
+        var frame = $(AdamElliot.TemplateManager.sharedTemplate('frame')({block:block}));
         collection.add(frame);
-        addButtonsToFrame(frame, buttons);
 
         $("body").append(frame);
         frame.find(".close").click(function() {
-          AdamElliot.FrameManager.closeFrame();
+          AdamElliot.frameManager.closeFrame();
         });
 
         var h = $(window).height();
         left = ($(window).width() - frame.width()) / 2;
         frame.css({top:h, left:left});
       } else {
-        frame.find('.block').empty().append(block);
+        if (!preserveBlock)
+          frame.find('.block').empty().append(block);
         left = ($(window).width() - frame.width()) / 2;
       }
+
+      addButtonsToFrame(frame, buttons);
 
       // Any forms added should not obey submit policy
       frame.find("form").submit(function(e) { return false; });
@@ -270,16 +294,51 @@ AdamElliot.FrameManager = (function() {
         frame.animate({top:160, left:left, opacity:1}, 300);
       });
 
-      currentFrame = frame;
+      return currentFrame = frame;
+    };
+
+    this.closeFrameByRoute = function(route, callback) {
+      var frame = frames[route];
+
+      if (!frame) return;
+      if (frame == currentFrame) {
+        this.closeFrame();
+        return;
+      }
+
+      frame.remove();
+      delete frames[route];
+      for (var i = 0; i < frameStack.length; i++)
+        if (frameStack[i] == route) {
+          frameStack.splice(i, 1);
+          break;
+        }
     };
 
     this.closeFrame = function(callback) {
       destroyFrame(function() {
         if (!popFrame(callback)) {
           clearRoute();
-          AdamElliot.Menu.moveToCenter();
+          AdamElliot.menu.moveToCenter();
         }
       });
+    };
+
+    this.hideFrame = function(callback) {
+      pushFrame(function() {
+        AdamElliot.menu.moveToCenter();
+      });
+    };
+
+    this.closeAllFrames = function(callback) {
+      for (var i = 0; i < frameStack.length; i++) {
+        var route = frameStack[i]
+        var frame = frames[route];
+        if (currentFrame != frame) frame.remove();
+      }
+      frames = {};
+      frameStack = [];
+      this.closeFrame();
     };
 
     $(window).resize(function() {
@@ -295,35 +354,20 @@ AdamElliot.FrameManager = (function() {
   return Klass;
 })();
 
-/**
- * Main Application, the application controller
- */
-AdamElliot.Application = (function() {
-  var Klass = function() {
-  };
-  
-  return Klass;
-})();
-
 $(function() {
-  AdamElliot.PostsController = new AdamElliot.PostsController;
-  AdamElliot.GeneralController = new AdamElliot.GeneralController;
+  AdamElliot.router = new AdamElliot.Router;
 
-  AdamElliot.Router = new AdamElliot.Router;
+  AdamElliot.router.resource("session", new AdamElliot.SessionController);
+  AdamElliot.router.resource("post", new AdamElliot.PostsController);
 
-  AdamElliot.Router.map("login", AdamElliot.GeneralController, AdamElliot.GeneralController.login);
-  AdamElliot.Router.resource("post");
+  AdamElliot.frameManager = new AdamElliot.FrameManager;
 
-  AdamElliot.TemplatManager = new AdamElliot.TemplatManager;
-  AdamElliot.FrameManager = new AdamElliot.FrameManager;
+  AdamElliot.menu = new AdamElliot.Menu;
+  AdamElliot.dashboard = new AdamElliot.Dashboard;
 
-  AdamElliot.Menu = new AdamElliot.Menu;
-  AdamElliot.Dashboard = new AdamElliot.Dashboard;
+  AdamElliot.router.route();
 
-  AdamElliot.Router.route();
-
-
-/*  setTimeout(function() {
-    app.showBlog();
-  }, 2000);*/
+  $(window).bind('hashchange', function() {
+    AdamElliot.router.route();
+  });
 });
