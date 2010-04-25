@@ -65,7 +65,7 @@ module Site
       @posts = Site::Models::Post.all
       @posts.to_json
     end
-    
+
     get '/post/:id.json' do |id|
       @post = Site::Models::Post.get(id)
       @post.to_json
