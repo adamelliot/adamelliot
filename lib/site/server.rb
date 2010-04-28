@@ -104,7 +104,7 @@ module Site
     # General Routes
 
     get '/sessions.json' do
-      session[:authenticated] ? '{"authenticated":"true", "username":"' + ENV[:username] + '"}' : "{}"
+      session[:authenticated] ? '{"authenticated":"true", "username":"' + ENV['username'] + '"}' : "{}"
     end
 
     post '/session.json' do
@@ -114,7 +114,7 @@ module Site
         :value => true,
         :path => '/'
       })
-      '{"authenticated":"true", "username":"' + ENV[:username] + '"}'
+      '{"authenticated":"true", "username":"' + ENV['username'] + '"}'
     end
     
     delete '/session/:id.json' do
