@@ -3,11 +3,14 @@ require 'haml'
 require 'sass'
 require 'active_support'
 require 'yaml'
-#require 'sinatra_more'
+require 'sinatra_more'
 require 'net/http'
+
 
 module Site
   class Server < Sinatra::Base
+    register SinatraMore::MarkupPlugin
+    
     enable :logging, :static
     set :root, APP_ROOT
 

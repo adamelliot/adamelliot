@@ -9,22 +9,22 @@
     #tweet
     #social
       %a{:href => 'http://twitter.com/adam_elliot'}
-        %img{:src => "/images/social/twitter.png"}
+        %img{:src => "/images/social/twitter.png", :alt => "Twitter"}
       %a{:href => 'http://www.flickr.com/photos/30782515@N02/'}
-        %img{:src => "/images/social/flickr.png"}
+        %img{:src => "/images/social/flickr.png", :alt => "Flickr"}
       %a{:href => 'http://www.facebook.com/adamelliot'}
-        %img{:src => "/images/social/facebook.png"}
+        %img{:src => "/images/social/facebook.png", :alt => "Facebook"}
       %a{:href => 'http://www.youtube.com/user/astrobombastic'}
-        %img{:src => "/images/social/youtube.png"}
+        %img{:src => "/images/social/youtube.png", :alt => "YouTube"}
       %a{:href => 'http://www.reddit.com/user/astro_bombastic/'}
-        %img{:src => "/images/social/reddit.png"}
+        %img{:src => "/images/social/reddit.png", :alt => "reddit.com"}
       %a{:href => 'http://www.last.fm/user/adamelliot'}
-        %img{:src => "/images/social/lastfm.png"}
+        %img{:src => "/images/social/lastfm.png", :alt => "Last.fm"}
       %a{:href => 'http://ca.linkedin.com/pub/adam-elliot/1/690/899'}
-        %img{:src => "/images/social/linkedin.png"}
+        %img{:src => "/images/social/linkedin.png", :alt => "LinkedIn"}
       /%img{:src => "/images/social/feed.png"}
       %a{:href => 'mailto:adam@adamelliot.com?subject=Hello'}
-        %img{:src => "/images/social/email.png"}
+        %img{:src => "/images/social/email.png", :alt => "Email"}
 
   #menu
     #adamelliot
@@ -71,6 +71,11 @@
       %input.title{:type => 'text', :name => 'title', :value => ''}
       %h3 body:
       %textarea.markdown{:name => 'markdown'}
+      %h3 tags:
+      %input.tags{:type => 'text', :name => 'tags'}
+      
+      %h3 posted:
+      = select_tag(:posted_on, :options => [1,2])
 
   .session.form
     %form
