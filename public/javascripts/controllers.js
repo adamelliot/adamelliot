@@ -56,7 +56,7 @@ AdamElliot.PostsController = function() {
           var post = arg.item;
           var firstChunk = post.body.match(/>([^<]*)</)[1];
           var firstWords = firstChunk.match(/([^\s]+\s){0,34}[^\s]+/)[0];
-          return firstWords + "...";
+          return firstWords + (firstWords == firstChunk ? "" : "...");
         }
       }
     }
