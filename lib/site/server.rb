@@ -3,14 +3,11 @@ require 'haml'
 require 'sass'
 require 'active_support'
 require 'yaml'
-require 'sinatra_more'
 require 'net/http'
 
 
 module Site
   class Server < Sinatra::Base
-    register SinatraMore::MarkupPlugin
-    
     enable :logging, :static
     set :root, APP_ROOT
 
@@ -96,7 +93,7 @@ module Site
       halt 400, "Something went wrong..." unless @post.save
       @post.to_json
     end
-    
+
     delete '/post/:id.json' do |id|
       protected!
       @post = Site::Models::Post.get(id)
