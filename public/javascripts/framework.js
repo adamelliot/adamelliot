@@ -245,14 +245,6 @@ AdamElliot.FrameManager = (function() {
       currentFrame = null;
     };
 
-    var adjustFrameForWindow = function() {
-      var h = $(window).height() - 310;
-      var ih = currentFrame.find(".post").innerHeight();
-      if (ih < h) h = "";
-      currentFrame.find(".block > .post").css("height", h);
-//      currentFrame.css("top", 100);
-    };
-
     // Shake the current frame a bit
     this.shakeFrame = function() {
       if (!currentFrame) return;
@@ -312,7 +304,6 @@ AdamElliot.FrameManager = (function() {
       });
 
       currentFrame = frame;
-      adjustFrameForWindow();
 
       return currentFrame;
     };
@@ -366,7 +357,6 @@ AdamElliot.FrameManager = (function() {
       if (!currentFrame) return;
       var w = ($(window).width() - currentFrame.width()) / 2;
       currentFrame.css("left", w);
-      adjustFrameForWindow();
     });
 
   };
