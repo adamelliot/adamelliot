@@ -299,8 +299,15 @@ AdamElliot.FrameManager = (function() {
       frames[route] = frame;
       frameStack.push(route);
 
+      var _currentFrame = currentFrame;
+      $('body').animate({scrollTop:0}, 80, function() {
+        if (_currentFrame) _currentFrame.css('position', 'fixed');
+      });
+
       pushFrame(function() {
-        frame.animate({top:160, left:left, opacity:1}, 300);
+        frame.animate({top:0, left:left, opacity:1}, 300, function() {
+          frame.css('position', 'absolute');
+        });
       });
 
       currentFrame = frame;
@@ -578,7 +585,7 @@ AdamElliot.ResourceController = (function() {
         if (self.failedUpdate) self.failedUpdate(id);
         return;
       }
-      var data = activeBlock.find('form').serialize();
+      var data = activeBlock.find('form').serializeArray();
       if (!data) {
         if (self.failedUpdate) self.failedUpdate(id);
         return;

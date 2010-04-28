@@ -37,8 +37,6 @@ AdamElliot.PostsController = function() {
     }
 
     result.push({name:'posted_on', value:date});
-
-    console.log("Submitting", result);
     
     return result;
   };
@@ -121,16 +119,16 @@ AdamElliot.SessionController = (function() {
     this.templateManager.defineTemplate('form');
 
     var enableAdmin = function() {
+      AdamElliot.dashboard.showAdminPanel();
       if (AdamElliot.session.authenticated) return;
       AdamElliot.session.authenticated = true;
-      AdamElliot.dashboard.showAdminPanel();
       AdamElliot.frameManager.closeFrame();
     };
     
     var disableAdmin = function() {
+      AdamElliot.dashboard.hideAdminPanel();
       if (!AdamElliot.session.authenticated) return;
       AdamElliot.session.authenticated = false;
-      AdamElliot.dashboard.hideAdminPanel();
       AdamElliot.frameManager.closeAllFrames();
     };
 
