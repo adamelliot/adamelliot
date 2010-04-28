@@ -4,9 +4,18 @@
 AdamElliot.PostsController = function() {
   var _super = new AdamElliot.ResourceController("post", this);
   $.extend(this, _super);
-  
+
   this.dataOrderKey = 'posted_on';
-  
+  this.descendingOrder = true;
+
+  this.dataMangler = function(data) {
+    // TODO: Check this cross timezone.
+    // NOTE: This is kinda smelly
+    var date = data['posted_on'].split('-');
+    data['posted_on'] = new Date(date[0], date[1] - 1, date[2]);
+    return data;
+  };
+
   this.formHandler = function(data) {
     var date = new Date;
     var result = [];
@@ -17,7 +26,7 @@ AdamElliot.PostsController = function() {
           date.setDate(data[i].value);
           break;
         case 'posted_on_month':
-          date.setMonth(data[i].value);
+          date.setMonth(data[i].value - 1);
           break;
         case 'posted_on_year':
           date.setYear(data[i].value);
@@ -42,7 +51,9 @@ AdamElliot.PostsController = function() {
           return 'post/' + post.id;
         },
         '.title': 'post.title',
-        '.date': 'post.posted_on',
+        '.date': function(arg) {
+          return arg.item['posted_on'].toDateString();
+        },
         '.description': function(arg) {
           var post = arg.item;
           var firstChunk = post.body.match(/>([^<]*)</)[1];
@@ -56,7 +67,9 @@ AdamElliot.PostsController = function() {
   this.templateManager.defineTemplate('show', {
     '.title': 'title',
     '.body': 'body',
-    '.date': 'posted_on'
+    '.date': function(arg) {
+      return arg.context['posted_on'].toDateString();
+    },
   });
 
   this.templateManager.defineTemplate('form', {
@@ -67,8 +80,8 @@ AdamElliot.PostsController = function() {
 
   this.index = function(params) {
     this.remoteIndex();
-    this.afterData = (function(data) {
-      this.render('index', {'title':'Post Listing', posts:data});
+    this.afterData = (function() {
+      this.render('index', {posts:this.getSortedData()});
     });
   };
 
@@ -86,9 +99,9 @@ AdamElliot.PostsController = function() {
     buttons['index'] = 'posts';
 
     if (post._index > 0)
-      buttons['prev'] = "post/" + this.getDataByIndex(post._index - 1)[this.dataKey];
+      buttons['next'] = "post/" + this.getDataByIndex(post._index - 1)[this.dataKey];
     if (this.getDataByIndex(post._index + 1))
-      buttons['next'] = "post/" + this.getDataByIndex(post._index + 1)[this.dataKey];
+      buttons['prev'] = "post/" + this.getDataByIndex(post._index + 1)[this.dataKey];
 
     this.render('show', post, buttons);
   };
@@ -135,7 +148,9 @@ AdamElliot.SessionController = (function() {
     this.index();
   };
   
-  AdamElliot.session = {authenticated:false};
+  AdamElliot.session = {
+    authenticated: document.cookie.indexOf('authenticated=true') > -1
+  };
 
   return Klass;
 })();

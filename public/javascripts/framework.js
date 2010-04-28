@@ -442,11 +442,20 @@ AdamElliot.ResourceController = (function() {
     var dataIndex = [];
     this.dataKey = 'id';
     this.dataOrderKey = 'id';
+    this.descendingOrder = false;
 
     // Data management functions
 
     this.orderCompare = function(o1, o2) {
-      return o1[self.dataOrderKey] < o2[self.dataOrderKey];
+      return (data[o1][self.dataOrderKey] - data[o2][self.dataOrderKey]) *
+        (self.descendingOrder ? -1 : 1);
+    };
+
+    this.getSortedData = function() {
+      var result = [];
+      for (var i = 0; i < dataIndex.length; i++)
+        result.push(data[dataIndex[i]]);
+      return result;
     };
 
     this.getDataByIndex = function(index) {
@@ -458,6 +467,7 @@ AdamElliot.ResourceController = (function() {
     };
 
     this.formHandler = function(data) { return data; };
+    this.dataMangler = function(data) { return data; };
 
     // TODO: Resorting every time is a crappy way of doing things
     var indexData = function() {
@@ -473,9 +483,9 @@ AdamElliot.ResourceController = (function() {
       if (!objects) return null;
       if (objects instanceof Array)
         for (var i = 0; i < objects.length; i++)
-          data[objects[i][self.dataKey]] = objects[i];
+          data[objects[i][self.dataKey]] = self.dataMangler(objects[i]);
       else
-        data[objects[self.dataKey]] = objects;
+        data[objects[self.dataKey]] = self.dataMangler(objects);
 
       indexData();
     };

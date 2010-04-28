@@ -107,16 +107,24 @@ module Site
     # General Routes
 
     get '/sessions.json' do
-      session[:authenticated] ? '{"authenticated":"true", "username":"astro"}' : "{}"
+      session[:authenticated] ? '{"authenticated":"true", "username":"' + ENV[:username] + '"}' : "{}"
     end
 
     post '/session.json' do
       halt 401, "Nope." unless ENV['username'] == params[:username] && ENV['password'] == params[:password]
       session[:authenticated] = true
-      '{"authenticated":"true", "username":"astro"}'
+      response.set_cookie("authenticated", {
+        :value => true,
+        :path => '/'
+      })
+      '{"authenticated":"true", "username":"' + ENV[:username] + '"}'
     end
     
     delete '/session/:id.json' do
+      response.set_cookie("authenticated", {
+        :value => false,
+        :path => '/'
+      })
       session[:authenticated] = false
     end
     
