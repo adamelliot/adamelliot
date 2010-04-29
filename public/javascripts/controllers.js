@@ -9,10 +9,7 @@ AdamElliot.PostsController = function() {
   this.descendingOrder = true;
 
   this.dataMangler = function(data) {
-    // TODO: Check this cross timezone.
-    // NOTE: This is kinda smelly
-    var date = data['posted_on'].split('-');
-    data['posted_on'] = new Date(date[0], date[1] - 1, date[2]);
+    data['posted_on'] = new Date(data['posted_on']);
     return data;
   };
 
@@ -73,7 +70,8 @@ AdamElliot.PostsController = function() {
   this.templateManager.defineTemplate('form', {
     'input.id@value': 'id',
     'input.title@value': 'title',
-    'textarea.markdown': 'markdown'
+    'textarea.markdown': 'markdown',
+    'input.tags@value': 'tags'
   });
 
   this.index = function(params) {
