@@ -23,7 +23,7 @@ AdamElliot.PostsController = function() {
           date.setDate(data[i].value);
           break;
         case 'posted_on_month':
-          date.setMonth(data[i].value - 1);
+          date.setMonth(data[i].value);
           break;
         case 'posted_on_year':
           date.setYear(data[i].value);
@@ -34,7 +34,7 @@ AdamElliot.PostsController = function() {
     }
 
     result.push({name:'posted_on', value:date});
-    
+
     return result;
   };
 
@@ -71,7 +71,23 @@ AdamElliot.PostsController = function() {
     'input.id@value': 'id',
     'input.title@value': 'title',
     'textarea.markdown': 'markdown',
-    'input.tags@value': 'tags'
+    'input.tags@value': 'tags',
+    'select[name=posted_on_month]@value': function(arg) {
+      return arg.context && arg.context['posted_on'] ?
+        arg.context['posted_on'].getMonth() :
+        (new Date).getMonth();
+    },
+    'select[name=posted_on_day]@value': function(arg) {
+      return arg.context && arg.context['posted_on'] ?
+        arg.context['posted_on'].getDate() :
+        (new Date).getDate();
+    },
+    'select[name=posted_on_year]@value': function(arg) {
+      return arg.context && arg.context['posted_on'] ?
+        arg.context['posted_on'].getFullYear() :
+        (new Date).getFullYear();
+    }
+    
   });
 
   this.index = function(params) {

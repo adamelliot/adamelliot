@@ -292,6 +292,13 @@ AdamElliot.FrameManager = (function() {
 
       // Any forms added should not obey submit policy
       frame.find("form").submit(function(e) { return false; });
+      // Any selecte fiels with value attr set get translated to the option
+      // TODO: Fix this in a better way (dates are complicated...)
+      frame.find("select[value]").each(function() {
+        if (this.getAttribute('value'))
+          $(this).val(this.getAttribute('value'));
+      });
+
       frame.bindDataRoute();
       frame.targetBlank();
       frame.css("zIndex", zIndex++);

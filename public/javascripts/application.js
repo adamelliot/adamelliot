@@ -7,6 +7,9 @@
 window.AdamElliot = window.AdamElliot || {};
 
 $(function() {
+  // Show the application once we're loaded
+  $("#application").css({display:'block'});
+
   // Bind basic html to routes and targets
   $("body").bindDataRoute();
   $("body").targetBlank();
