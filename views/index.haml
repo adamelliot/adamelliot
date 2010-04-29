@@ -52,16 +52,17 @@
       %h2.title Warning
       .message Are you sure you want to eat that?
 
-  .post.index.scroll
+  .post.index
     .row
       .date
       %h1.title
       .description
 
-  .post.show.scroll
+  .post.show
     .date
     %h1.title
     .body
+    .comments.disqus_thread
 
   .post.form
     %form
@@ -82,6 +83,10 @@
       %select.posted_on{:name => 'posted_on_year'}
         - 3.times do |i|
           %option{:value => Date.today.year - i}= Date.today.year - i
+      %input{:name => 'draft', :type => 'checkbox'}
+      %label{:for => 'draft'} draft
+      %input{:name => 'comments_closed', :type => 'checkbox'}
+      %label{:for => 'comments_closed'} comments closed
 
   .session.form
     %form

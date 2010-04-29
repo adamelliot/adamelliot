@@ -87,11 +87,12 @@ AdamElliot.PostsController = function() {
         arg.context['posted_on'].getFullYear() :
         (new Date).getFullYear();
     }
-    
   });
 
   this.index = function(params) {
     this.remoteIndex();
+    
+    // TODO: Tigger Once this
     this.afterData = (function() {
       this.render('index', {posts:this.getSortedData()});
     });
@@ -115,7 +116,16 @@ AdamElliot.PostsController = function() {
     if (this.getDataByIndex(post._index + 1))
       buttons['prev'] = "post/" + this.getDataByIndex(post._index + 1)[this.dataKey];
 
-    this.render('show', post, buttons);
+    var block = this.render('show', post, buttons);
+    var thread = block.find('.disqus_thread');
+    var dsq = document.createElement('script');
+    window.disqus_developer = 1;
+    window.disqus_identifier = post[this.dataKey];
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'http://adamelliot.disqus.com/embed.js';
+    thread.attr('id', "disqus_thread");
+    thread.append(dsq);
   };
 };
 

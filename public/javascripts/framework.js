@@ -656,7 +656,7 @@ AdamElliot.ResourceController = (function() {
 
     this.render = function(name, data, buttons, preserveBlock) {
       var block = self.templateManager.render(name, data, buttons, preserveBlock);
-      activeBlock = block;
+      return activeBlock = block;
     };
 
     this.index = function(params) {

@@ -4,6 +4,7 @@ require 'sass'
 require 'active_support'
 require 'yaml'
 require 'net/http'
+require 'datamapper'
 
 
 module Site
@@ -62,7 +63,8 @@ module Site
     # Post resource routes
 
     get '/posts.json' do
-      @posts = Site::Models::Post.all
+      options = session[:authenticated] ? {} : {:draft => false, :posted_on.lte => Date.today}
+      @posts = Site::Models::Post.all(options)
       @posts.to_json
     end
 
