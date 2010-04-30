@@ -98,6 +98,41 @@ AdamElliot.PostsController = function() {
     });
   };
 
+  var addCommentScript = function() {
+    if ($("script[src=http://adamelliot.disqus.com/embed.js]").length > 0)
+      return false;
+
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'http://adamelliot.disqus.com/embed.js';
+    $("body").append(dsq);
+
+    return true;
+  };
+
+  var showCommentInBlock = function(block) {
+    var thread = block.find('.disqus_thread');
+
+    $("#disqus_thread").remove();
+
+    window.disqus_developer = (location.hostname == "0.0.0.0") ? 1 : 0;
+    window.disqus_url = location.href.replace('#', '?hash=');
+    window.disqus_skip_auth = true;
+
+    thread.attr('id', "disqus_thread");
+    
+    if (!addCommentScript()) return;
+  };
+
+  this.frameClosed = function() {
+    
+  };
+  
+  this.frameHidden = function(frame) {
+    
+  };
+
   this.show = function(params) {
     var post = null;
     if (!(post = _super.show(params))) return null;
@@ -117,15 +152,7 @@ AdamElliot.PostsController = function() {
       buttons['prev'] = "post/" + this.getDataByIndex(post._index + 1)[this.dataKey];
 
     var block = this.render('show', post, buttons);
-    var thread = block.find('.disqus_thread');
-    var dsq = document.createElement('script');
-    window.disqus_developer = 1;
-    window.disqus_identifier = post[this.dataKey];
-    dsq.type = 'text/javascript';
-    dsq.async = true;
-    dsq.src = 'http://adamelliot.disqus.com/embed.js';
-    thread.attr('id', "disqus_thread");
-    thread.append(dsq);
+    if (!post['comments_closed']) showCommentInBlock(block);
   };
 };
 

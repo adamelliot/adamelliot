@@ -169,10 +169,15 @@ AdamElliot.FrameManager = (function() {
         if (callback) callback();
         return;
       }
+      var _currentFrame = currentFrame;
+      $('body').animate({scrollTop:0}, 80, function() {
+        _currentFrame.css('position', 'fixed');
+      });
 
       dir *= -1;
       var w = $(window).width() / 4 * dir;
       currentFrame.animate({left:"+=" + w, opacity:0}, 300, function() {
+        $(this).css('display', 'none');
         if (callback) callback();
       });
       currentFrame = null;
@@ -186,7 +191,7 @@ AdamElliot.FrameManager = (function() {
       if (frameStack[frameStack.length - 1] != route) {
         var w = $(window).width() / 4 * dir;
         var left = (($(window).width() - frame.width()) / 2) - w;
-        frame.css({left:left, opacity:0});
+        frame.css({display: 'block', left:left, opacity:0});
       } else currentFrame = null; // FIXME: Prevent push from doing anything (HACK)
       
       for (var i = 0; i < frameStack.length; i++)
@@ -217,7 +222,7 @@ AdamElliot.FrameManager = (function() {
       dir *= -1;
       var w = $(window).width() / 4 * dir;
       var left = (($(window).width() - frame.width()) / 2) - w;
-      currentFrame.css({left:left, opacity:0});
+      currentFrame.css({display: 'block', left:left, opacity:0});
       currentFrame.animate({left:"+=" + w, opacity:1}, 300, function() {
         if (callback) callback();
       });
@@ -239,8 +244,10 @@ AdamElliot.FrameManager = (function() {
       delete frames[route];
 
       currentFrame.animate({top:"+=60", opacity:0}, 300, function() {
-        $(this).remove();
         if (callback) callback();
+        // Do the remove second as it can be slow, this may create
+        // an interface bug, so watch for it.
+        $(this).remove();
       });
       currentFrame = null;
     };
@@ -288,6 +295,8 @@ AdamElliot.FrameManager = (function() {
         left = ($(window).width() - frame.width()) / 2;
       }
 
+      frame.css({display:'block'});
+
       addButtonsToFrame(frame, buttons);
 
       // Any forms added should not obey submit policy
@@ -305,11 +314,6 @@ AdamElliot.FrameManager = (function() {
 
       frames[route] = frame;
       frameStack.push(route);
-
-      var _currentFrame = currentFrame;
-      $('body').animate({scrollTop:0}, 80, function() {
-        if (_currentFrame) _currentFrame.css('position', 'fixed');
-      });
 
       pushFrame(function() {
         frame.animate({top:0, left:left, opacity:1}, 300, function() {
@@ -363,7 +367,6 @@ AdamElliot.FrameManager = (function() {
       }
       frames = {};
       frameStack = [];
-      console.log("close all frames");
       this.closeFrame();
     };
 
@@ -472,6 +475,7 @@ AdamElliot.ResourceController = (function() {
 
     this.formHandler = function(data) { return data; };
     this.dataMangler = function(data) { return data; };
+    this.frameClosed = function() {};
 
     // TODO: Resorting every time is a crappy way of doing things
     var indexData = function() {
