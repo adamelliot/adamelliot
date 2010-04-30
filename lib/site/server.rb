@@ -63,7 +63,7 @@ module Site
     # Post resource routes
 
     get '/posts.json' do
-      options = session[:authenticated] ? {} : {:posted_on.lte => Date.today}
+      options = session[:authenticated] ? {} : {:draft => false, :posted_on.lte => Date.today}
       @posts = Site::Models::Post.all(options)
       @posts.to_json
     end
@@ -80,6 +80,8 @@ module Site
     post '/post.json' do
       protected!
       params.delete("id")
+      params[:draft] = params[:draft] == "on" ? true : false
+      params[:closed] = params[:closed] == "on" ? true : false
       params[:body] = brighten(params[:markdown])
       @post = Site::Models::Post.new(params)
       halt 400, "Something went wrong..." unless @post.save
@@ -89,10 +91,12 @@ module Site
     put '/post/:id.json' do |id|
       protected!
       params.delete("id")
+      params[:draft] = params[:draft] == "on" ? true : false
+      params[:closed] = params[:closed] == "on" ? true : false
       params[:body] = brighten(params[:markdown])
       @post = Site::Models::Post.get(id)
       @post.attributes = params
-      halt 400, "Something went wrong..." unless @post.save
+      halt 400, "Something went wrong... [#{params}]" unless @post.save
       @post.to_json
     end
 

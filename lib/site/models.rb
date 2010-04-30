@@ -22,7 +22,7 @@ module Site
       property :draft,      Boolean
       property :posted_on,  Date
       property :closed,     Boolean
-      property :closed_on,  Date
+#      property :closed_on,  Date
 
       property :created_at, DateTime
       property :updated_at, DateTime

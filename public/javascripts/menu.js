@@ -84,7 +84,7 @@ AdamElliot.Menu = (function() {
     };
 
     // Setup and run the intro sequence
-    if (location.hash == "") {
+    if (location.href.indexOf("#") == -1) {
       setup.call(this);
       introSequence.call(this);
     } else
