@@ -63,7 +63,7 @@ module Site
     # Post resource routes
 
     get '/posts.json' do
-      options = session[:authenticated] ? {} : {:draft => false, :posted_on.lte => Date.today}
+      options = session[:authenticated] ? {} : {:posted_on.lte => Date.today}
       @posts = Site::Models::Post.all(options)
       @posts.to_json
     end

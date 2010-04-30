@@ -86,7 +86,9 @@ AdamElliot.PostsController = function() {
       return arg.context && arg.context['posted_on'] ?
         arg.context['posted_on'].getFullYear() :
         (new Date).getFullYear();
-    }
+    },
+    'input[name="draft"]@checked': 'draft',
+    'input[name="closed"]@checked': 'closed'
   });
 
   this.index = function(params) {
@@ -152,7 +154,7 @@ AdamElliot.PostsController = function() {
       buttons['prev'] = "post/" + this.getDataByIndex(post._index + 1)[this.dataKey];
 
     var block = this.render('show', post, buttons);
-    if (!post['comments_closed']) showCommentInBlock(block);
+    if (!post['closed']) showCommentInBlock(block);
   };
 };
 

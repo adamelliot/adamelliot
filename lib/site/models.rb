@@ -19,9 +19,10 @@ module Site
       property :body,     Text
       property :tags,     String
 
-      property :draft,            Boolean
-      property :posted_on,        Date
-      property :comments_closed,  Boolean
+      property :draft,      Boolean
+      property :posted_on,  Date
+      property :closed,     Boolean
+      property :closed_on,  Date
 
       property :created_at, DateTime
       property :updated_at, DateTime
@@ -38,9 +39,10 @@ module Site
     property :url,          String
     property :tags,         String
 
-    property :draft,            Boolean
-    property :posted_on,        Date
-    property :comments_closed,  Boolean
+    property :draft,      Boolean
+    property :posted_on,  Date
+    property :closed,     Boolean
+    property :closed_on,  Date
 
     property :created_at, DateTime
     property :updated_at, DateTime
