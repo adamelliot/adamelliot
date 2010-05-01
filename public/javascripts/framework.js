@@ -164,7 +164,7 @@ AdamElliot.Frame = (function() {
     };
 
     var init = function() {
-      $("body").append(frame);
+      $("#frames").append(frame);
       frame.find(".close").click(function() {
         AdamElliot.frameManager.closeFrame();
       });
