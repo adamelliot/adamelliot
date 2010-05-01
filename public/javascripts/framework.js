@@ -129,27 +129,60 @@ AdamElliot.Router = (function() {
 })();
 
 /**
- * Handles blocks returned from the TemplatManager
+ * Represents a frame object on the screen. Is used to attach callbacks
+ * once instantiated.
  */
-AdamElliot.FrameManager = (function() {
-  var Klass = function() {
+AdamElliot.Frame = (function() {
+  var dir = 1;
+  var zIndex = 100;
+  
+  var Klass = function(block) {
+    var self = this;
+    // jQuery object for the frame on the page.
+    var frame = $(AdamElliot.TemplateManager.sharedTemplate('frame')({block:block}));
+    var visible = false;
 
-    var frames = {};
-    var frameStack = [];
+    var adjustContent = function() {
+      // Any forms added should not obey submit policy
+      frame.find("form").submit(function(e) { return false; });
+      // Any selecte fiels with value attr set get translated to the option
+      // TODO: Fix this in a better way (dates are complicated...)
+      frame.find("select[value]").each(function() {
+        if (this.getAttribute('value'))
+          $(this).val(this.getAttribute('value'));
+      });
 
-    var currentFrame;
-    var collection = $();
-    var dir = 1;
-    // Frames start at 100 and keep moving up on show to keep them forward
-    var zIndex = 100;
+      frame.bindDataRoute();
+      frame.targetBlank();
+    };
 
-    var getCurrentRoute = function() { return location.hash.split("#")[1]; };
-    var setRoute = function(path) {
-      location.hash = path || "";
+    var init = function() {
+      $("body").append(frame);
+      frame.find(".close").click(function() {
+        AdamElliot.frameManager.closeFrame();
+      });
+
+      var h = $(window).height();
+      left = ($(window).width() - frame.width()) / 2;
+      frame.css({
+        display: "block",
+        "zIndex": zIndex++,
+        top: h,
+        left: left
+      });
+
+      adjustContent();
+    };
+
+    // This is the delegate that recieves messages this frame posts
+    this.delegate = null;
+
+    this.setContent = function(block) {
+      frame.find('.block').empty().append(block);
+      adjustContent();
     }
-    var clearRoute = function() { setRoute(""); };
 
-    var addButtonsToFrame = function(frame, buttons) {
+    this.setButtons = function(buttons) {
       if (!buttons) return;
       var toolbar = frame.find(".toolbar");
       toolbar.find(".button").remove();
@@ -164,22 +197,128 @@ AdamElliot.FrameManager = (function() {
       }
     };
 
+    this.center = function() {
+      var w = ($(window).width() - currentFrame.width()) / 2;
+      frame.css("left", w);
+    }
+
+    // Shake the frame left and right
+    this.shake = function(callback) {
+      var right, left, times = 2;
+      right = function() {
+        frame.animate({left:"+=30"}, 100, left);
+      };
+      left = function() {
+        if (times-- > 0)
+          frame.animate({left:"-=30"}, 100, right);
+        else
+          frame.animate({left:"-=15"}, 50, callback);
+      };
+
+      frame.animate({left:"+=15"}, 50, left);
+    };
+
+    this.hide = function(callback) {
+      if (!visible) {
+        if (callback) callback();
+        return;
+      }
+
+      if (self.delegate && self.delegate.beforeFrameHide)
+        self.delegate.beforeFrameHide(self);
+
+      dir *= -1;
+      var w = $(window).width() / 4 * dir;
+      frame.animate({left:"+=" + w, opacity:0}, 300, function() {
+        if (self.delegate && self.delegate.afterFrameHide)
+          self.delegate.afterFrameHide(self);
+
+        visible = false;
+        $(this).hide();
+        if (callback) callback();
+      });
+    };
+
+    this.show = function(callback) {
+      if (visible) {
+        if (callback) callback();
+        return;
+      }
+
+      var left = ($(window).width() - frame.width()) / 2;
+      frame.animate({left:left, top:0, opacity:1}, 300, function() {
+        visible = true;
+        frame.css('position', 'absolute');
+        $(this).show();
+        if (callback) callback();
+      });
+    };
+
+    // Place the frame where it should be to slide in
+    this.prepairToShow = function() {
+      var w = $(window).width() / 4 * dir;
+      var left = (($(window).width() - frame.width()) / 2) - w;
+      frame.css({display:'block', left:left, opacity:0});
+    };
+
+    this.destroy = function(callback) {
+      if (self.delegate && self.delegate.beforeFrameDestroy)
+        self.delegate.beforeFrameDestroy(self);
+
+//      frame.css({position: 'fixed'});
+      frame.animate({top:"+=60", opacity:0}, 300, function() {
+        if (self.delegate && self.delegate.afterFrameDestroy)
+          self.delegate.afterFrameDestroy(self);
+
+        if (callback) callback();
+        // Do the remove second as it can be slow, this may create
+        // an interface bug, so watch for it.
+        $(this).remove();
+      });
+    };
+
+    // Return the jQuery frame object;
+    this.getFrame = function() { return frame; };
+
+    init.call(this);
+  };
+  
+  return Klass;
+})();
+
+/**
+ * Handles blocks returned from the TemplatManager
+ */
+AdamElliot.FrameManager = (function() {
+  var Klass = function() {
+
+    var frames = {};
+    var frameStack = [];
+
+    var currentFrame;
+    var dir = 1;
+    // Frames start at 100 and keep moving up on show to keep them forward
+    var zIndex = 100;
+
+    var getCurrentRoute = function() { return location.hash.split("#")[1]; };
+    var setRoute = function(path) {
+      location.hash = path || "";
+    }
+    var clearRoute = function() { setRoute(""); };
+
     var pushFrame = function(callback) {
       if (!currentFrame) {
         if (callback) callback();
         return;
       }
+
+      // TODO: Move this to Frame
       var _currentFrame = currentFrame;
       $('body').animate({scrollTop:0}, 80, function() {
-        _currentFrame.css('position', 'fixed');
+        _currentFrame.getFrame().css('position', 'fixed');
       });
 
-      dir *= -1;
-      var w = $(window).width() / 4 * dir;
-      currentFrame.animate({left:"+=" + w, opacity:0}, 300, function() {
-        $(this).css('display', 'none');
-        if (callback) callback();
-      });
+      currentFrame.hide(callback);
       currentFrame = null;
     };
 
@@ -188,12 +327,10 @@ AdamElliot.FrameManager = (function() {
 
       var frame = frames[route];
 
-      if (frameStack[frameStack.length - 1] != route) {
-        var w = $(window).width() / 4 * dir;
-        var left = (($(window).width() - frame.width()) / 2) - w;
-        frame.css({display: 'block', left:left, opacity:0});
-      } else currentFrame = null; // FIXME: Prevent push from doing anything (HACK)
-      
+      if (frameStack[frameStack.length - 1] != route)
+        frame.prepairToShow();
+      else currentFrame = null;
+
       for (var i = 0; i < frameStack.length; i++)
         if (frameStack[i] == route) {
           frameStack.splice(i, 1);
@@ -204,7 +341,7 @@ AdamElliot.FrameManager = (function() {
     };
 
     var popFrame = function(callback) {
-      if (currentFrame) console.error("Frame in way, poping anyway.");
+      if (currentFrame) console.error("Frame in way, popping anyway.");
 
       if (frameStack.length <= 0) {
         if (callback) callback();
@@ -219,13 +356,8 @@ AdamElliot.FrameManager = (function() {
       }
       currentFrame = frame;
 
-      dir *= -1;
-      var w = $(window).width() / 4 * dir;
-      var left = (($(window).width() - frame.width()) / 2) - w;
-      currentFrame.css({display: 'block', left:left, opacity:0});
-      currentFrame.animate({left:"+=" + w, opacity:1}, 300, function() {
-        if (callback) callback();
-      });
+      currentFrame.prepairToShow();
+      currentFrame.show(callback);
 
       setRoute(route);
 
@@ -243,31 +375,13 @@ AdamElliot.FrameManager = (function() {
         }
       delete frames[route];
 
-      currentFrame.animate({top:"+=60", opacity:0}, 300, function() {
-        if (callback) callback();
-        // Do the remove second as it can be slow, this may create
-        // an interface bug, so watch for it.
-        $(this).remove();
-      });
+      currentFrame.destroy(callback);
       currentFrame = null;
     };
 
     // Shake the current frame a bit
     this.shakeFrame = function() {
-      if (!currentFrame) return;
-
-      var right, left, times = 2;
-      right = function() {
-        currentFrame.animate({left:"+=30"}, 100, left);
-      };
-      left = function() {
-        if (times-- > 0)
-          currentFrame.animate({left:"-=30"}, 100, right);
-        else
-          currentFrame.animate({left:"-=15"}, 50);
-      };
-
-      currentFrame.animate({left:"+=15"}, 50, left);
+      if (currentFrame) currentFrame.shakeFrame();
     };
 
     this.showFrame = function(block, buttons, preserveBlock) {
@@ -275,55 +389,21 @@ AdamElliot.FrameManager = (function() {
 
       var route = getCurrentRoute();
       var frame = dequeueFrame(route);
-      var left;
 
-      if (!frame) {
-        var frame = $(AdamElliot.TemplateManager.sharedTemplate('frame')({block:block}));
-        collection.add(frame);
+      if (!frame)
+        frame = new AdamElliot.Frame(block);
+      else if (!preserveBlock)
+        frame.setContent(block);
 
-        $("body").append(frame);
-        frame.find(".close").click(function() {
-          AdamElliot.frameManager.closeFrame();
-        });
-
-        var h = $(window).height();
-        left = ($(window).width() - frame.width()) / 2;
-        frame.css({top:h, left:left});
-      } else {
-        if (!preserveBlock)
-          frame.find('.block').empty().append(block);
-        left = ($(window).width() - frame.width()) / 2;
-      }
-
-      frame.css({display:'block'});
-
-      addButtonsToFrame(frame, buttons);
-
-      // Any forms added should not obey submit policy
-      frame.find("form").submit(function(e) { return false; });
-      // Any selecte fiels with value attr set get translated to the option
-      // TODO: Fix this in a better way (dates are complicated...)
-      frame.find("select[value]").each(function() {
-        if (this.getAttribute('value'))
-          $(this).val(this.getAttribute('value'));
-      });
-
-      frame.bindDataRoute();
-      frame.targetBlank();
-      frame.css("zIndex", zIndex++);
-
+      frame.setButtons(buttons);
       frames[route] = frame;
       frameStack.push(route);
 
       pushFrame(function() {
-        frame.animate({top:0, left:left, opacity:1}, 300, function() {
-          frame.css('position', 'absolute');
-        });
+        frame.show();
       });
 
-      currentFrame = frame;
-
-      return currentFrame;
+      return currentFrame = frame;
     };
 
     this.closeFrameByRoute = function(route, callback) {
@@ -371,9 +451,7 @@ AdamElliot.FrameManager = (function() {
     };
 
     $(window).resize(function() {
-      if (!currentFrame) return;
-      var w = ($(window).width() - currentFrame.width()) / 2;
-      currentFrame.css("left", w);
+      if (currentFrame) currentFrame.center();
     });
 
   };
@@ -659,8 +737,8 @@ AdamElliot.ResourceController = (function() {
     // Local routes. These are bound to resource routes.
 
     this.render = function(name, data, buttons, preserveBlock) {
-      var block = self.templateManager.render(name, data, buttons, preserveBlock);
-      return activeBlock = block;
+      var frame = self.templateManager.render(name, data, buttons, preserveBlock);
+      return activeBlock = frame.getFrame();
     };
 
     this.index = function(params) {

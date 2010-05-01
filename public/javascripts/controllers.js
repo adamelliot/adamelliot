@@ -3,6 +3,7 @@
  */
 AdamElliot.PostsController = function() {
   var _super = new AdamElliot.ResourceController("post", this);
+  var self = this;
   $.extend(this, _super);
 
   this.dataOrderKey = 'posted_on';
@@ -127,12 +128,8 @@ AdamElliot.PostsController = function() {
     if (!addCommentScript()) return;
   };
 
-  this.frameClosed = function() {
-    
-  };
-  
-  this.frameHidden = function(frame) {
-    
+  this.afterFrameHide = function(frame) {
+    frame.getFrame().find('#disqus_thread').remove();
   };
 
   this.show = function(params) {
@@ -153,8 +150,9 @@ AdamElliot.PostsController = function() {
     if (this.getDataByIndex(post._index + 1))
       buttons['prev'] = "post/" + this.getDataByIndex(post._index + 1)[this.dataKey];
 
-    var block = this.render('show', post, buttons);
-    if (!post['closed']) showCommentInBlock(block);
+    var frame = this.render('show', post, buttons);
+    frame.delegate = this;
+    if (!post['closed']) showCommentInBlock(frame.getFrame());
   };
 };
 
