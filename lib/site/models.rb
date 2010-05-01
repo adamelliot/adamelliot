@@ -15,6 +15,7 @@ module Site
 
       property :id,       Serial
       property :title,    String
+      property :slug,     Slug
       property :markdown, Text
       property :body,     Text
       property :tags,     String
@@ -22,7 +23,7 @@ module Site
       property :draft,      Boolean
       property :posted_on,  Date
       property :closed,     Boolean
-#      property :closed_on,  Date
+      property :closed_on,  Date
 
       property :created_at, DateTime
       property :updated_at, DateTime
@@ -34,8 +35,9 @@ module Site
 
     property :id,           Serial
     property :title,        String
+    property :slug,         Slug
     property :description,  Text
-    property :javascript,   Text
+    property :javascript,   String
     property :url,          String
     property :tags,         String
 

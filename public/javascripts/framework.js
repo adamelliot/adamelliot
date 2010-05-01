@@ -1,3 +1,8 @@
+/**
+ * Code base for adamelliot.com
+ * Copyright (c) Adam Elliot 2010
+ */
+
 window.AdamElliot = window.AdamElliot || {};
  
 /**
@@ -67,6 +72,8 @@ AdamElliot.Router = (function() {
     /**
      * Causes the router to read the path and execute the route if one a
      * route exists. If routed returns true, otherwise returns false.
+     * 
+     * TODO: Refactor this into smaller parts
      */
     this.route = function() {
       var route = location.hash.split("#")[1];
@@ -78,7 +85,7 @@ AdamElliot.Router = (function() {
       var params = getParams(route);
       route = route.split("?")[0];
 
-      // First check static mappings, if nothing matches, then check resources
+      // Check static mappings, if nothing matches, then check resources
       var target = mappings[route];
       if (target) {
         // Short cut for static routes to templates
@@ -182,6 +189,12 @@ AdamElliot.Frame = (function() {
       adjustContent();
     }
 
+    this.scrollTop = function() {
+      $('body').animate({scrollTop:0}, 80, function() {
+        frame.css('position', 'fixed');
+      });
+    };
+
     this.setButtons = function(buttons) {
       if (!buttons) return;
       var toolbar = frame.find(".toolbar");
@@ -198,7 +211,7 @@ AdamElliot.Frame = (function() {
     };
 
     this.center = function() {
-      var w = ($(window).width() - currentFrame.width()) / 2;
+      var w = ($(window).width() - frame.width()) / 2;
       frame.css("left", w);
     }
 
@@ -278,6 +291,7 @@ AdamElliot.Frame = (function() {
     };
 
     // Return the jQuery frame object;
+    // TODO: Name this better
     this.getFrame = function() { return frame; };
 
     init.call(this);
@@ -312,12 +326,7 @@ AdamElliot.FrameManager = (function() {
         return;
       }
 
-      // TODO: Move this to Frame
-      var _currentFrame = currentFrame;
-      $('body').animate({scrollTop:0}, 80, function() {
-        _currentFrame.getFrame().css('position', 'fixed');
-      });
-
+      currentFrame.scrollTop();
       currentFrame.hide(callback);
       currentFrame = null;
     };
@@ -575,7 +584,7 @@ AdamElliot.ResourceController = (function() {
 
       indexData();
     };
-    
+
     var remove = function(id) {
       delete data[id];
       dataIndex.splice(dataIndex.indexOf(id), 1);
@@ -738,7 +747,8 @@ AdamElliot.ResourceController = (function() {
 
     this.render = function(name, data, buttons, preserveBlock) {
       var frame = self.templateManager.render(name, data, buttons, preserveBlock);
-      return activeBlock = frame.getFrame();
+      activeBlock = frame.getFrame();
+      return frame;
     };
 
     this.index = function(params) {
@@ -749,7 +759,10 @@ AdamElliot.ResourceController = (function() {
       if (!params[self.dataKey]) return self.showFirst(params);
       var obj = null, id = params[self.dataKey];
       if (!(obj = data[id])) {
-        self.afterData = this.triggerOnce(function() { self.show(params); });
+        if (!params._noFetch) {
+          params._noFetch = true;
+          self.afterData = this.triggerOnce(function() { self.show(params); });
+        }
         self.remoteShow(id);
         return null;
       }

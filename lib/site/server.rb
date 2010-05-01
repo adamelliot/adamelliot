@@ -58,6 +58,11 @@ module Site
       "Not sure what you're looking for, but I don't think it's here..."
     end
 
+    # Permalink mapper (via slug)
+    get '/permalink?:type=:slug' do |type, slug|
+      
+    end
+
     # Data routes
 
     # Post resource routes
@@ -83,6 +88,7 @@ module Site
       params[:draft] = params[:draft] == "on" ? true : false
       params[:closed] = params[:closed] == "on" ? true : false
       params[:body] = brighten(params[:markdown])
+      params[:slug] = params[:title]
       @post = Site::Models::Post.new(params)
       halt 400, "Something went wrong..." unless @post.save
       @post.to_json
@@ -94,6 +100,7 @@ module Site
       params[:draft] = params[:draft] == "on" ? true : false
       params[:closed] = params[:closed] == "on" ? true : false
       params[:body] = brighten(params[:markdown])
+      params.delete('slug')
       @post = Site::Models::Post.get(id)
       @post.attributes = params
       halt 400, "Something went wrong... [#{params}]" unless @post.save
@@ -107,7 +114,7 @@ module Site
       halt 401, "Something went wrong..." unless @post.destroy
     end
 
-    # General Routes
+    # Session Routes
 
     get '/sessions.json' do
       session[:authenticated] ? '{"authenticated":"true", "username":"' + ENV['username'] + '"}' : "{}"

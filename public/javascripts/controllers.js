@@ -1,4 +1,9 @@
 /**
+ * Code base for adamelliot.com
+ * Copyright (c) Adam Elliot 2010
+ */
+
+/**
  * Resource posts controller.
  */
 AdamElliot.PostsController = function() {
@@ -95,8 +100,7 @@ AdamElliot.PostsController = function() {
   this.index = function(params) {
     this.remoteIndex();
     
-    // TODO: Tigger Once this
-    this.afterData = (function() {
+    this.afterData = this.triggerOnce(function() {
       this.render('index', {posts:this.getSortedData()});
     });
   };
@@ -105,23 +109,19 @@ AdamElliot.PostsController = function() {
     if ($("script[src=http://adamelliot.disqus.com/embed.js]").length > 0)
       return false;
 
-    var dsq = document.createElement('script');
-    dsq.type = 'text/javascript';
-    dsq.async = true;
-    dsq.src = 'http://adamelliot.disqus.com/embed.js';
-    $("body").append(dsq);
-
+    $.getScript("http://adamelliot.disqus.com/embed.js");
     return true;
   };
 
-  var showCommentInBlock = function(block) {
+  var showCommentInBlock = function(post, block) {
     var thread = block.find('.disqus_thread');
 
     $("#disqus_thread").remove();
 
     window.disqus_developer = (location.hostname == "0.0.0.0") ? 1 : 0;
-    window.disqus_url = location.href.replace('#', '?hash=');
+    window.disqus_url = location.href.split('#')[0] + 'permalink?post=' + post['slug'];
     window.disqus_skip_auth = true;
+    window.disqus_identifier = post['slug'];
 
     thread.attr('id', "disqus_thread");
     
@@ -129,7 +129,7 @@ AdamElliot.PostsController = function() {
   };
 
   this.afterFrameHide = function(frame) {
-    frame.getFrame().find('#disqus_thread').remove();
+    $('#disqus_thread').remove();
   };
 
   this.show = function(params) {
@@ -152,8 +152,14 @@ AdamElliot.PostsController = function() {
 
     var frame = this.render('show', post, buttons);
     frame.delegate = this;
-    if (!post['closed']) showCommentInBlock(frame.getFrame());
+    if (!post['closed']) showCommentInBlock(post, frame.getFrame());
   };
+  
+  // Make sure that disqus comments don't hash link
+  $("a[href*=comment-]").live('mousedown click', function() {
+    $(this).attr('onclick', null);
+    return false;
+  });
 };
 
 /**
