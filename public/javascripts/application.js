@@ -18,6 +18,7 @@ $(function() {
 
   AdamElliot.router.resource("session", new AdamElliot.SessionController);
   AdamElliot.router.resource("post", new AdamElliot.PostsController);
+  AdamElliot.router.resource("toy", new AdamElliot.ToysController);
 
   AdamElliot.frameManager = new AdamElliot.FrameManager;
 

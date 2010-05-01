@@ -28,35 +28,35 @@ module Site
       property :created_at, DateTime
       property :updated_at, DateTime
     end
-  end
 
-  class Toy
-    include DataMapper::Resource
+    class Toy
+      include DataMapper::Resource
 
-    property :id,           Serial
-    property :title,        String
-    property :slug,         Slug
-    property :description,  Text
-    property :javascript,   String
-    property :url,          String
-    property :tags,         String
+      property :id,           Serial
+      property :title,        String
+      property :slug,         Slug
+      property :description,  Text
+      property :javascript,   String
+      property :url,          String
+      property :tags,         String
 
-    property :draft,      Boolean
-    property :posted_on,  Date
-    property :closed,     Boolean
-    property :closed_on,  Date
+      property :draft,      Boolean
+      property :posted_on,  Date
+      property :closed,     Boolean
+      property :closed_on,  Date
 
-    property :created_at, DateTime
-    property :updated_at, DateTime
-  end
-
-  class Auth
-    def all
-      {}
+      property :created_at, DateTime
+      property :updated_at, DateTime
     end
 
-    def find(username, password)
+    class Auth
+      def all
+        {}
+      end
+
+      def find(username, password)
       
+      end
     end
   end
 end

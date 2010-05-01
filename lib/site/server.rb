@@ -103,7 +103,7 @@ module Site
       params.delete('slug')
       @post = Site::Models::Post.get(id)
       @post.attributes = params
-      halt 400, "Something went wrong... [#{params}]" unless @post.save
+      halt 400, "Something went wrong..." unless @post.save
       @post.to_json
     end
 
@@ -112,6 +112,51 @@ module Site
       @post = Site::Models::Post.get(id)
       halt 404, "Nothing to delete." if @post.nil?
       halt 401, "Something went wrong..." unless @post.destroy
+    end
+
+    # Toy Routes
+
+
+    get '/toys.json' do
+      options = session[:authenticated] ? {} : {:draft => false, :posted_on.lte => Date.today}
+      @toys = Site::Models::Toy.all(options)
+      @toys.to_json
+    end
+
+    get '/toy/:id.json' do |id|
+      @toy = Site::Models::Toy.get(id)
+      @toy.to_json
+    end
+
+    post '/toy.json' do
+      protected!
+      params.delete("id")
+      params[:draft] = params[:draft] == "on" ? true : false
+      params[:closed] = params[:closed] == "on" ? true : false
+      params[:slug] = params[:title]
+      @toy = Site::Models::Toy.new(params)
+      halt 400, "Something went wrong..." unless @toy.save
+      @toy.to_json
+    end
+
+    put '/toy/:id.json' do |id|
+      protected!
+      params.delete("id")
+      params[:draft] = params[:draft] == "on" ? true : false
+      params[:closed] = params[:closed] == "on" ? true : false
+      params[:body] = brighten(params[:markdown])
+      params.delete('slug')
+      @toy = Site::Models::Toy.get(id)
+      @toy.attributes = params
+      halt 400, "Something went wrong..." unless @toy.save
+      @toy.to_json
+    end
+
+    delete '/toy/:id.json' do |id|
+      protected!
+      @toy = Site::Models::Toy.get(id)
+      halt 404, "Nothing to delete." if @toy.nil?
+      halt 401, "Something went wrong..." unless @toy.destroy
     end
 
     # Session Routes

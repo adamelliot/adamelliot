@@ -67,13 +67,48 @@
 
   .post.form
     %form
-      %input.id{:type => 'hidden', :name => 'id'}
+      %input{:type => 'hidden', :name => 'id'}
       %h3 title:
-      %input.title{:type => 'text', :name => 'title', :value => ''}
+      %input{:type => 'text', :name => 'title', :value => ''}
       %h3 body:
-      %textarea.markdown{:name => 'markdown'}
+      %textarea{:name => 'markdown'}
       %h3 tags:
-      %input.tags{:type => 'text', :name => 'tags'}
+      %input{:type => 'text', :name => 'tags'}
+      %h3 posted:
+      %select{:name => 'posted_on_month'}
+        - (1..12).each do |month|
+          %option{:value => month - 1}= Date::MONTHNAMES[month]
+      %select{:name => 'posted_on_day'}
+        - (1..31).each do |day|
+          %option{:value => day}= day
+      %select{:name => 'posted_on_year'}
+        - 3.times do |i|
+          %option{:value => Date.today.year - i}= Date.today.year - i
+      %input{:name => 'draft', :type => 'checkbox'}
+      %label{:for => 'draft'} draft
+      %input{:name => 'closed', :type => 'checkbox'}
+      %label{:for => 'closed'} comments closed
+
+  .toy.index
+    .row
+      .date
+      %h1.title
+      .description
+
+  .toy.show
+    .date
+    %h1.title
+    .comments.disqus_thread
+
+  .toy.form
+    %form
+      %input{:type => 'hidden', :name => 'id'}
+      %h3 title:
+      %input{:type => 'text', :name => 'title', :value => ''}
+      %h3 description:
+      %textarea{:name => 'description'}
+      %h3 tags:
+      %input{:type => 'text', :name => 'tags'}
       %h3 posted:
       %select.posted_on{:name => 'posted_on_month'}
         - (1..12).each do |month|
