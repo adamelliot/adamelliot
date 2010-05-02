@@ -125,7 +125,7 @@ AdamElliot.PostsController = function() {
 
     $("#disqus_thread").remove();
 
-    window.disqus_developer = (location.hostname != "adamelliot.com") ? 1 : 0;
+    window.disqus_developer = 1;//(location.hostname != "adamelliot.com") ? 1 : 0;
     window.disqus_url = location.href.split('#')[0] + 'permalink?post=' + post['slug'];
     window.disqus_skip_auth = true;
     window.disqus_identifier = post['slug'];
