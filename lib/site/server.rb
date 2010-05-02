@@ -117,7 +117,6 @@ module Site
 
     # Toy Routes
 
-
     get '/toys.json' do
       options = session[:authenticated] ? {} : {:draft => false, :posted_on.lte => Date.today}
       @toys = Site::Models::Toy.all(options)
@@ -145,7 +144,6 @@ module Site
       params.delete("id")
       params[:draft] = params[:draft] == "on" ? true : false
       params[:closed] = params[:closed] == "on" ? true : false
-      params[:body] = brighten(params[:markdown])
       params.delete('slug')
       @toy = Site::Models::Toy.get(id)
       @toy.attributes = params

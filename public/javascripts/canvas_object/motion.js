@@ -1,14 +1,15 @@
-window.motion = window.motion || {};
+window.CanvasObject = window.CanvasObject || {};
+CanvasObject.Motion = CanvasObject.Motion || {};
 
-window.motion.MovingBody = (function() {
+CanvasObject.Motion.MovingBody = (function() {
   var Klass = function() {
-    Object.inherit(geometry.Point);
+    Object.inherit(CanvasObject.Geometry.Point);
     Object.inherit(events.EventListener);
 
     this.defineHook('update');
 
-    this.acc = new geometry.Vector();
-    this.vel = new geometry.Vector();
+    this.acc = new CanvasObject.Geometry.Vector();
+    this.vel = new CanvasObject.Geometry.Vector();
 
     this.update(function() {
       this.add(this.vel);

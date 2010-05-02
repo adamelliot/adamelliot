@@ -1,10 +1,11 @@
-window.events = window.events || {};
+window.CanvasObject = window.CanvasObject || {};
+CanvasObject.Events = CanvasObject.Events || {};
 
 /**
  * Allows for a chain of methods to be associated and executed when a
  * specified method (or event name) is called or send to the object.
  */
-window.events.EventListener = (function() {
+CanvasObject.Events.EventListener = (function() {
   var Klass = function() {
     var events = {};
 

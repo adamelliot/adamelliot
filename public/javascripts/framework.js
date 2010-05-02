@@ -425,7 +425,7 @@ AdamElliot.FrameManager = (function() {
         return;
       }
 
-      frame.remove();
+      frame.destroy(callback);
       delete frames[route];
       for (var i = 0; i < frameStack.length; i++)
         if (frameStack[i] == route) {

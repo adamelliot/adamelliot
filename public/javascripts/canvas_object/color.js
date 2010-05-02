@@ -1,7 +1,9 @@
+window.CanvasObject = window.CanvasObject || {};
+
 /**
  * Color Helper Class
  */
-var Color = (function() {
+CanvasObject.Color = (function() {
   var Klass = function(r, g, b, a) {
     this.red      = Math.round(r || (isNaN(r) && 0));
     this.green    = Math.round(g || (isNaN(g) && 0));
@@ -34,7 +36,7 @@ var Color = (function() {
   };
 
   Klass.fromHex = function(hex, alpha) {
-    return new Color(hex >> 16, (hex >> 8) & 0xff, hex & 0xff, alpha || 1.0);
+    return new Klass(hex >> 16, (hex >> 8) & 0xff, hex & 0xff, alpha || 1.0);
   };
   
   Klass.random = function(alpha) {
@@ -43,7 +45,7 @@ var Color = (function() {
 
   Klass.randomGrey = function(alpha) {
     var color = Math.floor(Math.random() * 128) + 120;
-    return new Color(color, color, color, alpha || 1.0);
+    return new Klass(color, color, color, alpha || 1.0);
   };
 
   const COLOR_SETS = {

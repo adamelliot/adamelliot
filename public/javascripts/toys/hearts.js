@@ -1,6 +1,4 @@
-window.valentine = window.valentine || {};
-
-valentine.Hearts = (function() {
+AdamElliot.Toys.Hearts = (function() {
   var random = function(lo, hi) {
     if (!hi) return Math.random() * (lo || 1);
     return Math.random() * (hi - lo) + lo;
@@ -10,7 +8,7 @@ valentine.Hearts = (function() {
     alpha = alpha || 1.0;
     
 //    Object.inherit(this, motion.MovingBody);
-    Object.inherit(this, CanvasObject);
+    Object.inherit(this, CanvasObject.CanvasObject);
     
     var drawHeart = function(scale) {
       scale = scale || 100;
@@ -59,14 +57,15 @@ valentine.Hearts = (function() {
     drawHeart.call(this);
   };
 
-  var Klass = function(canvas, fps) {
-    Object.inherit(this, new CanvasStage(canvas, fps));
+  var Klass = function(frame, fps) {
+    Object.inherit(this, new AdamElliot.Toy(frame));
+    Object.inherit(this, new CanvasObject.CanvasStage(frame.getCanvas()[0], fps));
 
     var topHearts = new CanvasBitmap(750, 400);
     var bottomHearts = new CanvasBitmap(750, 400);
     
-    var top = new CanvasStage('hearts_top');
-    var bottom = new CanvasStage('hearts_bottom');
+    var top = new CanvasObject.CanvasStage('hearts_top');
+    var bottom = new CanvasObject.CanvasStage('hearts_bottom');
 
     var hearts = 70;
     while (hearts--) {

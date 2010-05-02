@@ -1,6 +1,7 @@
-window.geometry = {};
+window.CanvasObject = window.CanvasObject || {};
+CanvasObject.Geometry = CanvasObject.Geometry || {};
 
-window.geometry.Point = (function() {
+CanvasObject.Geometry.Point = (function() {
   
   var Klass = function(x, y) {
     this.x = x || 0;
@@ -10,7 +11,7 @@ window.geometry.Point = (function() {
       return (other.x == this.x && other.y == this.y);
     };
 
-    this.clone = function() { return new geometry.Point(this.x, this.y); };
+    this.clone = function() { return new CanvasObject.Geometry.Point(this.x, this.y); };
 
     this.add = function(vec) {
       this.x += vec.x;
@@ -43,7 +44,7 @@ window.geometry.Point = (function() {
   
   Klass.interpolate = function(p1, p2, weight) {
     weight = weight || 0.5;
-    return new geometry.Point(p1.x * (1 - weight) + p2.x * weight,
+    return new CanvasObject.Geometry.Point(p1.x * (1 - weight) + p2.x * weight,
       p1.y * (1 - weight) + p2.y * weight);
   };
 
@@ -58,7 +59,7 @@ window.geometry.Point = (function() {
   return Klass;
 })();
 
-window.geometry.Vector = (function() {
+CanvasObject.Geometry.Vector = (function() {
   var Klass = function(x, y) {
     this.x = x || 0;
     this.y = y || 0;
@@ -68,7 +69,7 @@ window.geometry.Vector = (function() {
     };
     this.eq = this.equals;
 
-    this.clone = function() { return new geometry.Vector(this.x, this.y); };
+    this.clone = function() { return new CanvasObject.Geometry.Vector(this.x, this.y); };
     this.dot = function(vec) { return vec.x * this.x + vec.y * this.y; };
     
     this.multiply = function(s) {
@@ -105,7 +106,7 @@ window.geometry.Vector = (function() {
     };
     
     this.perpendicular = function() {
-      return new geometry.Vector(-this.y, this.x);
+      return new CanvasObject.Geometry.Vector(-this.y, this.x);
     };
   };
 
@@ -119,7 +120,7 @@ window.geometry.Vector = (function() {
   Klass.sub = Klass.subtract;
 
   Klass.fromAngle = function(angle) {
-    var ret = new geometry.Vector;
+    var ret = new CanvasObject.Geometry.Vector;
     ret.x = Math.cos(angle);
     ret.y = Math.sin(angle);
     return ret;
@@ -128,7 +129,7 @@ window.geometry.Vector = (function() {
   return Klass;
 })();
 
-window.geometry.Size = (function() {
+CanvasObject.Geometry.Size = (function() {
   var Klass = function(width, height) {
     this.width = width || 0;
     this.height = height || 0;
@@ -137,7 +138,7 @@ window.geometry.Size = (function() {
   return Klass;
 })();
 
-window.geometry.Matrix = (function() {
+CanvasObject.Geometry.Matrix = (function() {
   var Klass = function() {
     var m = [[1, 0], [0, 1]];
 
@@ -171,7 +172,7 @@ window.geometry.Matrix = (function() {
   return Klass;
 })();
 
-window.geometry.Rectangle = (function() {
+CanvasObject.Geometry.Rectangle = (function() {
   var Klass = function(left, top, right, bottom) {
     if (arguments.length == 0) this.empty = true;
     else {
@@ -215,7 +216,7 @@ window.geometry.Rectangle = (function() {
 
   Klass.fromRotated = function(rect, angle) {
     if (angle == 0) return rect.clone();
-    var mat = new geometry.Matrix();
+    var mat = new CanvasObject.Geometry.Matrix();
     mat.rotate(angle);
 
     var pt1 = mat.transform({x: rect.left, y: rect.top});

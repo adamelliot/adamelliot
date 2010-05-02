@@ -1,6 +1,7 @@
-window.julia = function(canvas, fps) {
-  var Julia = function(canvas, fps) {
-    Object.inherit(this, new CanvasStage(canvas, fps));
+AdamElliot.Toys.Julia = (function() {
+  var Klass = function(frame, fps) {
+    Object.inherit(this, new AdamElliot.Toy(frame));
+    Object.inherit(this, new CanvasObject.CanvasStage(this.getCanvas()[0], fps));
 
     var width = this.width();
     var height = this.height();
@@ -68,5 +69,5 @@ window.julia = function(canvas, fps) {
     });
   };
 
-  return new Julia(canvas, fps);
-};
+  return Klass;
+})();

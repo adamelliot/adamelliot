@@ -99,6 +99,20 @@
   .toy.show
     .date
     %h1.title
+    %canvas{:width => 300, :height => 190}
+    .clear
+    .controls
+      .control
+        %span ?
+        .label fps
+      .control
+        %span ◼
+        .label stop
+      .control
+        %span ►
+        .label play
+    .clear
+    
     .comments.disqus_thread
 
   .toy.form

@@ -10,8 +10,8 @@ window.hair = function(canvas, fps) {
     Object.inherit(this, CanvasObject);
     
     var w = stage.width() / 20, h = stage.height() / 4;
-    var v1 = new geometry.Point(random(-w, w), random(-h, h));
-    var v2 = new geometry.Point(random(-w, w), random(-h, h));
+    var v1 = new CanvasObject.Geometry.Point(random(-w, w), random(-h, h));
+    var v2 = new CanvasObject.Geometry.Point(random(-w, w), random(-h, h));
 
     this.strokeStyle = Color.randomGrey(0.8).toString();
     var path = function() {
@@ -33,7 +33,7 @@ window.hair = function(canvas, fps) {
   };
   
   var Hair = function(canvas, fps) {
-    Object.inherit(this, new CanvasStage(canvas, fps));
+    Object.inherit(this, new CanvasObject.CanvasStage(canvas, fps));
     stage = this;
     
     for (var i = 0; i < STRANDS; i++)

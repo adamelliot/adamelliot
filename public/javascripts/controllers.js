@@ -230,6 +230,7 @@ AdamElliot.ToysController = function() {
   this.templateManager.defineTemplate('form', {
     'input[name=id]@value': 'id',
     'input[name=title]@value': 'title',
+    'input[name=javascript]@value': 'javascript',
     'input[name=tags]@value': 'tags',
     'textarea[name=description]': 'description',
     'select[name=posted_on_month]@value': function(arg) {
@@ -286,6 +287,14 @@ AdamElliot.ToysController = function() {
     $('#disqus_thread').remove();
   };
 
+  this.beforeFrameHide = function(frame) {
+    if (frame.toy) frame.toy.stop();
+  };
+
+  this.beforeFrameDestroy = function(frame) {
+    if (frame.toy) frame.toy.stop();
+  };
+
   this.show = function(params) {
     var toy = null;
     if (!(toy = _super.show(params))) return null;
@@ -302,6 +311,10 @@ AdamElliot.ToysController = function() {
     var frame = this.render('show', toy, buttons);
     frame.delegate = this;
     if (!toy['closed']) showCommentInBlock(toy, frame.getFrame());
+
+    AdamElliot.Toy.loadToy(toy.javascript, frame, function(toy) {
+      frame.toy = toy;
+    });
   };
 };
 
