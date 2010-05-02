@@ -1,7 +1,9 @@
 AdamElliot.Toys.Julia = (function() {
   var Klass = function(frame, fps) {
-    Object.inherit(this, new AdamElliot.Toy(frame));
-    Object.inherit(this, new CanvasObject.Stage(this.getCanvas()[0], fps));
+    AdamElliot.Toy.call(this, frame);
+
+    this.resize(250, 150);
+    frame.getFrame().find("canvas").css({width: 490, height: 300, backgroundColor:'black'});
 
     var width = this.width();
     var height = this.height();
@@ -14,14 +16,14 @@ AdamElliot.Toys.Julia = (function() {
     for (var i = 0; i < imageData.data.length - 3; i += 4) {
       imageData.data[i + 0] = 0x0c;
       imageData.data[i + 1] = 0x10;
-      imageData.data[i + 2] = 0x21;
+      imageData.data[i + 2] = 0x18;
       imageData.data[i + 3] = 0xff;
     }
 
     const RANGE_X = 2.0;
     const RANGE_Y = 2.0;
 
-    var a = 0.21, b = 0.72;
+    var a = 0.5 - Math.random(), b = 0.5 - Math.random();
     var aStep = 0.011, bStep = 0.009;
 
     var colors = [];
@@ -52,7 +54,7 @@ AdamElliot.Toys.Julia = (function() {
         }
 
         cx = x; cy = y;
-        for (c = 0; c <= 13; c++) {
+        for (c = 0; c <= 12; c++) {
           x_ = cx * cx - cy * cy + a;
           y_ = 2.0 * cx * cy + b;
 
@@ -68,6 +70,7 @@ AdamElliot.Toys.Julia = (function() {
       ctx.putImageData(imageData, 0, 0);
     });
   };
+  Klass.prototype = new AdamElliot.Toy;
 
   return Klass;
 })();

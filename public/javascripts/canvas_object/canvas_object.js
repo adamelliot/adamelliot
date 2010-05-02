@@ -6,9 +6,8 @@ window.CanvasObject = window.CanvasObject || {};
 CanvasObject.Base = (function() {
   var Klass = function() {
     CanvasObject.Events.EventListener.call(this);
-
-    Object.extend(this, CanvasObject.Geometry.Point);
-    Object.extend(this, CanvasObject.Geometry.Rectangle);
+    CanvasObject.Geometry.Point.call(this);
+    CanvasObject.Geometry.Rectangle.call(this);
 
     var parent;
 
@@ -105,7 +104,6 @@ CanvasObject.Path = (function() {
 
   var Klass = function() {
     CanvasObject.Base.call(this);
-//    Object.inherit(this, CanvasObject.Base);
 
     var commands = [];
 
@@ -201,8 +199,8 @@ CanvasObject.Path = (function() {
         Math.round(rect.top + this.y) + 0.5,
         Math.round(rect.width()),
         Math.round(rect.height()));
-      context.closePath();
-*/
+      context.closePath();*/
+
     };
 
     /**

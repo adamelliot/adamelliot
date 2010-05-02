@@ -1,6 +1,6 @@
 AdamElliot.Toys.Boids = (function() {
   var stage;
-  const BOIDS = 40;
+  const BOIDS = 60;
 
   var Boid = function(x, y) {
     CanvasObject.Path.call(this);
@@ -60,7 +60,7 @@ AdamElliot.Toys.Boids = (function() {
       var cv = centerVector.call(this, flock).divide(200);
       var pv = pushVector.call(this, flock).divide(32);
       var vv = velocityVector.call(this, flock);
-      var vp = (new CanvasObject.Geometry.Vector(400, 225)).subtract(this).divide(1000);
+      var vp = (new CanvasObject.Geometry.Vector(400, 205)).subtract(this).divide(1000);
       
       this.vector.add(cv);
       this.vector.add(pv);
@@ -99,7 +99,7 @@ AdamElliot.Toys.Boids = (function() {
     AdamElliot.Toy.call(this, frame);
     stage = this;
 
-    this.resize(480, 320);
+    this.resize(490, 300);
 
     var boids = [];
 
