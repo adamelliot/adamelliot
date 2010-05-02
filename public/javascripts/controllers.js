@@ -125,7 +125,7 @@ AdamElliot.PostsController = function() {
 
     $("#disqus_thread").remove();
 
-    window.disqus_developer = (location.hostname == "0.0.0.0") ? 1 : 0;
+    window.disqus_developer = (location.hostname != "adamelliot.com") ? 1 : 0;
     window.disqus_url = location.href.split('#')[0] + 'permalink?post=' + post['slug'];
     window.disqus_skip_auth = true;
     window.disqus_identifier = post['slug'];
@@ -361,6 +361,10 @@ AdamElliot.GeneralController = (function() {
   var Klass = function() {
     this.bio = function() {
     };
+    
+    this.pics = function() {
+      // http://api.flickr.com/services/feeds/photos_public.gne?id=30782515@N02&format=json
+    }
   };
 
   return Klass;

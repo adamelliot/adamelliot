@@ -1,6 +1,6 @@
 #application
   #frames
-    #frameChase "Chase"
+    #frameChase
   #dashbaord
     #admin
       .button{'data-route' => 'session/create'} login
@@ -70,7 +70,7 @@
     %form
       %input{:type => 'hidden', :name => 'id'}
       %h3 title:
-      %input{:type => 'text', :name => 'title', :value => ''}
+      %input{:type => 'text', :name => 'title'}
       %h3 body:
       %textarea{:name => 'markdown'}
       %h3 tags:
@@ -83,8 +83,8 @@
         - (1..31).each do |day|
           %option{:value => day}= day
       %select{:name => 'posted_on_year'}
-        - 3.times do |i|
-          %option{:value => Date.today.year - i}= Date.today.year - i
+        - 4.times do |i|
+          %option{:value => Date.today.year - i + 1}= Date.today.year - i + 1
       %input{:name => 'draft', :type => 'checkbox'}
       %label{:for => 'draft'} draft
       %input{:name => 'closed', :type => 'checkbox'}
@@ -105,7 +105,9 @@
     %form
       %input{:type => 'hidden', :name => 'id'}
       %h3 title:
-      %input{:type => 'text', :name => 'title', :value => ''}
+      %input{:type => 'text', :name => 'title'}
+      %h3 javascript:
+      %input{:type => 'text', :name => 'javascript'}
       %h3 description:
       %textarea{:name => 'description'}
       %h3 tags:
@@ -118,8 +120,8 @@
         - (1..31).each do |day|
           %option{:value => day}= day
       %select.posted_on{:name => 'posted_on_year'}
-        - 3.times do |i|
-          %option{:value => Date.today.year - i}= Date.today.year - i
+        - 4.times do |i|
+          %option{:value => Date.today.year - i + 1}= Date.today.year - i + 1
       %input{:name => 'draft', :type => 'checkbox'}
       %label{:for => 'draft'} draft
       %input{:name => 'closed', :type => 'checkbox'}

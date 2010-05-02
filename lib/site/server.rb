@@ -5,34 +5,12 @@ require 'active_support'
 require 'yaml'
 require 'net/http'
 require 'datamapper'
-require 'jsmin'
 
 module Site
   class Server < Sinatra::Base
     enable :logging, :static
     set :root, APP_ROOT
     
-    def cache_javascript(min = true)
-      scripts = %w[]
-      output = ""
-
-      scripts.each do |js|
-        path = File.join SOURCE_DIR, JS_DIR, "#{js}.js"
-        output << File.read(path)
-      end
-
-      f = File.new(File.join(BUILD_DIR, JS_DIR, "#{STITCHED_FILE}.js"), "w+")
-      f.write(output)
-      f.close
-
-      output = js_header
-      output << JSMin.minify(File.read(File.join(BUILD_DIR, JS_DIR, "#{STITCHED_FILE}.js")))
-
-      f = File.new(File.join(BUILD_DIR, JS_DIR, "#{STITCHED_FILE}.min.js"), "w+")
-      f.write(output)
-      f.close
-    end
-
     configure do
       enable :sessions
       set :haml, {:format => :html5}

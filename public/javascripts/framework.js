@@ -142,7 +142,7 @@ AdamElliot.Router = (function() {
 AdamElliot.Frame = (function() {
   var dir = 1;
   var zIndex = 100;
-
+/*
   // A bit of a hack to fix the issue with the content at the bottom
   $(function() {
     var chase = $("#frameChase");
@@ -154,7 +154,7 @@ AdamElliot.Frame = (function() {
       }
     }, 500);
   });
-
+*/
   var Klass = function(block) {
     var self = this;
     // jQuery object for the frame on the page.
@@ -403,7 +403,7 @@ AdamElliot.FrameManager = (function() {
 
     // Shake the current frame a bit
     this.shakeFrame = function() {
-      if (currentFrame) currentFrame.shakeFrame();
+      if (currentFrame) currentFrame.shake();
     };
 
     this.showFrame = function(block, buttons, preserveBlock) {
