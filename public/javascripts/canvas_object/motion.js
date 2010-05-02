@@ -1,10 +1,10 @@
 window.CanvasObject = window.CanvasObject || {};
 CanvasObject.Motion = CanvasObject.Motion || {};
-
+/*
 CanvasObject.Motion.MovingBody = (function() {
   var Klass = function() {
-    Object.inherit(CanvasObject.Geometry.Point);
-    Object.inherit(events.EventListener);
+    Object.extend(CanvasObject.Geometry.Point);
+    Object.extend(events.EventListener);
 
     this.defineHook('update');
 
@@ -19,3 +19,4 @@ CanvasObject.Motion.MovingBody = (function() {
   
   return Klass;
 })();
+*/

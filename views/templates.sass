@@ -1,29 +1,36 @@
 .frame
   position: fixed
-  margin: 160px 0 0 0
-  & > .close
-    +rounded-top
-    position: relative
-    left: 30px
-    top: 10px
-    display: inline-block
-    background-image: url(/images/alpha-black-background.png)
-    padding: 6px 9px
-
+  margin: 170px 0 0 0
   & > .toolbar
     text-align: right
-    margin: -10px 0
+    padding: 0 22px
+    .button
+      +rounded-top
+      display: inline
+      float: right
+      margin: 0 4px
+      padding: 8px 10px
+      background-image: url(/images/alpha-black-background.png)
+    & > .close
+      float: left
+
+  & > .navbar
+    text-align: right
     padding: 0 22px
     .button
       +rounded-bottom
-      display: inline-block
+      display: inline
+      float: right
       margin: 0 4px
       padding: 8px 10px
       background-image: url(/images/alpha-black-background.png)
 
+  .block
+    clear: both
+
   .frameChase
     position: absolute
-    bottom: -160px
+    bottom: -120px
     height: 0
     overflow: hidden
     font-size: 0
@@ -101,9 +108,8 @@
 
   canvas
     +rounded
-    +box-shadow
     margin: 6px auto
-    background-color: #333
+    background-color: #fff
     display: block
 
   .controls

@@ -3,11 +3,12 @@ window.CanvasObject = window.CanvasObject || {};
 /**
  * Common base to allow for object heirachy maintenance, used internally.
  */
-CanvasObject.CanvasBase = (function() {
+CanvasObject.Base = (function() {
   var Klass = function() {
-    Object.inherit(this, CanvasObject.Events.EventListener);
-    Object.inherit(this, CanvasObject.Geometry.Point);
-    Object.inherit(this, CanvasObject.Geometry.Rectangle);
+    CanvasObject.Events.EventListener.call(this);
+
+    Object.extend(this, CanvasObject.Geometry.Point);
+    Object.extend(this, CanvasObject.Geometry.Rectangle);
 
     var parent;
 
@@ -22,6 +23,7 @@ CanvasObject.CanvasBase = (function() {
     this.parent = function() { return parent; };
     this.context = function() { return null; };
   };
+  Klass.prototype = new CanvasObject.Events.EventListener;
 
   return Klass;
 })();
@@ -32,9 +34,9 @@ CanvasObject.CanvasBase = (function() {
  * 
  * All CanvasObjects can be converted to a bitmap.
  */
-CanvasObject.CanvasBitmap = (function() {
+CanvasObject.Bitmap = (function() {
   var Klass = function(width, height) {
-    Object.inherit(this, CanvasObject.CanvasBase);
+    CanvasObject.Base.call(this);
     
     var canvas = document.createElement("canvas");
     canvas.width = width;
@@ -56,6 +58,7 @@ CanvasObject.CanvasBitmap = (function() {
     this.width = function() { return canvas.width; };
     this.height = function() { return canvas.height; };
   };
+  Klass.prototype = new CanvasObject.Base;
 
   Klass.withCanvasObject = function(canvasObject) {
     var rect = CanvasObject.Geometry.Rectangle.fromRotated(canvasObject, canvasObject.rotation);
@@ -65,7 +68,7 @@ CanvasObject.CanvasBitmap = (function() {
     rect.right  +=  canvasObject.shadowBlur + canvasObject.shadowOffsetX;
     rect.bottom +=  canvasObject.shadowBlur + canvasObject.shadowOffsetY;
 */
-    var bitmap = new CanvasObject.CanvasBitmap(rect.width(), rect.height());
+    var bitmap = new CanvasObject.Bitmap(rect.width(), rect.height());
 
     bitmap.x = rect.left + canvasObject.x;
     bitmap.y = rect.top + canvasObject.y;
@@ -93,7 +96,7 @@ CanvasObject.CanvasBitmap = (function() {
  * Basic object used to contain graphics, will need to be placed in a
  * container to be used. Does all the abstraction of methods.
  */
-CanvasObject.CanvasObject = (function() {
+CanvasObject.Path = (function() {
   const METHODS = ['beginPath', 'closePath', 'moveTo', 'lineTo',
     'bezierCurveTo', 'quadraticCurveTo', 'arc', 'drawImage',
     'fillRect', 'strokeRect', 'fill', 'stroke'];
@@ -101,7 +104,8 @@ CanvasObject.CanvasObject = (function() {
     'shadowOffsetY', 'shadowBlur', 'shadowColor'];
 
   var Klass = function() {
-    Object.inherit(this, CanvasObject.CanvasBase);
+    CanvasObject.Base.call(this);
+//    Object.inherit(this, CanvasObject.Base);
 
     var commands = [];
 
@@ -110,14 +114,13 @@ CanvasObject.CanvasObject = (function() {
     this.y = 0;
     this.rotation = 0;
 
-
     // Setup the mappings for the methods that get called on the context
     for (var i = 0; i < METHODS.length; i++) {
       (function() {
         var command = METHODS[i];
         this[command] = function() {
           commands.push([command, arguments]);
-        }
+        };
       }).call(this);
     }
 
@@ -162,9 +165,11 @@ CanvasObject.CanvasObject = (function() {
     this.remove = function() { this.trigger('onRemove'); };
 
     /**
-     * Returns this object drawn into a CanvasBitmap
+     * Returns this object drawn into a Bitmap
      */
-    this.toBitmap = function() { return CanvasBitmap.withCanvasObject(this); }
+    this.toBitmap = function() {
+      return CanvasObject.Bitmap.withCanvasObject(this);
+    };
 
     /**
      * Draws this canvas object into a context
@@ -211,6 +216,7 @@ CanvasObject.CanvasObject = (function() {
         context[PROPS[i]] = this[PROPS[i]];
     };
   };
+  Klass.prototype = new CanvasObject.Base;
 
   return Klass;
 })();
@@ -218,9 +224,9 @@ CanvasObject.CanvasObject = (function() {
 /**
  * Contains a set of canvas objects
  */
-CanvasObject.CavnasObjectContainer = (function() {
+CanvasObject.Container = (function() {
   var Klass = function() {
-    Object.inherit(this, CanvasObject.CanvasBase);
+    CanvasObject.Base.call(this);
 
     var children = [];
 
@@ -243,6 +249,7 @@ CanvasObject.CavnasObjectContainer = (function() {
         children[i].drawInto(context);
     }
   };
+  Klass.prototype = new CanvasObject.Base;
 
   return Klass;
 })();
@@ -251,17 +258,33 @@ CanvasObject.CavnasObjectContainer = (function() {
  * Wrapper for the root canvas attached to the dom. Handles frame rates
  * and the like.
  */
-CanvasObject.CanvasStage = (function() {
+CanvasObject.Stage = (function() {
   var Klass = function(target, _fps) {
-    Object.inherit(this, CanvasObject.CavnasObjectContainer);
+    var self = this;
+    CanvasObject.Container.call(this);
 
-    var canvas = typeof target == 'string' ? document.getElementById(target) : target;
-    if (!canvas.getContext) throw "Uh oh! Can't get a context.";
+    var interval, fps, currentFps = 0, canvas, context;
 
-    var context = canvas.getContext('2d');
-    if (!context) throw "Uh oh! Can't get a context.";
+    var initialize = function() {
+      if (!target) return;
 
-    var interval, fps, currentFps = 0;
+      canvas = typeof target == 'string' ? document.getElementById(target) : target;
+      if (!canvas.getContext) throw "Uh oh! Can't get a context.";
+
+      context = canvas.getContext('2d');
+      if (!context) throw "Uh oh! Can't get a context.";
+
+      this.enterFrame(function() {
+//        context.fillStyle = 'rgba(255, 255, 255, 0.02)';
+//        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        this.drawInto(context);
+        updateFps.call(this);
+      });
+
+//      this.trigger('enterFrame');
+      this.setFrameRate(_fps);
+    };
 
     /**
      * FPS Counter
@@ -278,19 +301,12 @@ CanvasObject.CanvasStage = (function() {
         lastTime = time;
         
         currentFps = Math.round(1000 / lastDiff);
-      }
-    }
+      };
+    };
 
     /**
      * Core drawing function, pull the command list from
      */
-    this.enterFrame(function() {
-//        context.fillStyle = 'rgba(255, 255, 255, 0.02)';
-//        context.fillRect(0, 0, canvas.width, canvas.height);
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      this.drawInto(context);
-      updateFps.call(this);
-    });
 
     /**
      * Creates a interval that automatically redraws our objects via timer.
@@ -299,7 +315,6 @@ CanvasObject.CanvasStage = (function() {
       if (!value || interval != undefined) return;
 
       var ms = 1000 / (fps = value);
-      var self = this;
       interval = setInterval(function() { self.trigger('enterFrame'); }, ms);
     }
 
@@ -322,9 +337,9 @@ CanvasObject.CanvasStage = (function() {
     this.context = function() { return context; };
 
     // ---- Initializer Code ----
-    this.setFrameRate(_fps);
-//      this.trigger('enterFrame');
+    initialize.call(this);
   };
+  Klass.prototype = new CanvasObject.Container;
 
   return Klass;
 })();

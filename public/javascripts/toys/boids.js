@@ -3,8 +3,8 @@ AdamElliot.Toys.Boids = (function() {
   const BOIDS = 40;
 
   var Boid = function(x, y) {
-    Object.inherit(this, CanvasObject.CanvasObject);
-    Object.inherit(this, CanvasObject.Geometry.Point);
+    CanvasObject.Path.call(this);
+    CanvasObject.Geometry.Point.call(this);
 
     this.vector = new CanvasObject.Geometry.Vector;//(Math.random() - 0.5, Math.random() - 0.5);
     this.vector.multiply(3);
@@ -80,7 +80,7 @@ AdamElliot.Toys.Boids = (function() {
     this.enterFrame(function() {
       this.add(this.vector);
 
-      this.rotate = this.vector.angle() - Math.PI / 2;
+      this.rotation = this.vector.angle() - Math.PI / 2;
 
       if (this.x >= stage.width() + 20) this.x = -20;
       else if (this.x < -20) this.x = stage.width() + 20;
@@ -91,12 +91,15 @@ AdamElliot.Toys.Boids = (function() {
 
     // ---- Initializer Calls ----
     path.call(this);
-  }
+  };
+  Boid.prototype = new CanvasObject.Path;
 
   var Klass = function(frame, fps) {
-    Object.inherit(this, new AdamElliot.Toy(frame))
-    Object.inherit(this, new CanvasObject.CanvasStage(this.getCanvas()[0], fps));
+    var self = this;
+    AdamElliot.Toy.call(this, frame);
     stage = this;
+
+    this.resize(480, 320);
 
     var boids = [];
 
@@ -122,6 +125,7 @@ AdamElliot.Toys.Boids = (function() {
       }
     });
   };
-  
+  Klass.prototype = new AdamElliot.Toy;
+
   return Klass;  
 })();

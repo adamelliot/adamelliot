@@ -12,14 +12,14 @@ CanvasObject.Events.EventListener = (function() {
     /**
      * Merges another EventListener into this one.
      */
-    this.inheritMerge = function(from) {
+/*    this.inheritMerge = function(from) {
       events = from.events();
       for (var name in events)
         (function() {
           var n = name;
           this[n] = function(fn) { events[n].push(fn); };
         })();
-    };
+    };*/
 
     /**
      * Used to create a short hand hook for setting events that objects
@@ -27,7 +27,7 @@ CanvasObject.Events.EventListener = (function() {
      */
     this.defineHook = function(name) {
       // TODO: Raise warning if event name doesn't get added
-      if (events[name] || this[name]) return;
+      if (events[name]) return;
 
       events[name] = [];
       this[name] = function(fn) { events[name].push(fn); };

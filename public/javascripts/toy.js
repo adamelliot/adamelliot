@@ -11,23 +11,36 @@ AdamElliot.Toy = (function() {
   var canvasObjectLoaded = false;
   
   var Klass = function(_frame) {
-    var frame = _frame;
+    var self = this;
+    var frame = _frame, buttons;
+    if (frame)
+      CanvasObject.Stage.call(this, frame.getFrame().find("canvas")[0], 24);
+    
+    var initialize = function() {
+      if (!frame) return;
 
-    this.getCanvas = function() {
-      return frame.getFrame().find("canvas");
+      buttons = frame.setToolbarButtons({
+        'play': function() { self.play(); },
+        'stop': function() { self.stop(); },
+        'fps': function() {}
+      });
+
+      setInterval(function() {
+        buttons['fps'].text('fps: ' + self.fps());
+      }, 500);
     };
 
-    // Place holders for the Stage's methods
-    this.stop = function() {};
-    this.play = function() {};
+    initialize.call(this);
   };
+  Klass.prototype = new CanvasObject.Stage;
 
   Klass.loadCanvasObject = function(callback) {
     if (canvasObjectLoaded) {
-      callback();
+      if (callback) callback();
       return;
     }
     canvasObjectLoaded = true;
+    return callback();
 
     $.getScript("/javascripts/canvas_object/common.js");
     $.getScript("/javascripts/canvas_object/color.js");
@@ -42,7 +55,7 @@ AdamElliot.Toy = (function() {
 
     Klass.loadCanvasObject(function() {
       $.getScript(path, function() {
-        callback(new AdamElliot.Toys[name.camelize()](frame, 24));
+        callback(new AdamElliot.Toys[name.camelize()](frame, 1));
       });
     });
   };

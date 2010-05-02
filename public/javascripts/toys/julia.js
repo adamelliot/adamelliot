@@ -1,7 +1,7 @@
 AdamElliot.Toys.Julia = (function() {
   var Klass = function(frame, fps) {
     Object.inherit(this, new AdamElliot.Toy(frame));
-    Object.inherit(this, new CanvasObject.CanvasStage(this.getCanvas()[0], fps));
+    Object.inherit(this, new CanvasObject.Stage(this.getCanvas()[0], fps));
 
     var width = this.width();
     var height = this.height();
@@ -52,7 +52,7 @@ AdamElliot.Toys.Julia = (function() {
         }
 
         cx = x; cy = y;
-        for (c = 0; c <= 14; c++) {
+        for (c = 0; c <= 13; c++) {
           x_ = cx * cx - cy * cy + a;
           y_ = 2.0 * cx * cy + b;
 

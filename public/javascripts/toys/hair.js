@@ -33,7 +33,7 @@ window.hair = function(canvas, fps) {
   };
   
   var Hair = function(canvas, fps) {
-    Object.inherit(this, new CanvasObject.CanvasStage(canvas, fps));
+    Object.inherit(this, new CanvasObject.Stage(canvas, fps));
     stage = this;
     
     for (var i = 0; i < STRANDS; i++)

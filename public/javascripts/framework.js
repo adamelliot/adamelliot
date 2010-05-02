@@ -196,19 +196,42 @@ AdamElliot.Frame = (function() {
       });
     };
 
-    this.setButtons = function(buttons) {
+    this.setToolbarButtons = function(buttons) {
       if (!buttons) return;
-      var toolbar = frame.find(".toolbar");
+      var toolbar = frame.find(".toolbar > .buttons");
       toolbar.find(".button").remove();
 
+      var buttonElements = {};
       for (var key in buttons) {
         var button = $("<div class='button'>" + key + "</div>");
+        buttonElements[key] = button;
         
         if (typeof buttons[key] == "string")
           button.linkTo(buttons[key]);
         else button.click(buttons[key]);
         toolbar.append(button);
       }
+      
+      return buttonElements;
+    };
+
+    this.setButtons = function(buttons) {
+      if (!buttons) return;
+      var navbar = frame.find(".navbar");
+      navbar.find(".button").remove();
+
+      var buttonElements = {};
+      for (var key in buttons) {
+        var button = $("<div class='button'>" + key + "</div>");
+        buttonElements[key] = button;
+
+        if (typeof buttons[key] == "string")
+          button.linkTo(buttons[key]);
+        else button.click(buttons[key]);
+        navbar.append(button);
+      }
+
+      return buttonElements;
     };
 
     this.center = function() {
@@ -487,9 +510,9 @@ AdamElliot.TemplateManager = (function() {
     };
 
     // Renders the specified action and shows it in the frame manager
-    this.render = function(action, data, toolbar, preserveBlock) {
+    this.render = function(action, data, navbar, preserveBlock) {
       var block = templates[action](data);
-      return AdamElliot.frameManager.showFrame(block, toolbar, preserveBlock);
+      return AdamElliot.frameManager.showFrame(block, navbar, preserveBlock);
     };
   };
 
@@ -498,9 +521,9 @@ AdamElliot.TemplateManager = (function() {
     return sharedTemplates[name];
   };
   
-  Klass.renderShared = function(name, data, toolbar) {
+  Klass.renderShared = function(name, data, navbar) {
     var block = sharedTemplates[name](data);
-    return AdamElliot.frameManager.showFrame(block, toolbar);
+    return AdamElliot.frameManager.showFrame(block, navbar);
   };
   
   // Define the shared templates. (Needs to be done post load)

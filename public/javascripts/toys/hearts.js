@@ -8,7 +8,7 @@ AdamElliot.Toys.Hearts = (function() {
     alpha = alpha || 1.0;
     
 //    Object.inherit(this, motion.MovingBody);
-    Object.inherit(this, CanvasObject.CanvasObject);
+    Object.inherit(this, CanvasObject.Path);
     
     var drawHeart = function(scale) {
       scale = scale || 100;
@@ -59,13 +59,13 @@ AdamElliot.Toys.Hearts = (function() {
 
   var Klass = function(frame, fps) {
     Object.inherit(this, new AdamElliot.Toy(frame));
-    Object.inherit(this, new CanvasObject.CanvasStage(frame.getCanvas()[0], fps));
+    Object.inherit(this, new CanvasObject.Stage(frame.getCanvas()[0], fps));
 
-    var topHearts = new CanvasBitmap(750, 400);
-    var bottomHearts = new CanvasBitmap(750, 400);
+    var topHearts = new CanvasObject.Bitmap(750, 400);
+    var bottomHearts = new CanvasObject.Bitmap(750, 400);
     
-    var top = new CanvasObject.CanvasStage('hearts_top');
-    var bottom = new CanvasObject.CanvasStage('hearts_bottom');
+    var top = new CanvasObject.Stage('hearts_top');
+    var bottom = new CanvasObject.Stage('hearts_bottom');
 
     var hearts = 70;
     while (hearts--) {
@@ -81,7 +81,7 @@ AdamElliot.Toys.Hearts = (function() {
       r *= 330;
       heart.y = r;
 
-      topHearts.addBitmap(CanvasBitmap.withCanvasObject(heart));
+      topHearts.addBitmap(CanvasObject.Bitmap.withCanvasObject(heart));
     }
     
     var hearts = 70;
@@ -97,7 +97,7 @@ AdamElliot.Toys.Hearts = (function() {
       r *= 330;
       heart.y = 400 - r;
 
-      bottomHearts.addBitmap(CanvasBitmap.withCanvasObject(heart));
+      bottomHearts.addBitmap(CanvasObject.Bitmap.withCanvasObject(heart));
     }
     
     top.addChild(topHearts);

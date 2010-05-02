@@ -17,3 +17,8 @@ Object.inherit = function(target, base) {
         target.__parentObjects.push(instance.__parentObjects[i]);
   target.__parentObjects.push(instance.constructor);
 };
+
+Object.extend = function(target, base) {
+  var instance = base instanceof Function ? new base : base;
+  for (var prop in instance) target[prop] = instance[prop];
+};
