@@ -142,19 +142,7 @@ AdamElliot.Router = (function() {
 AdamElliot.Frame = (function() {
   var dir = 1;
   var zIndex = 100;
-/*
-  // A bit of a hack to fix the issue with the content at the bottom
-  $(function() {
-    var chase = $("#frameChase");
-    setInterval(function() {
-      var frame = $(".frame:visible");
-      if (frame.length > 0) {
-        var bottom = frame.height() + frame.position().top + 320;
-        chase.css({top: bottom});
-      }
-    }, 500);
-  });
-*/
+
   var Klass = function(block) {
     var self = this;
     // jQuery object for the frame on the page.

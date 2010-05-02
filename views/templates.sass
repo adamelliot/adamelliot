@@ -1,7 +1,6 @@
 .frame
   position: fixed
   margin: 160px 0 0 0
-  padding: 0 0 160px 0
   .close
     +rounded-top
     position: relative
@@ -22,12 +21,12 @@
       padding: 8px 10px
       background-image: url(/images/alpha-black-background.png)
 
-#frameChase
-  position: absolute
-  top: 0
-  height: 0
-  overflow: hidden
-  font-size: 0
+  .frameChase
+    position: absolute
+    bottom: -160px
+    height: 0
+    overflow: hidden
+    font-size: 0
 
 .form
   +frame-content
