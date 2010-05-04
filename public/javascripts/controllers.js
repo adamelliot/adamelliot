@@ -14,9 +14,9 @@ $("a[href*=comment-]").live('mousedown click', function() {
  * Resource posts controller.
  */
 AdamElliot.PostsController = function() {
-  var _super = new AdamElliot.ResourceController("post", this);
   var self = this;
-  $.extend(this, _super);
+  AdamElliot.ResourceController.call(this, "post");
+  var _super = $.extend({}, this);
 
   this.dataOrderKey = 'posted_on';
   this.descendingOrder = true;
@@ -162,14 +162,15 @@ AdamElliot.PostsController = function() {
     if (!post['closed']) showCommentInBlock(post, frame.getFrame());
   };
 };
+AdamElliot.PostsController.prototype = new AdamElliot.ResourceController;
 
 /**
  * Resource toys controller.
  */
 AdamElliot.ToysController = function() {
-  var _super = new AdamElliot.ResourceController("toys", this);
   var self = this;
-  $.extend(this, _super);
+  AdamElliot.ResourceController.call(this, "toys");
+  var _super = $.extend({}, this);
 
   this.dataOrderKey = 'posted_on';
   this.descendingOrder = true;
@@ -317,6 +318,7 @@ AdamElliot.ToysController = function() {
     });
   };
 };
+AdamElliot.ToysController.prototype = new AdamElliot.ResourceController;
 
 /**
  * Handle logging in and out and populate the session object with the logged

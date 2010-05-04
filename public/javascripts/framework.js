@@ -497,12 +497,12 @@ AdamElliot.FrameManager = (function() {
  * of data and how they display.
  */
 AdamElliot.TemplateManager = (function() {
-  var Klass = function (_modelName) {
-    var modelName = _modelName;
+  var Klass = function (_controllerName) {
+    var controllerName = _controllerName.singularize();
     var templates = {};
 
     this.defineTemplate = function(type, binding) {
-      templates[type] = $('#templates .' + modelName + '.' + type).compile(binding);
+      templates[type] = $('#templates .' + controllerName + '.' + type).compile(binding);
     };
     
     this.template = function(type) {
@@ -546,14 +546,51 @@ AdamElliot.TemplateManager = (function() {
 })();
 
 /**
+ * Basic controller object.
+ */
+AdamElliot.Controller = (function() {
+  var Klass = function(_controllerName) {
+    var modelName = (_controllerName || "").singularize();
+    var activeBlock;
+
+    this.templateManager = new AdamElliot.TemplateManager(modelName);
+    this.activeBlock = function() { return activeBlock; };
+
+    this.triggerOnce = function(func) {
+      var triggered = false;
+
+      return function() {
+        if (!triggered) {
+          var args = Array.prototype.slice.call(arguments);
+          args.shift();
+          func.apply(this, args);
+        }
+        triggered = true;
+      };
+    };
+    
+    this.render = function(name, data, buttons, preserveBlock) {
+      var frame = this.templateManager.render(name, data, buttons, preserveBlock);
+      activeBlock = frame.getFrame();
+      return frame;
+    };
+
+    this.redirect = function(route) {
+      location.hash = route;
+    };
+  };
+  
+  return Klass;
+})();
+
+/**
  * ResourceController controller type. Used in the resourceful situation.
  */
 AdamElliot.ResourceController = (function() {
-  var Klass = function(_modelName, _self) {
-    var modelName = (_modelName || "").singularize();
-    var self = _self || this;
-    var activeBlock;
-    this.templateManager = new AdamElliot.TemplateManager(modelName);
+  var Klass = function(_controllerName) {
+    var modelName = (_controllerName || "").singularize();
+    var self = this;
+    AdamElliot.Controller.call(this, modelName);
 
     // The chunk where model are stored.
     var data = {};
@@ -586,7 +623,6 @@ AdamElliot.ResourceController = (function() {
 
     this.formHandler = function(data) { return data; };
     this.dataMangler = function(data) { return data; };
-    this.frameClosed = function() {};
 
     // TODO: Resorting every time is a crappy way of doing things
     var indexData = function() {
@@ -615,19 +651,6 @@ AdamElliot.ResourceController = (function() {
       AdamElliot.frameManager.closeFrameByRoute(modelName + "/" + id);
     };
 
-    this.triggerOnce = function(func) {
-      var triggered = false;
-
-      return function() {
-        if (!triggered) {
-          var args = Array.prototype.slice.call(arguments);
-          args.shift();
-          func.apply(self, args);
-        }
-        triggered = true;
-      };
-    };
-    
     // Default event handlers
     this.afterCreate = this.afterUpdate = this.afterRemove = function() {
       AdamElliot.frameManager.closeFrame();
@@ -674,11 +697,11 @@ AdamElliot.ResourceController = (function() {
 
     this.remoteCreate = function() {
       if (self.beforeCreate) self.beforeCreate();
-      if (!activeBlock) {
+      if (!self.activeBlock()) {
         if (self.failedCreate) self.failedCreate();
         return;
       }
-      var data = activeBlock.find('form').serializeArray();
+      var data = self.activeBlock().find('form').serializeArray();
       if (!data) {
         if (self.failedCreate) self.failedCreate();
         return;
@@ -703,11 +726,11 @@ AdamElliot.ResourceController = (function() {
 
     this.remoteUpdate = function(id) {
       if (self.beforeUpdate) self.beforeUpdate(id);
-      if (!activeBlock) {
+      if (!self.activeBlock()) {
         if (self.failedUpdate) self.failedUpdate(id);
         return;
       }
-      var data = activeBlock.find('form').serializeArray();
+      var data = self.activeBlock().find('form').serializeArray();
       if (!data) {
         if (self.failedUpdate) self.failedUpdate(id);
         return;
@@ -747,12 +770,6 @@ AdamElliot.ResourceController = (function() {
       });
     };
 
-    // Route helpers
-    
-    this.redirect = function(route) {
-      location.hash = route;
-    };
-
     // Handles the situation where show is called without an id
     this.showFirst = function(params) {
       if (dataIndex.length == 0) {
@@ -768,12 +785,6 @@ AdamElliot.ResourceController = (function() {
     };
 
     // Local routes. These are bound to resource routes.
-
-    this.render = function(name, data, buttons, preserveBlock) {
-      var frame = self.templateManager.render(name, data, buttons, preserveBlock);
-      activeBlock = frame.getFrame();
-      return frame;
-    };
 
     this.index = function(params) {
       self.remoteIndex();
@@ -817,8 +828,8 @@ AdamElliot.ResourceController = (function() {
         'no': function() { AdamElliot.frameManager.closeFrame(); }
       });
     };
-
   };
+  Klass.prototype = new AdamElliot.Controller;
 
   return Klass;
 })();

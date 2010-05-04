@@ -2,8 +2,8 @@ AdamElliot.Toys.Julia = (function() {
   var Klass = function(frame, fps) {
     AdamElliot.Toy.call(this, frame);
 
-    this.resize(250, 150);
-    frame.getFrame().find("canvas").css({width: 490, height: 300, backgroundColor:'black'});
+    this.resize(244, 150);
+    frame.getFrame().find("canvas").css({width: 488, height: 300, backgroundColor:'black'});
 
     var width = this.width();
     var height = this.height();
@@ -28,7 +28,7 @@ AdamElliot.Toys.Julia = (function() {
 
     var colors = [];
     for (var i = 0;  i < 16; i++) colors[i] = 0x0c + i * 14;
-    for (var i = 16; i < 32; i++) colors[i] = 0x10 + ((i - 16) * (i - 16) / 4) * 10;
+    for (var i = 16; i < 32; i++) colors[i] = Math.min(0x10 + ((i - 16) * (i - 16) / 4) * 10, 0xff);
 
 
     var buffer = new Array(imageData.data.length);
