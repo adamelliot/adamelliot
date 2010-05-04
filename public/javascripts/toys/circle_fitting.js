@@ -1,7 +1,8 @@
 AdamElliot.Toys.CircleFitting = (function() {
   const IMAGES = [
     '/images/circle_image_1.jpg',
-    '/images/circle_image_2.jpg'];
+    '/images/circle_image_2.jpg',
+    '/images/circle_image_3.jpg'];
   const WIDTH = 480;
   const HEIGHT = 640;
   const STARTING_CIRCLES = 6;
