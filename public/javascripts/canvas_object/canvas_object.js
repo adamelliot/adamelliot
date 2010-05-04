@@ -59,6 +59,16 @@ CanvasObject.Bitmap = (function() {
   };
   Klass.prototype = new CanvasObject.Base;
 
+  Klass.withImage = function(path, callback) {
+    var image = new Image;
+    image.onload = function() {
+      var bitmap = new Klass(image.width, image.height);
+      bitmap.context().drawImage(image, 0, 0);
+      callback(bitmap);
+    }
+    image.src = path;
+  };
+
   Klass.withCanvasObject = function(canvasObject) {
     var rect = CanvasObject.Geometry.Rectangle.fromRotated(canvasObject, canvasObject.rotation);
 /*

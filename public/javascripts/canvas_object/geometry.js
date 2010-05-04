@@ -35,7 +35,11 @@ CanvasObject.Geometry.Point = (function() {
       return Math.sqrt(this.x * this.x + this.y * this.y);
     };
   };
-  
+
+  Klass.random = function(x, y) {
+    return new Klass(Math.random() * x, Math.random() * y);
+  }
+
   Klass.distance = function(p1, p2) {
     var x = p1.x - p2.x;
     var y = p1.y - p2.y;

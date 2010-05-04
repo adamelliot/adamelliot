@@ -39,6 +39,12 @@ CanvasObject.Events.EventListener = (function() {
       for (var i = 0; i < target.length; i++) target[i].apply(this, arguments);
     };
 
+    this.removeHandler = function(event, handler) {
+      if (!events[event]) return;
+      for (var i = 0; i < events[event].length; i++)
+        if (events[event][i] == handler) events[event].splice(i--, 1);
+    };
+
     this.bind = function(event, fn) {};
     this.unbind = function(event, fn) {};
   };
