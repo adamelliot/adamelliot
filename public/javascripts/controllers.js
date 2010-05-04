@@ -274,7 +274,7 @@ AdamElliot.ToysController = function() {
 
     $("#disqus_thread").remove();
 
-    window.disqus_developer = (location.hostname == "0.0.0.0") ? 1 : 0;
+    window.disqus_developer = 1;// (location.hostname == "0.0.0.0") ? 1 : 0;
     window.disqus_url = location.href.split('#')[0] + 'permalink?toy=' + toy['slug'];
     window.disqus_skip_auth = true;
     window.disqus_identifier = toy['slug'];
