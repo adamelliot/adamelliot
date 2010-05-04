@@ -220,8 +220,10 @@ CanvasObject.Path = (function() {
       context.translate(this.x, this.y);
       context.rotate(this.rotation);
 
-      for (var i = 0; i < PROPS.length; i++) 
-        context[PROPS[i]] = this[PROPS[i]];
+      for (var i = 0; i < PROPS.length; i++) {
+        if (this[PROPS[i]])
+          context[PROPS[i]] = this[PROPS[i]];
+      }
     };
   };
   Klass.prototype = new CanvasObject.Base;
@@ -242,12 +244,25 @@ CanvasObject.Container = (function() {
       children.push(child);
       child.setParent(this);
 
-      this.enterFrame(function() {
+      // TODO: Place this more carefully
+      child._enterFrame = function() {
         child.trigger('enterFrame');
-      });
+      }
+
+      this.enterFrame(child._enterFrame);
     };
     // NOTE: Make a getter
     this.children = function() { return children; };
+    
+    this.removeChild = function(child) {
+      for (var i = 0; i < children.length; i++)
+        if (children[i] == child) break;
+      
+      if (i == children.length) return;
+      children.splice(i, 1);
+
+      this.removeHandler('enterFrame', child._enterFrame);
+    };
     
     /**
      * Draws this object into a specified context.
@@ -272,6 +287,7 @@ CanvasObject.Stage = (function() {
     CanvasObject.Container.call(this);
 
     var interval, fps, currentFps = 0, canvas, context;
+    var noClearDraw, clearDraw, updateFps, drawFunc;
 
     var initialize = function() {
       if (!target) return;
@@ -282,16 +298,18 @@ CanvasObject.Stage = (function() {
       context = canvas.getContext('2d');
       if (!context) throw "Uh oh! Can't get a context.";
 
-      this.enterFrame(function() {
-//        context.fillStyle = 'rgba(255, 255, 255, 0.02)';
-//        context.fillRect(0, 0, canvas.width, canvas.height);
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        this.drawInto(context);
-        updateFps.call(this);
-      });
-
-//      this.trigger('enterFrame');
+      drawFunc = clearDraw;
+      this.enterFrame(drawFunc);
       this.setFrameRate(_fps);
+    };
+    
+    noClearDraw = function() {
+      self.drawInto(context);
+    };
+    
+    clearDraw = function() {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      self.drawInto(context);
     };
 
     /**
@@ -311,10 +329,17 @@ CanvasObject.Stage = (function() {
         currentFps = Math.round(1000 / lastDiff);
       };
     };
+    updateFps();
 
-    /**
-     * Core drawing function, pull the command list from
-     */
+    this.setUpdateMethod = function(clear, calcFps) {
+      this.removeHandler('enterFrame', drawFunc);
+      this.removeHandler('enterFrame', updateFps);
+
+      if (clear) this.enterFrame(drawFunc = clearDraw);
+      else this.enterFrame(drawFunc = noClearDraw);
+
+      if (calcFps) this.enterFrame(updateFps);
+    };
 
     /**
      * Creates a interval that automatically redraws our objects via timer.

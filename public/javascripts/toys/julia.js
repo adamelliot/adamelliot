@@ -3,6 +3,7 @@ AdamElliot.Toys.Julia = (function() {
     AdamElliot.Toy.call(this, frame);
 
     this.resize(244, 150);
+    this.setUpdateMethod(false, true);
     frame.getFrame().find("canvas").css({width: 488, height: 300, backgroundColor:'black'});
 
     var width = this.width();

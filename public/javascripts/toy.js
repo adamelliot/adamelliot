@@ -10,11 +10,12 @@ window.AdamElliot.Toys = window.AdamElliot.Toys || {};
 AdamElliot.Toy = (function() {
   var canvasObjectLoaded = false;
   
-  var Klass = function(_frame) {
+  var Klass = function(_frame, _fps) {
     var self = this;
     var frame = _frame, buttons;
+    var fps = _fps || 24;
     if (frame)
-      CanvasObject.Stage.call(this, frame.getFrame().find("canvas")[0], 24);
+      CanvasObject.Stage.call(this, frame.getFrame().find("canvas")[0], fps);
     
     var initialize = function() {
       if (!frame) return;

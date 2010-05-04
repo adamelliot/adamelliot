@@ -100,6 +100,7 @@ AdamElliot.Toys.Boids = (function() {
     stage = this;
 
     this.resize(490, 300);
+    this.setUpdateMethod(true, true);
 
     var boids = [];
 
