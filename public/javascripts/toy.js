@@ -56,7 +56,12 @@ AdamElliot.Toy = (function() {
 
     Klass.loadCanvasObject(function() {
       $.getScript(path, function() {
-        callback(new AdamElliot.Toys[name.camelize()](frame, 1));
+        var klass = name.camelize();
+        var timer = setInterval(function() {
+          if (!AdamElliot.Toys[klass]) return;
+          clearInterval(timer);
+          callback(new AdamElliot.Toys[klass](frame, 1));
+        }, 100);
       });
     });
   };

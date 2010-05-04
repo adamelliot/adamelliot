@@ -58,6 +58,12 @@ AdamElliot.Toys.CircleFitting = (function() {
       return false;
     };
 
+    var alpha = Math.random() >= 0.5;
+    var chooseAlpha = function() {
+      if (!alpha) return 1;
+      return Math.random();
+    };
+
     var addCircle = function() {
       var pt;
       var maxTries = 30;
@@ -78,7 +84,7 @@ AdamElliot.Toys.CircleFitting = (function() {
         imageData.data[offset + 0],
         imageData.data[offset + 1],
         imageData.data[offset + 2],
-        1.0
+        chooseAlpha()
       ).toString();
 
       var circle = new Circle(pt.x, pt.y, color);
