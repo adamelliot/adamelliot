@@ -58,7 +58,7 @@ AdamElliot.Toys.CircleFitting = (function() {
       return false;
     };
 
-    var alpha = Math.random() >= 0.5;
+    var alpha = Math.random() >= 0.35;
     var chooseAlpha = function() {
       if (!alpha) return 1;
       return Math.random();

@@ -22,11 +22,11 @@ AdamElliot.Menu = (function() {
     // Set initial placement and settings for the intro sequence
     var setup = function() {
       this.centerMenu();
-      adamelliot.css({opacity: 0});
-      blog.css({opacity: 0, left:blog.offset().left + 600});
-      pics.css({opacity: 0, left:pics.offset().left - 600});
-      bio.css({opacity: 0, top:bio.offset().top + 600});
-      toyz.css({opacity: 0, top:toyz.offset().top - 600});
+      adamelliot.css({opacity: 0.0});
+      blog.css({opacity: 0.0, left:blog.offset().left + 600});
+      pics.css({opacity: 0.0, left:pics.offset().left - 600});
+      bio.css({opacity: 0.0, top:bio.offset().top + 600});
+      toyz.css({opacity: 0.0, top:toyz.offset().top - 600});
     };
 
     // Run the intro sequence
@@ -83,8 +83,8 @@ AdamElliot.Menu = (function() {
       }, 250);
     };
 
-    // Setup and run the intro sequence
-    if (location.href.indexOf("#") == -1) {
+    // Setup and run the intro sequence, intro breaks in IE don't run it
+    if (location.href.indexOf("#") == -1 && $.support.opacity) {
       setup.call(this);
       introSequence.call(this);
     } else

@@ -169,6 +169,8 @@ AdamElliot.Frame = (function() {
       frame.find(".close").click(function() {
         AdamElliot.frameManager.closeFrame();
       });
+      
+      if ($.browser.msie) frame.css({paddingBottom: "120px"});
 
       var h = $(window).height();
       left = ($(window).width() - frame.width()) / 2;
