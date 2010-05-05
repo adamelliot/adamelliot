@@ -106,10 +106,10 @@ CanvasObject.Bitmap = (function() {
  * container to be used. Does all the abstraction of methods.
  */
 CanvasObject.Path = (function() {
-  const METHODS = ['beginPath', 'closePath', 'moveTo', 'lineTo',
+  var METHODS = ['beginPath', 'closePath', 'moveTo', 'lineTo',
     'bezierCurveTo', 'quadraticCurveTo', 'arc', 'drawImage',
     'fillRect', 'strokeRect', 'fill', 'stroke'];
-  const PROPS = ['fillStyle', 'strokeStyle', 'shadowOffsetX',
+  var PROPS = ['fillStyle', 'strokeStyle', 'shadowOffsetX',
     'shadowOffsetY', 'shadowBlur', 'shadowColor'];
 
   var Klass = function() {
