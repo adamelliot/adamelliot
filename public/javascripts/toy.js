@@ -8,8 +8,6 @@ window.AdamElliot = window.AdamElliot || {};
 window.AdamElliot.Toys = window.AdamElliot.Toys || {};
 
 AdamElliot.Toy = (function() {
-  var canvasObjectLoaded = false;
-  
   var Klass = function(_frame, _fps) {
     var self = this;
     var frame = _frame, buttons;
@@ -33,22 +31,17 @@ AdamElliot.Toy = (function() {
 
     initialize.call(this);
   };
-  Klass.prototype = new CanvasObject.Stage;
 
   Klass.loadCanvasObject = function(callback) {
-    if (canvasObjectLoaded) {
+    if (window.CanvasObject) {
       if (callback) callback();
       return;
     }
-    canvasObjectLoaded = true;
-    return callback();
 
-    $.getScript("/javascripts/canvas_object/common.js");
-    $.getScript("/javascripts/canvas_object/color.js");
-    $.getScript("/javascripts/canvas_object/events.js");
-    $.getScript("/javascripts/canvas_object/geometry.js");
-    $.getScript("/javascripts/canvas_object/motion.js");
-    $.getScript("/javascripts/canvas_object/canvas_object.js", callback);
+    $.getScript("/javascripts/canvas_object.min.js", function() {
+      Klass.prototype = new CanvasObject.Stage;
+      if (callback) callback();
+    });
   };
 
   Klass.loadToy = function(name, frame, callback) {

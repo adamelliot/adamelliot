@@ -9,6 +9,7 @@ gem "rack"
 gem "activesupport"
 gem "nokogiri"
 gem "haml"
+gem "jsmin"
 
 group :development do
   gem "thin"

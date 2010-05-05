@@ -15,7 +15,7 @@ module Site
       enable :sessions
       set :haml, {:format => :html5}
 
-      Site::Javascript.generate_scripts
+      Site::Javascripts::generate_scripts
 
       # Load configuration (just stores password for now)
       begin
