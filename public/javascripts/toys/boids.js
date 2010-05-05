@@ -1,6 +1,6 @@
 AdamElliot.Toys.Boids = (function() {
   var stage;
-  const BOIDS = 50;
+  const BOIDS = 60;
 
   var Boid = function(x, y) {
     CanvasObject.Path.call(this);
@@ -111,7 +111,7 @@ AdamElliot.Toys.Boids = (function() {
     var totalBoids = BOIDS * ($.browser.mozilla ? 1 : 2);
 
     for (var i = 0; i < totalBoids; i++) {
-      var boid = new Boid(stage.width() / 3, stage.height() / 2);
+      var boid = new Boid(stage.width() / 2, stage.height() / 2);
       var position = CanvasObject.Geometry.Vector.fromAngle(Math.PI * 2 * i / BOIDS);
       boid.x += position.x * 40;
       boid.y += position.y * 40;

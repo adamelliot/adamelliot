@@ -114,11 +114,12 @@ AdamElliot.Dashboard = (function() {
     var loadDashboard = function() {
       dashboard.css({opacity:0});
       // Hook up twitter to it's block
-      tweet.tweet({
-        username: "adam_elliot",
-        count: 2,
-        loading_text: "loading tweets..."
-      });
+      if (navigator.userAgent.indexOf('iPad') != -1)
+        tweet.tweet({
+          username: "adam_elliot",
+          count: 2,
+          loading_text: "loading tweets..."
+        });
     };
 
     var showDashboard = function() {
