@@ -48,7 +48,7 @@ CanvasObject.Color = (function() {
     return new Klass(color, color, color, alpha || 1.0);
   };
 
-  const COLOR_SETS = {
+  var COLOR_SETS = {
     'black':  [  0,   0,   0],
     'clear':  [  0,   0,   0, 0.0],
     'blue':   [  0,   0, 255],

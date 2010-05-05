@@ -161,6 +161,13 @@ AdamElliot.Frame = (function() {
 
       frame.bindDataRoute();
       frame.targetBlank();
+
+      if ($.browser.mozilla && parseFloat($.browser.version.substr(0,3)) < 1.9) {
+        // FF2 fix: Set the toolbar and nav bar's width to the same as the content
+        var w = frame.find('.block').innerWidth() - 44;
+        frame.find('.toolbar').css('width', w);
+        frame.find('.navbar').css('width', w);
+      }
     };
 
     var init = function() {
@@ -170,7 +177,9 @@ AdamElliot.Frame = (function() {
         AdamElliot.frameManager.closeFrame();
       });
       
-      if ($.browser.msie) frame.css({paddingBottom: "120px"});
+      if ($.browser.msie ||
+        ($.browser.mozilla && parseFloat($.browser.version.substr(0,3))))
+        frame.css({paddingBottom: "120px"});
 
       var h = $(window).height();
       left = ($(window).width() - frame.width()) / 2;
@@ -189,6 +198,7 @@ AdamElliot.Frame = (function() {
 
     this.setContent = function(block) {
       frame.find('.block').empty().append(block);
+      
       adjustContent();
     }
 
@@ -527,7 +537,32 @@ AdamElliot.TemplateManager = (function() {
     var block = sharedTemplates[name](data);
     return AdamElliot.frameManager.showFrame(block, navbar);
   };
-  
+
+  var showBox = function(type, title, message, buttons) {
+    if (!buttons) buttons = {
+      'ok': function() { AdamElliot.frameManager.closeFrame(); }
+    };
+
+    AdamElliot.TemplateManager.renderShared(type, {
+      'title': title,
+      'message': message
+    }, buttons);
+  };
+
+  Klass.showNotice = function(title, message, buttons) {
+    showBox('notice', title, message, buttons);
+  };
+
+  Klass.showError = function(title, message, buttons) {
+    showBox('error', title, message, buttons);
+  };
+
+  Klass.showUnsupported = function() {
+    AdamElliot.TemplateManager.renderShared('unsupported', {}, {
+      'ok': function() { AdamElliot.frameManager.closeFrame(); }
+    });
+  };
+
   // Define the shared templates. (Needs to be done post load)
   $(function() {
     sharedTemplates.error = $("#templates .shared .error").compile({
@@ -542,6 +577,8 @@ AdamElliot.TemplateManager = (function() {
     sharedTemplates.frame = $('#templates .shared .frame').compile({
       '.block': 'block'
     });
+
+    sharedTemplates.unsupported = $("#templates .shared .unsupported").compile();
   });
 
   return Klass;
@@ -822,10 +859,8 @@ AdamElliot.ResourceController = (function() {
     
     this.remove = function(params) {
       var id = params[self.dataKey];
-      AdamElliot.TemplateManager.renderShared('notice', {
-        'title': "Confirm Delete",
-        'message': 'Are you sure you want to delete?'
-      }, {
+      AdamElliot.TemplateManager.showNotice("Confirm Delete",
+        'Are you sure you want to delete?', {
         'yes': function() { self.remoteRemove(id); },
         'no': function() { AdamElliot.frameManager.closeFrame(); }
       });

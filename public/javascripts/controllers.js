@@ -295,8 +295,14 @@ AdamElliot.ToysController = function() {
   this.beforeFrameDestroy = function(frame) {
     if (frame.toy) frame.toy.stop();
   };
-
+  
   this.show = function(params) {
+    if (!Modernizr.canvas) {
+      AdamElliot.TemplateManager.showUnsupported();
+      return;
+    }
+
+
     var toy = null;
     if (!(toy = _super.show(params))) return null;
 

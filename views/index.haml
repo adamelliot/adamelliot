@@ -56,6 +56,19 @@
       %h2.title Warning
       .message Are you sure you want to eat that?
 
+    .unsupported
+      %h2 Unsupported Feature!
+      %p Sorry, but it appears that the browser you are using doesn't support the canvas element, might I suggest you upgrade to a more modern browser what will improve your Internet experience?
+      %ul
+        %li
+          %a{:href => 'http://www.google.com/chrome/'} Chrome
+        %li
+          %a{:href => 'http://www.apple.com/safari/'} Safari
+        %li
+          %a{:href => 'http://getfirefox.com'} Firefox
+        %li
+          %a{:href => 'http://www.opera.com/'} Opera
+
   .post.index
     .row
       .date
