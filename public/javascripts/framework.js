@@ -470,6 +470,7 @@ AdamElliot.FrameManager = (function() {
     };
 
     this.closeFrame = function(callback) {
+      if (!currentFrame) return;
       destroyFrame(function() {
         if (!popFrame(callback)) {
           clearRoute();
@@ -479,6 +480,7 @@ AdamElliot.FrameManager = (function() {
     };
 
     this.hideFrame = function(callback) {
+      if (!currentFrame) return;
       pushFrame(function() {
         AdamElliot.menu.moveToCenter();
       });

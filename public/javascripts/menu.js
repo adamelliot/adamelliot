@@ -76,8 +76,8 @@ AdamElliot.Menu = (function() {
     
     this.moveToCenter = function() {
       if (!atTop) return;
-      atTop = false;
       var h = ($(window).height() - 190) / 2;
+      atTop = false;
       collection.animate({
         top: "+=" + h
       }, 250);
