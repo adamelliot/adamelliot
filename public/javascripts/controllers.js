@@ -145,17 +145,17 @@ AdamElliot.PostsController = function() {
 
     var buttons = {};
 
+    if (this.getDataByIndex(post._index + 1))
+      buttons['older'] = "post/" + this.getDataByIndex(post._index + 1)[this.dataKey];
+    if (post._index > 0)
+      buttons['newer'] = "post/" + this.getDataByIndex(post._index - 1)[this.dataKey];
+
+    buttons['index'] = 'posts';
+
     if (AdamElliot.session.authenticated) {
       buttons['edit'] = 'post/update/' + post.id;
       buttons['delete'] = 'post/remove/' + post.id;
     }
-
-    buttons['index'] = 'posts';
-
-    if (post._index > 0)
-      buttons['next'] = "post/" + this.getDataByIndex(post._index - 1)[this.dataKey];
-    if (this.getDataByIndex(post._index + 1))
-      buttons['prev'] = "post/" + this.getDataByIndex(post._index + 1)[this.dataKey];
 
     var frame = this.render('show', post, buttons);
     frame.delegate = this;

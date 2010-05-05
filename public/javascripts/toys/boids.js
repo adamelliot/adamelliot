@@ -1,10 +1,15 @@
 AdamElliot.Toys.Boids = (function() {
   var stage;
-  const BOIDS = 60;
+  const BOIDS = 50;
 
   var Boid = function(x, y) {
     CanvasObject.Path.call(this);
     CanvasObject.Geometry.Point.call(this);
+
+    var color = CanvasObject.Color.random(1.0);
+    color.r(240);
+    color.green >>= 1;
+    color.blue >>= 1;
 
     this.vector = new CanvasObject.Geometry.Vector;//(Math.random() - 0.5, Math.random() - 0.5);
     this.vector.multiply(3);
@@ -13,7 +18,7 @@ AdamElliot.Toys.Boids = (function() {
     this.y = y || this.y;
 
     var path = function() {
-      this.fillStyle = CanvasObject.Color.randomGrey(0.8).toString();
+      this.fillStyle = color.toString();
 
       this.beginPath();
 //      this.arc(0, 0, 25, 0, 2 * Math.PI);
@@ -99,12 +104,13 @@ AdamElliot.Toys.Boids = (function() {
     AdamElliot.Toy.call(this, frame);
     stage = this;
 
-    this.resize(490, 300);
+    this.resize(490, 490);
     this.setUpdateMethod(true, true);
 
     var boids = [];
+    var totalBoids = BOIDS * ($.browser.mozilla ? 1 : 2);
 
-    for (var i = 0; i < BOIDS; i++) {
+    for (var i = 0; i < totalBoids; i++) {
       var boid = new Boid(stage.width() / 3, stage.height() / 2);
       var position = CanvasObject.Geometry.Vector.fromAngle(Math.PI * 2 * i / BOIDS);
       boid.x += position.x * 40;
@@ -115,9 +121,9 @@ AdamElliot.Toys.Boids = (function() {
     }
 
     this.enterFrame(function() {
-      for (var i = 0; i < BOIDS; i++) {
+      for (var i = 0; i < totalBoids; i++) {
         var flock = [];
-        for (var j = 0; j < BOIDS; j++) {
+        for (var j = 0; j < totalBoids; j++) {
           if (CanvasObject.Geometry.Point.distance(boids[i], boids[j]) < 60)
             flock.push(boids[j]);
         }

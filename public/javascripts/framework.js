@@ -861,8 +861,8 @@ AdamElliot.ResourceController = (function() {
       var id = params[self.dataKey];
       AdamElliot.TemplateManager.showNotice("Confirm Delete",
         'Are you sure you want to delete?', {
-        'yes': function() { self.remoteRemove(id); },
-        'no': function() { AdamElliot.frameManager.closeFrame(); }
+        'no': function() { AdamElliot.frameManager.closeFrame(); },
+        'yes': function() { self.remoteRemove(id); }
       });
     };
   };
