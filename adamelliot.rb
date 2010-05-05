@@ -6,4 +6,4 @@ Bundler.setup(:default, :development)
 require "nokogiri"
 require 'site'
 
-Site::Server.run! :environment => :production
+Site::Server.run! :environment => :development

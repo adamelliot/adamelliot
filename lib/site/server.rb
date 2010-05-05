@@ -13,7 +13,8 @@ module Site
     
     configure do
       enable :sessions
-      set :haml, {:format => :html5}
+      set :haml, {:format => :html5, :ugly => true}
+      set :sass, {:style => :compressed}
 
       Site::Javascripts::generate_scripts
 
@@ -26,12 +27,11 @@ module Site
         ENV['username'] = 'astro'
         ENV['password'] = 'bombastic'
       end
-      
-      
     end
 
     configure :production do
-      set :sass, {:style => :compact}
+      set :sass, {:style => :compressed}
+      set :haml, {:ugly => true}
     end
     
     helpers do
