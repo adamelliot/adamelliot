@@ -56,9 +56,30 @@ module Site
       content_type 'text/css', :charset => 'utf-8'
       sass :application
     end
+    
+    get '/ipad.css' do
+      content_type 'text/css', :charset => 'utf-8'
+      sass :ipad
+    end
+    
+    get '/iphone.css' do
+      content_type 'text/css', :charset => 'utf-8'
+      sass :iphone
+    end
+    
+    get '/simple.css' do
+      content_type 'text/css', :charset => 'utf-8'
+      sass :simpe
+    end
+    
+    get '/404.css' do
+      content_type 'text/css', :charset => 'utf-8'
+      sass :"404"
+    end
 
     not_found do
       "Not sure what you're looking for, but I don't think it's here..."
+      haml :"404", :layout => false
     end
 
     # Permalink mapper (via slug)
