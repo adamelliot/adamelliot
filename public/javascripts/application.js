@@ -5,6 +5,17 @@
  */
 
 window.AdamElliot = window.AdamElliot || {};
+AdamElliot.dev = true;
+
+AdamElliot.loadScripts = function(scripts, callback) {
+  if (!scripts instanceof Array) scripts = [scripts];
+
+  $.getScript(scripts.shift(), function() {
+    if (scripts.length > 1)
+      AdamElliot.loadScripts(scripts, callback);
+    else callback();
+  });
+};
 
 $(function() {
   // Show the application once we're loaded

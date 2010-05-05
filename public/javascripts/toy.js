@@ -14,7 +14,7 @@ AdamElliot.Toy = (function() {
     var self = this;
     var frame = _frame, buttons;
     var fps = _fps || 24;
-    if (frame)
+    if (frame && CanvasObject)
       CanvasObject.Stage.call(this, frame.getFrame().find("canvas")[0], fps);
     
     var initialize = function() {

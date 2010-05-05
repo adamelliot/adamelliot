@@ -15,6 +15,8 @@ module Site
       enable :sessions
       set :haml, {:format => :html5}
 
+      Site::Javascript.generate_scripts
+
       # Load configuration (just stores password for now)
       begin
         data = YAML.load_file('config/config.yml')

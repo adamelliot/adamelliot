@@ -3,7 +3,7 @@ AdamElliot.Toys.CircleFitting = (function() {
     '/images/circle_image_1.jpg',
     '/images/circle_image_2.jpg',
     '/images/circle_image_3.jpg'];
-  const WIDTH = 480;
+  const WIDTH = 490;
   const HEIGHT = 640;
   const STARTING_CIRCLES = 6;
   const MAX_CIRCLES = 2000;
@@ -73,7 +73,6 @@ AdamElliot.Toys.CircleFitting = (function() {
       } while (circleCollides(pt) && maxTries-- > 0);
       if (maxTries == 0) return;
       if (circles.length >= MAX_CIRCLES) {
-        console.log("Done.");
         this.stop();
         return;
       }
