@@ -326,8 +326,9 @@ AdamElliot.ToysController.prototype = new AdamElliot.ResourceController;
  */
 AdamElliot.SessionController = (function() {
   var Klass = function() {
-    var _super = new AdamElliot.ResourceController("session", this);
-    $.extend(this, _super);
+    var self = this;
+    AdamElliot.ResourceController.call(this, "session");
+    var _super = $.extend({}, this);
 
     this.dataKey = 'username';
 
@@ -360,6 +361,7 @@ AdamElliot.SessionController = (function() {
 
     this.index();
   };
+  Klass.prototype = new AdamElliot.ResourceController;
   
   AdamElliot.session = {
     authenticated: document.cookie.indexOf('authenticated=true') > -1
