@@ -49,6 +49,12 @@ module Site
     # General Routes
 
     get '/' do
+      # Check to see if it's crappy version of IE or an iPhone and send them
+      # to the right place
+      redirect '/simple' if request.env["HTTP_USER_AGENT"] =~ /iPhone/
+      redirect '/simple' if request.env["HTTP_USER_AGENT"] =~ /MSIE/ &&
+        !(request.env["HTTP_USER_AGENT"] =~ /MSIE (8|9)/)
+      
       haml :index
     end
 
@@ -69,7 +75,7 @@ module Site
     
     get '/simple.css' do
       content_type 'text/css', :charset => 'utf-8'
-      sass :simpe
+      sass :simple
     end
     
     get '/404.css' do
@@ -85,6 +91,17 @@ module Site
     # Permalink mapper (via slug)
     get '/permalink?:type=:slug' do |type, slug|
       
+    end
+    
+    # Simpler page for the iPhone or 
+    get %r{/simple(/\w+)?} do |id|
+      @post = id && Site::Models::Post.get(id) ||
+        Site::Models::Post.first({
+          :draft => false, 
+          :posted_on.lte => Date.today,
+          :order => [:posted_on]})
+
+      haml :simple, :layout => false
     end
 
     # Data routes

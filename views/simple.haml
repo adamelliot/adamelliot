@@ -1,0 +1,60 @@
+!!!
+%html{:xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "en", :lang => "en"}
+  %head
+    %title Adam Elliot
+    %link{:rel => 'stylesheet', :href => '/simple.css', :media => 'screen,projection'}
+    %link{:rel => 'stylesheet', :href => '/iphone.css', :media => "only screen and (max-device-width: 480px)"}
+
+    %meta{:name => "apple-mobile-web-app-capable", :content => "yes"}
+    %meta{:name => "apple-mobile-web-app-status-bar-style", :content => "black"}
+    %meta{:content => "initial-scale=1.0,user-scalable=no,maximum-scale=1.0,minimum-scale=1.0", :name => "viewport"}
+
+    %meta{:"http-equiv" => "X-UA-Compatible", :content => "chrome=1"}
+
+    %link{:rel => "openid.server", :href => "http://www.myopenid.com/server"}
+    %link{:rel => "openid.delegate", :href => "http://adamelliot.myopenid.com/"}
+
+    /%link{:rel => "alternate", :type => "application/rss+xml", :title => "Adam Elliot RSS Feed", :href => 'feed.rss'}
+
+    %meta{:"http-equiv" => "Content-Type", :content => "text/html; charset=utf-8" } 
+    %meta{:name => "keywords", :content => "ruby, javascript, poi, web, tech, iphone" } 
+    %meta{:name => "description", :content => "Sugar Plumps and Fire Stars" }  
+  %body
+    #social
+      %a{:href => 'http://twitter.com/adam_elliot'}
+        %img{:target => '_blank', :src => "/images/social/twitter.png", :alt => "Twitter"}
+      %a{:href => 'http://www.flickr.com/photos/30782515@N02/'}
+        %img{:target => '_blank', :src => "/images/social/flickr.png", :alt => "Flickr"}
+      %a{:href => 'http://www.facebook.com/adamelliot'}
+        %img{:target => '_blank', :src => "/images/social/facebook.png", :alt => "Facebook"}
+      %a{:href => 'http://www.youtube.com/user/astrobombastic'}
+        %img{:target => '_blank', :src => "/images/social/youtube.png", :alt => "YouTube"}
+      %a{:href => 'http://www.reddit.com/user/astro_bombastic/'}
+        %img{:target => '_blank', :src => "/images/social/reddit.png", :alt => "reddit.com"}
+      %a{:href => 'http://www.last.fm/user/adamelliot'}
+        %img{:target => '_blank', :src => "/images/social/lastfm.png", :alt => "Last.fm"}
+      %a{:href => 'http://ca.linkedin.com/pub/adam-elliot/1/690/899'}
+        %img{:target => '_blank', :src => "/images/social/linkedin.png", :alt => "LinkedIn"}
+      /%img{:target => '_blank', :src => "/images/social/feed.png"}
+      %a{:href => 'mailto:adam@adamelliot.com?subject=Hello'}
+        %img{:target => '_blank', :src => "/images/social/email.png", :alt => "Email"}
+  
+    #title
+      adamelliot
+
+    #post
+      .date=@post.posted_on
+      %h1.title=@post.title
+      .body=@post.body
+      .comments.disqus_thread
+    
+
+    - if Site::Server.environment == :production
+      %script{:type => "text/javascript"}
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      %script{:type => "text/javascript"}
+        try {
+        var pageTracker = _gat._getTracker("UA-8838497-1");
+        pageTracker._trackPageview();
+        } catch(err) {}
