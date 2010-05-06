@@ -306,9 +306,13 @@ CanvasObject.Stage = (function() {
     noClearDraw = function() {
       self.drawInto(context);
     };
-    
-    clearDraw = function() {
+
+    this.clearFunc = function() {
       context.clearRect(0, 0, canvas.width, canvas.height);
+    };
+
+    clearDraw = function() {
+      self.clearFunc();
       self.drawInto(context);
     };
 

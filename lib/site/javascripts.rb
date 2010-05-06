@@ -2,7 +2,7 @@ require 'jsmin'
 
 module Site
   module Javascripts
-    APP_SCRIPTS = %w[inflection.js pure_packed.js modernizr-1.1.min.js jquery.tweet.js jquery.ba-hashchange.min.js framework.js menu.js toy.js controllers.js application.js]
+    APP_SCRIPTS = %w[inflection.js pure_packed.js modernizr-1.1.min.js jquery.tweet.js jquery.ba-hashchange.min.js framework.js menu.js toy.js pics.js controllers.js application.js]
     APP_SCRIPT = 'application.min.js'
     CANVAS_OBJECT_SCRIPTS = %w[canvas_object/color.js canvas_object/events.js canvas_object/geometry.js canvas_object/motion.js canvas_object/canvas_object.js]
     CANVAS_OBJECT_SCRIPT = 'canvas_object.min.js'

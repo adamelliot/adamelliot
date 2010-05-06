@@ -89,8 +89,17 @@ module Site
     end
 
     # Permalink mapper (via slug)
-    get '/permalink?:type=:slug' do |type, slug|
-      
+    get "/permalink/:type/:slug" do |type, slug|
+      type.downcase!
+      type = type.singularize
+
+      begin
+        model = Site::Models.const_get(type.classify).first(:slug => slug)
+        raise Sinatra::NotFound if model.nil?
+        redirect "/\##{type}/#{model.id}"
+      rescue
+        raise Sinatra::NotFound
+      end
     end
     
     # Simpler page for the iPhone or 

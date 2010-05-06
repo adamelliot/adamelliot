@@ -233,7 +233,7 @@ AdamElliot.ToysController = function() {
     'input[name=title]@value': 'title',
     'input[name=javascript]@value': 'javascript',
     'input[name=tags]@value': 'tags',
-    'textarea[name=description]': 'description',
+    'textarea[name=markdown]': 'markdown',
     'select[name=posted_on_month]@value': function(arg) {
       return arg.context && arg.context['posted_on'] ?
         arg.context['posted_on'].getMonth() :
@@ -301,7 +301,6 @@ AdamElliot.ToysController = function() {
       AdamElliot.TemplateManager.showUnsupported();
       return;
     }
-
 
     var toy = null;
     if (!(toy = _super.show(params))) return null;
@@ -391,10 +390,23 @@ AdamElliot.GeneralController = (function() {
     this.bio = function() {
       this.render('bio');
     };
-    
+
+    this.beforeFrameHide = this.beforeFrameDestroy = function(frame) {
+      if (frame.pics) frame.pics.stop();
+    };
+
     this.pics = function() {
-      this.render('pics');
-      // http://api.flickr.com/services/feeds/photos_public.gne?id=30782515@N02&format=json
+      if (!Modernizr.canvas) {
+        AdamElliot.TemplateManager.showUnsupported();
+        return;
+      }
+
+      var frame = this.render('pics');
+      frame.delegate = this;
+
+      AdamElliot.Toy.loadCanvasObject(function() {
+        frame.pics = new AdamElliot.Pics(frame);
+      });
     }
   };
   Klass.prototype = AdamElliot.Controller;
