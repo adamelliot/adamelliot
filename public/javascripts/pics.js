@@ -6,19 +6,19 @@
 window.AdamElliot = window.AdamElliot || {};
 
 AdamElliot.Pics = (function() {
-  const FLICKR_PATH = "http://api.flickr.com/services/feeds/photos_public.gne?id=30782515@N02&format=json&jsoncallback=?";
-  const FRAME_DELAY = 317;
+  var FLICKR_PATH = "http://api.flickr.com/services/feeds/photos_public.gne?id=30782515@N02&format=json&jsoncallback=?";
+  var FRAME_DELAY = 317;
 
   var Picture = function(path) {
     var self = this;
     CanvasObject.Path.call(this);
 
-    const SIZE = 180;
-    const SUB_SIZE = 30;
-    const SUB_SIZE_2 = SUB_SIZE / 2;
-    const COLS = (SIZE / SUB_SIZE)
-    const SECTIONS = COLS * COLS;
-    const PIXEL_BORDER = 6;
+    var SIZE = 180;
+    var SUB_SIZE = 30;
+    var SUB_SIZE_2 = SUB_SIZE / 2;
+    var COLS = (SIZE / SUB_SIZE);
+    var SECTIONS = COLS * COLS;
+    var PIXEL_BORDER = 6;
 
     var offsetX = 0, offsetY = 0;
     var bitmap;
