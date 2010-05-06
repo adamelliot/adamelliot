@@ -353,7 +353,7 @@ CanvasObject.Stage = (function() {
 
       var ms = 1000 / (fps = value);
       interval = setInterval(function() { self.trigger('enterFrame'); }, ms);
-    }
+    };
 
     this.width = function() { return canvas.width; };
     this.height = function() { return canvas.height; };

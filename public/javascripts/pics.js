@@ -71,7 +71,7 @@ AdamElliot.Pics = (function() {
     var frame = _frame, buttons;
     CanvasObject.Stage.call(this, frame.getFrame().find("canvas")[0], 30);
     
-    var images = [], imageIndex = 0,
+    var images = [], imageIndex = 0;
     var pictures = [], pictureIndex = 0;
     var frameDelay = FRAME_DELAY;
     var order = [0, 1, 2, 3, 4, 5, 6, 7, 8];
@@ -109,14 +109,14 @@ AdamElliot.Pics = (function() {
         var initialPics = 9, i = 0;
         var func;
         self.enterFrame(func = function() {
-          if ((i++ % 16) == 0) {
+          if ((i++ % 16) === 0) {
             addPicture();
             if (initialPics-- <= 0) this.removeHandler('enterFrame', func);
           }
         });
 
         self.enterFrame(function() {
-          if (frameDelay == 0) {
+          if (frameDelay === 0) {
             addPicture();
             frameDelay = FRAME_DELAY;
           }
