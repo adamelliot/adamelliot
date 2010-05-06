@@ -64,7 +64,6 @@ AdamElliot.Pics = (function() {
       });
     });
   };
-  Picture.prototype = new CanvasObject.Path;
 
   var Klass = function(_frame) {
     var self = this;
