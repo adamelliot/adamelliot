@@ -173,6 +173,7 @@ module Site
       params.delete("id")
       params[:draft] = params[:draft] == "on" ? true : false
       params[:closed] = params[:closed] == "on" ? true : false
+      params[:description] = brighten(params[:markdown])
       params[:slug] = params[:title]
       @toy = Site::Models::Toy.new(params)
       halt 400, "Something went wrong..." unless @toy.save
@@ -184,6 +185,7 @@ module Site
       params.delete("id")
       params[:draft] = params[:draft] == "on" ? true : false
       params[:closed] = params[:closed] == "on" ? true : false
+      params[:description] = brighten(params[:markdown])
       params.delete('slug')
       @toy = Site::Models::Toy.get(id)
       @toy.attributes = params

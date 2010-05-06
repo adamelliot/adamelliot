@@ -382,13 +382,22 @@ AdamElliot.SessionController = (function() {
  */
 AdamElliot.GeneralController = (function() {
   var Klass = function() {
+    var self = this;
+    AdamElliot.ResourceController.call(this, "general");
+
+    this.templateManager.defineTemplate('bio');
+    this.templateManager.defineTemplate('pics');
+
     this.bio = function() {
+      this.render('bio');
     };
     
     this.pics = function() {
+      this.render('pics');
       // http://api.flickr.com/services/feeds/photos_public.gne?id=30782515@N02&format=json
     }
   };
+  Klass.prototype = AdamElliot.Controller;
 
   return Klass;
 })();

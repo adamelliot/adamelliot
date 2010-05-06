@@ -24,6 +24,9 @@ AdamElliot.Toys.CircleFitting = (function() {
     };
 
     this.intersectsWith = function(circle) {
+      var d = (this.radius + circle.radius - 0.8);
+      if (d < Math.abs(this.x - circle.x) || d < Math.abs(this.y - circle.y))
+        return false;
       return Math.floor(this.distanceTo(circle)) < (this.radius + circle.radius - 0.8);
     };
 

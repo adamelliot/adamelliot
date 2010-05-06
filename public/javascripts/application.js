@@ -31,6 +31,10 @@ $(function() {
   AdamElliot.router.resource("post", new AdamElliot.PostsController);
   AdamElliot.router.resource("toy", new AdamElliot.ToysController);
 
+  var generalController = new AdamElliot.GeneralController;
+  AdamElliot.router.map("bio", generalController);
+  AdamElliot.router.map("pics", generalController);
+
   AdamElliot.frameManager = new AdamElliot.FrameManager;
 
   AdamElliot.menu = new AdamElliot.Menu;

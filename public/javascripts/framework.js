@@ -60,6 +60,7 @@ AdamElliot.Router = (function() {
 
     // Creates static mappings.
     this.map = function(path, controller, action) {
+      action = action || controller[path];
       mappings[path] = {controller:controller, action:action};
     };
     
@@ -714,7 +715,6 @@ AdamElliot.ResourceController = (function() {
           if (self.afterData) self.afterData(data);
         },
         error: function(a, b, c) {
-          console.log("Remote Index Bad", a, b, c);
           if (self.failedData) self.failedData();
         }
       });

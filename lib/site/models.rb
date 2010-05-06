@@ -35,6 +35,7 @@ module Site
       property :id,           Serial
       property :title,        String
       property :slug,         Slug
+      property :markdown,     Text
       property :description,  Text
       property :javascript,   String
       property :url,          String
