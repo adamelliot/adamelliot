@@ -6,7 +6,7 @@ module Site
     APP_SCRIPT = 'application.min.js'
     CANVAS_OBJECT_SCRIPTS = %w[canvas_object/color.js canvas_object/events.js canvas_object/geometry.js canvas_object/motion.js canvas_object/canvas_object.js]
     CANVAS_OBJECT_SCRIPT = 'canvas_object.min.js'
-    JSMIN = true
+    JSMIN = false
 
     JS_DIR = "#{APP_ROOT}/public/javascripts"
 
