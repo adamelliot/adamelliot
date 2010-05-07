@@ -8,14 +8,14 @@ window.AdamElliot = window.AdamElliot || {};
 AdamElliot.Pics = (function() {
   var FLICKR_PATH = "http://api.flickr.com/services/feeds/photos_public.gne?id=30782515@N02&format=json&jsoncallback=?";
   var FRAME_RATE = 20;
-  var FRAME_DELAY = Math.floor(FRAME_RATE * 7.6);
+  var FRAME_DELAY = Math.floor(FRAME_RATE * 9.6);
   var SIZE = 180;
 
   var Picture = function(path) {
     var self = this;
     CanvasObject.Path.call(this);
 
-    var SUB_SIZE = [15, 20, 30, 36][Math.floor(Math.random() * 4)];
+    var SUB_SIZE = [20, 30, 36, 45][Math.floor(Math.random() * 4)];
     var SUB_SIZE_2 = SUB_SIZE / 2;
     var COLS = (SIZE / SUB_SIZE);
     var SECTIONS = COLS * COLS;
