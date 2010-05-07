@@ -102,9 +102,10 @@ AdamElliot.Pics = (function() {
   var Klass = function(_frame) {
     var self = this;
     var frame = _frame, buttons;
-    CanvasObject.Stage.call(this, frame.getFrame().find("canvas")[0], FRAME_RATE);
+    var canvas = frame.getFrame().find("canvas");
+    CanvasObject.Stage.call(this, canvas[0], FRAME_RATE);
     
-    var images = [], imageIndex = 0;
+    var images, imageIndex = 0;
     var pictures = [], pictureIndex = 0;
     var frameDelay = FRAME_DELAY;
     var order = [0, 1, 2, 3, 4, 5, 6, 7, 8];
@@ -113,11 +114,23 @@ AdamElliot.Pics = (function() {
     this.resize(550, 550);
     this.setUpdateMethod(false, false);
 
+    canvas.click(function(event) {
+      var x = Math.floor(event.layerX / 184);
+      var y = Math.floor(event.layerY / 184);
+      var index = x + y * 3;
+
+      if (pictures[order.indexOf(index)])
+        window.open(pictures[order.indexOf(index)].url, "_blank");
+    });
+
     var addPicture = function() {
       if (pictures[pictureIndex]) self.removeChild(pictures[pictureIndex]);
 
-      var picture = new Picture(images[imageIndex++]);
+      var picture = new Picture(images[imageIndex].media.m);
+      picture.url = images[imageIndex].link;
       self.addChild(picture);
+      
+      imageIndex++;
 
       var index = order[pictureIndex];
 
@@ -138,9 +151,7 @@ AdamElliot.Pics = (function() {
       if (!frame) return;
 
       $.getJSON(FLICKR_PATH, function(data) {
-        for (var i = 0; i < data.items.length; i++) {
-          images.push(data.items[i].media.m);
-        }
+        images = data.items;
         images.sort(function() { return Math.random() - 0.5; });
 
         var initialPics = 9, i = 0;

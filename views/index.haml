@@ -92,7 +92,7 @@
       fire me an&nbsp;
       %a{:href => 'mailto:adam@adamelliot.com?subject=Hi%20Adam'}> email
       \.
-      %h1.thanks Thanks For Visiting!
+    %h1.thanks Thanks For Visiting!
     %img{:src => "/images/bubbles.jpg", :alt => 'Bubbles!', :align => 'right'}
     %h2 What Else?
     %p
@@ -141,6 +141,8 @@
   .post.show
     .date
     %h1.title
+    .permalink
+      %a{:href => '#'} permalink
     .body
     .comments.disqus_thread
 
@@ -178,6 +180,8 @@
     .date
     %h1.title
     %canvas{:width => 300, :height => 190}
+    .permalink
+      %a{:href => '#'} permalink
     .clear
     .comments.disqus_thread
 

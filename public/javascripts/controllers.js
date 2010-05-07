@@ -10,6 +10,8 @@ $("a[href*=comment-]").live('mousedown click', function() {
   return false;
 });
 
+window.disqus_developer = (location.hostname != "adamelliot.com") ? 1 : 0;
+
 /**
  * Resource posts controller.
  */
@@ -74,6 +76,9 @@ AdamElliot.PostsController = function() {
 
   this.templateManager.defineTemplate('show', {
     '.title': 'title',
+    '.permalink a@href': function(arg) {
+      return '/permalink/post/' + arg.context['slug'];
+    },
     '.body': 'body',
     '.date': function(arg) {
       return arg.context['posted_on'].toDateString();
@@ -125,8 +130,7 @@ AdamElliot.PostsController = function() {
 
     $("#disqus_thread").remove();
 
-    window.disqus_developer = 1;//(location.hostname != "adamelliot.com") ? 1 : 0;
-    window.disqus_url = location.href.split('#')[0] + 'permalink?post=' + post['slug'];
+    window.disqus_url = location.href.split('#')[0] + 'permalink/post/' + post['slug'];
     window.disqus_skip_auth = true;
     window.disqus_identifier = post['slug'];
 
@@ -223,6 +227,9 @@ AdamElliot.ToysController = function() {
 
   this.templateManager.defineTemplate('show', {
     '.title': 'title',
+    '.permalink a@href': function(arg) {
+      return '/permalink/toy/' + arg.context['slug'];
+    },
     '.date': function(arg) {
       return arg.context['posted_on'].toDateString();
     },
@@ -274,8 +281,7 @@ AdamElliot.ToysController = function() {
 
     $("#disqus_thread").remove();
 
-    window.disqus_developer = 1;// (location.hostname == "0.0.0.0") ? 1 : 0;
-    window.disqus_url = location.href.split('#')[0] + 'permalink?toy=' + toy['slug'];
+    window.disqus_url = location.href.split('#')[0] + 'permalink/toy/' + toy['slug'];
     window.disqus_skip_auth = true;
     window.disqus_identifier = toy['slug'];
 

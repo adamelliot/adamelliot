@@ -21,6 +21,7 @@ AdamElliot.Toys.Julia = (function() {
       imageData.data[i + 3] = 0xff;
     }
 
+    var RANGE_X = 2.0;
     var RANGE_Y = 2.0;
 
     var a = 0.5 - Math.random(), b = 0.5 - Math.random();
