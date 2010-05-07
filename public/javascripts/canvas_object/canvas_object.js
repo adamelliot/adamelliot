@@ -128,6 +128,13 @@ CanvasObject.Path = (function() {
         var command = METHODS[i];
         this[command] = function() {
           commands.push([command, arguments]);
+          return commands.length - 1;
+        };
+        this[command + 'At'] = function() {
+          // TODO: Creating a new array here maybe slow
+          var arr = Array.prototype.slice.call(arguments);
+          commands[arr.shift()] = [command, arr];
+          return commands.length - 1;
         };
       }).call(this);
     }
@@ -136,15 +143,18 @@ CanvasObject.Path = (function() {
     // be loaded easily and interact with the bounding regions.
 
     // ----- Commands that need to update the bounding box -----
+    // TODO: Add the "At" commands to the bounding fixes
 
     this.moveTo = function(x, y) {
       this.includePoint({x:x, y:y});
       commands.push(['moveTo', arguments]);
+      return commands.length - 1;
     };
 
     this.lineTo = function(x, y) {
       this.includePoint({x:x, y:y});
       commands.push(['lineTo', arguments]);
+      return commands.length - 1;
     };
 
     this.bezierCurveTo = function(px1, py1, px2, py2, x, y) {
@@ -152,18 +162,22 @@ CanvasObject.Path = (function() {
       this.includePoint({x:px2, y:py2});
       this.includePoint({x:x, y:y});
       commands.push(['bezierCurveTo', arguments]);
+      return commands.length - 1;
     };
 
     this.quadraticCurveTo = function(px, py, x, y) {
       this.includePoint({x:px, y:py});
       this.includePoint({x:x, y:y});
       commands.push(['quadraticCurveTo', arguments]);
+      return commands.length - 1;
     };
 
     // ----- End Commands -----
 
     // NOTE: Make getters
     this.commands = function() { return commands; };
+    // TODO: Need to add compressing commands that are now gone.
+    this.removeCommandAt = function(index) { commands[index] = null; };
 
     /**
      * Clears the command stack
@@ -188,7 +202,8 @@ CanvasObject.Path = (function() {
 
       var commands = this.commands();
       for (var j = 0; j < commands.length; j++)
-        context[commands[j][0]].apply(context, commands[j][1]);
+        if (commands[j])
+          context[commands[j][0]].apply(context, commands[j][1]);
 /*
       context.strokeStyle = CanvasObject.Color.red().toString();
       context.beginPath();

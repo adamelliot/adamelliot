@@ -1,6 +1,6 @@
 AdamElliot.Toys.Boids = (function() {
   var stage;
-  const BOIDS = 40;
+  var BOIDS = 40;
 
   var Boid = function(x, y) {
     CanvasObject.Path.call(this);

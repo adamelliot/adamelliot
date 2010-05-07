@@ -1,12 +1,12 @@
 AdamElliot.Toys.CircleFitting = (function() {
-  const IMAGES = [
+  var IMAGES = [
     '/images/circle_image_1.jpg',
     '/images/circle_image_2.jpg',
     '/images/circle_image_3.jpg'];
-  const WIDTH = 490;
-  const HEIGHT = 640;
-  const STARTING_CIRCLES = 6;
-  const MAX_CIRCLES = 2000;
+  var WIDTH = 490;
+  var HEIGHT = 640;
+  var STARTING_CIRCLES = 6;
+  var MAX_CIRCLES = 2000;
 
   var Circle = function(x, y, color) {
     CanvasObject.Path.call(this);

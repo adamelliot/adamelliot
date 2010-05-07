@@ -7,36 +7,42 @@ window.AdamElliot = window.AdamElliot || {};
 
 AdamElliot.Pics = (function() {
   var FLICKR_PATH = "http://api.flickr.com/services/feeds/photos_public.gne?id=30782515@N02&format=json&jsoncallback=?";
-  var FRAME_DELAY = 317;
+  var FRAME_RATE = 30;
+  var FRAME_DELAY = Math.floor(FRAME_RATE * 10.6);
+  var SIZE = 180;
 
   var Picture = function(path) {
     var self = this;
     CanvasObject.Path.call(this);
 
-    var SIZE = 180;
-    var SUB_SIZE = 30;
+    var SUB_SIZE = [10, 15, 20, 30][Math.floor(Math.random() * 4)];
     var SUB_SIZE_2 = SUB_SIZE / 2;
     var COLS = (SIZE / SUB_SIZE);
     var SECTIONS = COLS * COLS;
     var PIXEL_BORDER = 6;
+    var MAX_SCALES = 1 + Math.round(SECTIONS / 5);
+    var SCALE_FRAME_OFFSET = 1;
+    var DURATION = 3.0;
 
     var offsetX = 0, offsetY = 0;
     var bitmap;
 
-    var scaleStep = 0.25;
+    var scaleStep = (SECTIONS / (MAX_SCALES >> 1)) / DURATION / FRAME_RATE;
     var sectionScale = [];
     for (var i = 0; i < SECTIONS; i++) sectionScale[i] = 0;
 
-    var targetIndex = 0;
+    var startTargetIndex = 0, endTargetIndex = 0;
     var order = [];
     for (var i = 0; i < SECTIONS; i++) order[i] = i;
     order.sort(function() { return Math.random() - 0.5; });
 
+    this.fillStyle = 'black';
+
+    this.defineHook('finshedDisplay');
+
     var scaleSection = function(index) {
-      if (sectionScale[index] >= 1.0) {
-        targetIndex++;
-        return;
-      }
+      if (sectionScale[index] >= 1.0)
+        return false;
       sectionScale[index] += scaleStep;
       if (sectionScale[index] > 1.0) sectionScale[index] = 1.0;
 
@@ -47,8 +53,10 @@ AdamElliot.Pics = (function() {
       var ds = Math.min(SUB_SIZE, s + PIXEL_BORDER);
       var bp = (ds - s) / 2;
 
-      self.fillRect(x - bp, y - bp, ds, ds);
-      self.drawImage(bitmap.canvas(), x + offsetX, y + offsetY, s, s, x, y, s, s);
+      self.fillRectAt((index << 1) + 1, x - bp, y - bp, ds, ds);
+      self.drawImageAt((index << 1) + 2, bitmap.canvas(), x + offsetX, y + offsetY, s, s, x, y, s, s);
+
+      return true;
     };
 
     CanvasObject.Bitmap.withImage(path, function(_bitmap) {
@@ -57,10 +65,36 @@ AdamElliot.Pics = (function() {
       if (bitmap.width() > SIZE) offsetX = (bitmap.width() - SIZE) / 2;
       if (bitmap.height() > SIZE) offsetY = (bitmap.height() - SIZE) / 2;
 
-      var func;
+      var func, count = 0;
+      var fade = 0.0;
       self.enterFrame(func = function() {
-        scaleSection(order[targetIndex]);
-        if (targetIndex >= SECTIONS) self.removeHandler('enterFrame', func);
+        fade += 0.005;
+        self.fillStyle = 'rgba(0,0,0,' + fade + ')'; 
+        self.fillRectAt(0, 0, 0, SIZE, SIZE);
+
+//        self.context().fillStyle = 'rgba(0, 0, 0, 0.02)';
+//        self.context().fillRect(self.x, self.y, SIZE, SIZE);
+
+        var moveForward = !scaleSection(order[startTargetIndex]);
+        for (var i = startTargetIndex + 1; i < endTargetIndex; i++)
+          scaleSection(order[i]);
+
+        if (moveForward) {
+          startTargetIndex++;
+          endTargetIndex++;
+          endTargetIndex = Math.min(endTargetIndex, SECTIONS - 1);
+        }
+
+        if (count++ % SCALE_FRAME_OFFSET == 0 &&
+          (endTargetIndex - startTargetIndex) < MAX_SCALES) {
+          endTargetIndex++;
+          endTargetIndex = Math.min(endTargetIndex, SECTIONS - 1);
+        }
+
+        if (startTargetIndex >= SECTIONS) {
+          self.removeHandler('enterFrame', func);
+          self.trigger('finshedDisplay');
+        }
       });
     });
   };
@@ -68,7 +102,7 @@ AdamElliot.Pics = (function() {
   var Klass = function(_frame) {
     var self = this;
     var frame = _frame, buttons;
-    CanvasObject.Stage.call(this, frame.getFrame().find("canvas")[0], 30);
+    CanvasObject.Stage.call(this, frame.getFrame().find("canvas")[0], FRAME_RATE);
     
     var images = [], imageIndex = 0;
     var pictures = [], pictureIndex = 0;
@@ -77,7 +111,7 @@ AdamElliot.Pics = (function() {
     order.sort(function() { return Math.random() - 0.5; });
 
     this.resize(550, 550);
-    this.setUpdateMethod(true, false);
+    this.setUpdateMethod(false, false);
 
     var addPicture = function() {
       if (pictures[pictureIndex]) self.removeChild(pictures[pictureIndex]);
@@ -87,10 +121,14 @@ AdamElliot.Pics = (function() {
 
       var index = order[pictureIndex];
 
-      picture.x = (index % 3) * 185;
-      picture.y = Math.floor(index / 3) * 185;
+      picture.x = (index % 3) * (SIZE + 5);
+      picture.y = Math.floor(index / 3) * (SIZE + 5);
 
       pictures[pictureIndex++] = picture;
+      
+      picture.finshedDisplay(function() {
+        self.removeChild(picture);
+      });
 
       pictureIndex %= 9;
       imageIndex %= images.length;
@@ -108,9 +146,9 @@ AdamElliot.Pics = (function() {
         var initialPics = 9, i = 0;
         var func;
         self.enterFrame(func = function() {
-          if ((i++ % 16) === 0) {
+          if ((i++ % (FRAME_RATE >> 1)) === 0) {
             addPicture();
-            if (initialPics-- <= 0) this.removeHandler('enterFrame', func);
+            if (--initialPics <= 0) this.removeHandler('enterFrame', func);
           }
         });
 
