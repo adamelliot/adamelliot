@@ -7,22 +7,22 @@ window.AdamElliot = window.AdamElliot || {};
 
 AdamElliot.Pics = (function() {
   var FLICKR_PATH = "http://api.flickr.com/services/feeds/photos_public.gne?id=30782515@N02&format=json&jsoncallback=?";
-  var FRAME_RATE = 30;
-  var FRAME_DELAY = Math.floor(FRAME_RATE * 10.6);
+  var FRAME_RATE = 20;
+  var FRAME_DELAY = Math.floor(FRAME_RATE * 7.6);
   var SIZE = 180;
 
   var Picture = function(path) {
     var self = this;
     CanvasObject.Path.call(this);
 
-    var SUB_SIZE = [10, 15, 20, 30][Math.floor(Math.random() * 4)];
+    var SUB_SIZE = [15, 20, 30, 36][Math.floor(Math.random() * 4)];
     var SUB_SIZE_2 = SUB_SIZE / 2;
     var COLS = (SIZE / SUB_SIZE);
     var SECTIONS = COLS * COLS;
     var PIXEL_BORDER = 6;
     var MAX_SCALES = 1 + Math.round(SECTIONS / 5);
     var SCALE_FRAME_OFFSET = 1;
-    var DURATION = 3.0;
+    var DURATION = 2.7;
 
     var offsetX = 0, offsetY = 0;
     var bitmap;
@@ -146,7 +146,7 @@ AdamElliot.Pics = (function() {
         var initialPics = 9, i = 0;
         var func;
         self.enterFrame(func = function() {
-          if ((i++ % (FRAME_RATE >> 1)) === 0) {
+          if ((i++ % FRAME_RATE) === 0) {
             addPicture();
             if (--initialPics <= 0) this.removeHandler('enterFrame', func);
           }
