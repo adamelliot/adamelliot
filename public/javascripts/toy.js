@@ -39,8 +39,12 @@ AdamElliot.Toy = (function() {
     }
 
     $.getScript("/javascripts/canvas_object.min.js", function() {
-      Klass.prototype = new CanvasObject.Stage;
-      if (callback) callback();
+      var timer = setInterval(function() {
+        if (!window.CanvasObject) return;
+        clearInterval(timer);
+        Klass.prototype = new CanvasObject.Stage;
+        if (callback) callback();
+      }, 100);
     });
   };
 
