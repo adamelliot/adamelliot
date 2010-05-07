@@ -162,6 +162,7 @@ AdamElliot.PostsController = function() {
     }
 
     var frame = this.render('show', post, buttons);
+    frame.setToolbarButtons({'index': 'posts'});
     frame.delegate = this;
     if (!post['closed']) showCommentInBlock(post, frame.getFrame());
   };
@@ -321,6 +322,7 @@ AdamElliot.ToysController = function() {
     buttons['index'] = 'toys';
 
     var frame = this.render('show', toy, buttons);
+    frame.setToolbarButtons({'index': 'toys'});
     frame.delegate = this;
     if (!toy['closed']) showCommentInBlock(toy, frame.getFrame());
 

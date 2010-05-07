@@ -8,7 +8,7 @@ window.AdamElliot = window.AdamElliot || {};
 AdamElliot.Pics = (function() {
   var FLICKR_PATH = "http://api.flickr.com/services/feeds/photos_public.gne?id=30782515@N02&format=json&jsoncallback=?";
   var FRAME_RATE = 20;
-  var FRAME_DELAY = Math.floor(FRAME_RATE * 9.6);
+  var FRAME_DELAY = Math.floor(FRAME_RATE * 5.6);
   var SIZE = 180;
 
   var Picture = function(path) {
@@ -152,6 +152,7 @@ AdamElliot.Pics = (function() {
 
       $.getJSON(FLICKR_PATH, function(data) {
         images = data.items;
+        console.log(data);
         images.sort(function() { return Math.random() - 0.5; });
 
         var initialPics = 9, i = 0;
