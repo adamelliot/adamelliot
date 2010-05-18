@@ -10,9 +10,14 @@ CanvasObject.Base = (function() {
     CanvasObject.Geometry.Rectangle.call(this);
 
     var parent;
+    // State variables
+    this.x = 0;
+    this.y = 0;
+    this.rotation = 0;
+    this.scale = 1.0;
 
     this.defineHook('enterFrame');
-    this.defineHook('onRemove');
+    this.defineHook('afterRemove');
 
     // Place holder function.
     this.draw = function() {};
@@ -21,6 +26,19 @@ CanvasObject.Base = (function() {
     this.setParent = function(value) { parent = value; };
     this.parent = function() { return parent; };
     this.context = function() { return null; };
+    
+    this.remove = function() {
+      if (parent) {
+        parent.removeChild(this);
+        this.trigger('afterRemove');
+      }
+    };
+    
+    this.applyTransform = function(context) {
+      context.translate(this.x, this.y);
+      context.rotate(this.rotation);
+      context.scale(this.scale, this.scale);
+    };
   };
   Klass.prototype = new CanvasObject.Events.EventListener;
 
@@ -117,11 +135,6 @@ CanvasObject.Path = (function() {
 
     var commands = [];
 
-    // State variables
-    this.x = 0;
-    this.y = 0;
-    this.rotation = 0;
-
     // Setup the mappings for the methods that get called on the context
     for (var i = 0; i < METHODS.length; i++) {
       (function() {
@@ -184,8 +197,6 @@ CanvasObject.Path = (function() {
      */
     this.clear = function() { commands = []; };
 
-    this.remove = function() { this.trigger('onRemove'); };
-
     /**
      * Returns this object drawn into a Bitmap
      */
@@ -204,36 +215,15 @@ CanvasObject.Path = (function() {
       for (var j = 0; j < commands.length; j++)
         if (commands[j])
           context[commands[j][0]].apply(context, commands[j][1]);
-/*
-      context.strokeStyle = CanvasObject.Color.red().toString();
-      context.beginPath();
-      context.strokeRect(
-        Math.round(this.left) + 0.5,
-        Math.round(this.top) + 0.5,
-        Math.round(this.width()),
-        Math.round(this.height()));
-      context.closePath();
-*/
-      context.restore();
-/*
-      var rect = CanvasObject.Geometry.Rectangle.fromRotated(this, this.rotation);
-      context.strokeStyle = CanvasObject.Color.red().toString();
-      context.beginPath();
-      context.strokeRect(
-        Math.round(rect.left + this.x) + 0.5,
-        Math.round(rect.top + this.y) + 0.5,
-        Math.round(rect.width()),
-        Math.round(rect.height()));
-      context.closePath();*/
 
+      context.restore();
     };
 
     /**
      * Set the context to the relevant state for drawing this object.
      */
     this.applyState = function(context) {
-      context.translate(this.x, this.y);
-      context.rotate(this.rotation);
+      this.applyTransform(context);
 
       for (var i = 0; i < PROPS.length; i++) {
         if (this[PROPS[i]])
@@ -283,8 +273,11 @@ CanvasObject.Container = (function() {
      * Draws this object into a specified context.
      */
     this.drawInto = function(context) {
+      context.save();
+      this.applyTransform(context);
       for (var i = 0; i < children.length; i++)
         children[i].drawInto(context);
+      context.restore();
     }
   };
   Klass.prototype = new CanvasObject.Base;
@@ -299,6 +292,7 @@ CanvasObject.Container = (function() {
 CanvasObject.Stage = (function() {
   var Klass = function(target, _fps) {
     var self = this;
+    var origin = new CanvasObject.Geometry.Point(0, 0);
     CanvasObject.Container.call(this);
 
     var interval, fps, currentFps = 0, canvas, context;
@@ -323,7 +317,7 @@ CanvasObject.Stage = (function() {
     };
 
     this.clearFunc = function() {
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(-origin.x, -origin.y, canvas.width, canvas.height);
     };
 
     clearDraw = function() {
@@ -358,6 +352,17 @@ CanvasObject.Stage = (function() {
       else this.enterFrame(drawFunc = noClearDraw);
 
       if (calcFps) this.enterFrame(updateFps);
+    };
+    
+    /**
+     * Sets the center point for this stage. Default is top left.
+     */
+    this.setOrigin = function(_origin) {
+      if (typeof _origin == 'number')
+        _origin = new CanvasObject.Geometry.Point(arguments[0], arguments[1]);
+
+      origin = _origin;
+      context.translate(origin.x, origin.y);
     };
 
     /**

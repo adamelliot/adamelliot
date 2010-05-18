@@ -11,22 +11,22 @@ CanvasObject.Color = (function() {
     this.alpha    = a || (isNaN(a) && 1.0);
     
     this.r = function(val) {
-      this.red = val;
+      this.red = parseInt(val);
       return this;
     };
 
     this.g = function(val) {
-      this.green = val;
+      this.green = parseInt(val);
       return this;
     }
 
     this.b = function(val) {
-      this.blue = val;
+      this.blue = parseInt(val);
       return this;
     }
 
     this.a = function(val) {
-      this.alpha = val;
+      this.alpha = parseFloat(val);
       return this;
     }
   };

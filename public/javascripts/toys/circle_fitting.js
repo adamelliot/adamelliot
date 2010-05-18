@@ -46,13 +46,18 @@ AdamElliot.Toys.CircleFitting = (function() {
     AdamElliot.Toy.call(this, frame, 30);
     this.resize(WIDTH, HEIGHT);
     this.setUpdateMethod(false, true);
+    
+    var canvas = frame.getFrame().find("canvas");
 
+    canvas.click(function(event) {
+      addCircle.call(self, new CanvasObject.Geometry.Point(event.offsetX, event.offsetY));
+    });
 
     var image, imageData;
     var circles = [];
     var activeCircles = [];
 
-    frame.getFrame().find("canvas").css("backgroundColor", "black");
+    canvas.css("backgroundColor", "black");
 
     var circleCollides = function(circle) {
       for (var i = 0; i < circles.length; i++)
@@ -67,13 +72,13 @@ AdamElliot.Toys.CircleFitting = (function() {
       return Math.random();
     };
 
-    var addCircle = function() {
-      var pt;
+    var addCircle = function(_pt) {
+      var pt = _pt || CanvasObject.Geometry.Point.random(WIDTH, HEIGHT);
       var maxTries = 30;
-      do {
+      while (circleCollides(pt) && maxTries-- > 0) {
         pt = CanvasObject.Geometry.Point.random(WIDTH, HEIGHT);
-        pt.radius = 0;
-      } while (circleCollides(pt) && maxTries-- > 0);
+        pt.radius = 0.5;
+      }
       if (maxTries == 0) return;
       if (circles.length >= MAX_CIRCLES) {
         this.stop();
@@ -86,7 +91,7 @@ AdamElliot.Toys.CircleFitting = (function() {
         imageData.data[offset + 0],
         imageData.data[offset + 1],
         imageData.data[offset + 2],
-        chooseAlpha()
+        1.0//chooseAlpha()
       ).toString();
 
       var circle = new Circle(pt.x, pt.y, color);

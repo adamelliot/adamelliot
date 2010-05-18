@@ -72,9 +72,6 @@ AdamElliot.Pics = (function() {
         self.fillStyle = 'rgba(0,0,0,' + fade + ')'; 
         self.fillRectAt(0, 0, 0, SIZE, SIZE);
 
-//        self.context().fillStyle = 'rgba(0, 0, 0, 0.02)';
-//        self.context().fillRect(self.x, self.y, SIZE, SIZE);
-
         var moveForward = !scaleSection(order[startTargetIndex]);
         for (var i = startTargetIndex + 1; i < endTargetIndex; i++)
           scaleSection(order[i]);
@@ -115,8 +112,8 @@ AdamElliot.Pics = (function() {
     this.setUpdateMethod(false, false);
 
     canvas.click(function(event) {
-      var x = Math.floor(event.layerX / 184);
-      var y = Math.floor(event.layerY / 184);
+      var x = Math.floor(event.offsetX / 184);
+      var y = Math.floor(event.offsetY / 184);
       var index = x + y * 3;
 
       if (pictures[order.indexOf(index)])
