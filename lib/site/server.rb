@@ -4,7 +4,10 @@ require 'sass'
 require 'active_support'
 require 'yaml'
 require 'net/http'
-require 'datamapper'
+
+include 'resource_mapper'
+
+include Application::Models
 
 module Site
   class Server < Sinatra::Base
@@ -116,6 +119,16 @@ module Site
     # Data routes
 
     # Post resource routes
+
+    def brighten(markdown, theme = 'idle')
+      Net::HTTP.post_form(URI.parse("http://brightly.warptube.com/brighten"), {:markdown => markdown, :theme => theme}).body
+    end
+
+    resource Post do
+      create.before do
+        
+      end
+    end
 
     get '/posts.json' do
       options = session[:authenticated] ? {} : {:draft => false, :posted_on.lte => Date.today}
