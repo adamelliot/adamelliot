@@ -1,2 +1,2 @@
-describe Site::Models do
+describe Application::Models do
 end

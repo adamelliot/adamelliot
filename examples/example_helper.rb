@@ -3,11 +3,13 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'rubygems'
 require 'micronaut'
-require 'site'
+require 'application'
 require 'rack/test'
 require 'factory_girl'
 
 require File.expand_path(File.dirname(__FILE__)) + '/factories'
+
+include Application::Models
 
 def not_in_editor?
   !(ENV.has_key?('TM_MODE') || ENV.has_key?('EMACS') || ENV.has_key?('VIM'))
@@ -20,7 +22,7 @@ Micronaut.configure do |configure|
   configure.include Rack::Test::Methods
 
   def app
-    Rack::Lint.new(Site::Server.new)
+    Rack::Lint.new(Application::Server.new)
   end
 end
 

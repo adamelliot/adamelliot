@@ -4,6 +4,6 @@ require "rubygems"
 require "bundler"
 Bundler.setup
 require "nokogiri"
-require 'site'
+require 'application'
 
-run Site::Server
+run Application::Server

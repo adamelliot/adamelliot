@@ -2,7 +2,7 @@ $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 
 require 'rubygems'
 require 'rake'
-require 'site'
+require 'application'
 
 begin
   require 'micronaut/rake_task'
@@ -57,15 +57,6 @@ begin
 rescue LoadError
   task :yardoc do
     abort "YARD is not available. In order to run yardoc, you must: sudo gem install yard"
-  end
-end
-
-namespace :db do
-  desc "Auto migrates the data model"
-  task :auto_migrate do
-    include Site::Models
-
-    DataMapper.auto_migrate!
   end
 end
 

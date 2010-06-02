@@ -25,14 +25,14 @@
 
     %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"}
 
-    - if Site::Server.environment == :development
+    - if Application::Server.environment == :development
       %script{:src => "/javascripts/canvas_object/color.js"}
       %script{:src => "/javascripts/canvas_object/events.js"}
       %script{:src => "/javascripts/canvas_object/geometry.js"}
       %script{:src => "/javascripts/canvas_object/motion.js"}
       %script{:src => "/javascripts/canvas_object/canvas_object.js"}
 
-    - if Site::Server.environment == :development
+    - if Application::Server.environment == :development
       %script{:src => "/javascripts/inflection.js"}
       %script{:src => "/javascripts/pure_packed.js"}
       %script{:src => "/javascripts/modernizr-1.1.min.js"}
@@ -48,7 +48,7 @@
     - else
       %script{:src => "/javascripts/application.min.js"}
 
-    - if Site::Server.environment == :production
+    - if Application::Server.environment == :production
       %script{:type => "text/javascript"}
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
         document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
