@@ -37,7 +37,7 @@ describe Application::Server do
         last_response.body.should_not =~ /#{post.id}/
       end
 
-      it "prevents posting" do
+      it "prevents posting post" do
         post '/post', {:post => {:no_data => ""}}
         last_response.status.should == 401
       end
@@ -72,6 +72,67 @@ describe Application::Server do
         last_response.should be_ok
         last_response.body.should =~ /New post text/
         Post.all.count.should == len
+      end
+    end
+  end
+
+  describe "Toy resrouce" do
+    before :each do
+      Toy.delete_all
+    end
+
+    describe "not authenticated" do
+      it "returns a listing of toys" do
+        Factory.create(:toy)
+        Factory.create(:toy)
+        get '/toys'
+        last_response.should be_ok
+        last_response.body.should =~ /a-toy-1/
+        last_response.body.should =~ /a-toy-2/
+      end
+
+      it "doesn't return the object id" do
+        toy = Factory.create(:toy)
+        get "/toy/#{toy.slug}"
+        last_response.should be_ok
+        last_response.body.should_not =~ /#{toy.id}/
+      end
+
+      it "prevents posting toy" do
+        post '/toy', {:toy => {:no_data => ""}}
+        last_response.status.should == 401
+      end
+
+      it "prevents updating toys" do
+        put '/toy/a-toy', {:toy => {:no_data => ""}}
+        last_response.status.should == 401
+      end
+
+      it "prevents deleting toys" do
+        delete '/toy/a-toy'
+        last_response.status.should == 401
+      end
+    end
+
+    describe "authenticated" do
+      before :each do
+        login
+      end
+
+      it "creates a new toy" do
+        len = Toy.all.count
+        post '/toy', {:toy => Factory.attributes_for(:toy)}
+        last_response.should be_ok
+        Toy.all.count.should == len + 1
+      end
+
+      it "updates an existing post" do
+        toy = Factory.create(:toy)
+        len = Toy.all.count
+        put "/toy/#{toy.slug}", {:toy => Factory.attributes_for(:toy, :markdown => 'New toy text')}
+        last_response.should be_ok
+        last_response.body.should =~ /New toy text/
+        Toy.all.count.should == len
       end
     end
   end

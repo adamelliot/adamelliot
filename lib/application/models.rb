@@ -23,7 +23,6 @@ module Application
       key :draft,      Boolean
       key :posted_on,  Date
       key :closed,     Boolean
-      key :closed_on,  Date
 
       timestamps!
 
@@ -54,7 +53,6 @@ module Application
       key :draft,      Boolean
       key :posted_on,  Date
       key :closed,     Boolean
-      key :closed_on,  Date
 
       timestamps!
 
