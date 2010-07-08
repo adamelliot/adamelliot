@@ -13,7 +13,6 @@
       background-image: url(/images/alpha-black-background.png)
     & > .close
       float: left
-
   & > .navbar
     text-align: right
     padding: 0 22px
@@ -24,10 +23,8 @@
       margin: 0 4px
       padding: 8px 10px
       background-image: url(/images/alpha-black-background.png)
-
   .block
     clear: both
-
   .frameChase
     position: absolute
     bottom: -120px
@@ -69,7 +66,7 @@
     margin-left: 8px
   img
     +rounded(3px)
-    border: 6px solid #333
+    border: 6px solid #333333
 
 .form
   +frame-content
@@ -80,15 +77,15 @@
 
 .post, .toy
   .date
-    text-shadow: 0px 1px 0px #000
+    text-shadow: 0px 1px 0px black
     float: right
-    color: #666
+    color: #666666
     font-size: 9pt
     padding: 1px 8px
   .permalink
     a
       font-size: 12pt
-      color: #fff
+      color: white
       float: right
       padding: 0px 8px
       &:hover
@@ -102,24 +99,24 @@
     cursor: pointer
     padding: 8px
     h1
-      :color #fb1258
+      color: #fb1258
   .row:hover
     h1
-      :color #04a5f6
+      color: #04a5f6
 
 .post.show
   +frame-content
   width: 600px
   font-size: 10pt
   .body
-    color: #fff
+    color: white
     pre
       +rounded
-      :overflow auto
-      :text-shadow none
-      :padding 6px
-      :max-width 588px
-      :font-size 8pt
+      overflow: auto
+      text-shadow: none
+      padding: 6px
+      max-width: 588px
+      font-size: 8pt
 
 .post.form
   width: 600px
@@ -139,23 +136,21 @@
     cursor: pointer
     padding: 8px
     h1
-      :color #fb1258
+      color: #fb1258
   .row:hover
     h1
-      :color #04a5f6
+      color: #04a5f6
 
 .toy.show
   +frame-content
   width: 500px
   font-size: 10pt
   .body
-    color: #fff
-
+    color: white
   canvas
     margin: 6px auto
-    background-color: #000
+    background-color: black
     display: block
-
   .controls
     font-family: Helvetica, Arial, sans-serif
     float: right
@@ -163,13 +158,13 @@
     .control
       cursor: pointer
       font-size: 16pt
-      color: #ddd
+      color: #dddddd
       width: 24px
       padding: 0 6px
       float: left
       text-align: center
       &:hover
-        color: #444
+        color: #444444
     .label
       margin-top: -4px
       font-size: 9pt

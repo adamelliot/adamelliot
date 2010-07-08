@@ -5,7 +5,7 @@ body
   background-attachment: fixed
   font-family: Helvetica, Arial, san-serif
   color: white
-  text-shadow: 0px 2px 0px #000
+  text-shadow: 0px 2px 0px black
   padding: 0
   margin: 0
 
@@ -23,24 +23,24 @@ img
   top: 0
 
 #title
-  :font-family "Gill Sans"
-  :margin 20px 0
-  :text-shadow 0px 2px 0px #000
-  :color #fff
-  :font-weight bold
+  font-family: "Gill Sans"
+  margin: 20px 0
+  text-shadow: 0px 2px 0px black
+  color: white
+  font-weight: bold
   text-align: center
   font-size: 64pt
   &:first-letter
-    :color #fb1258 !important
+    color: #fb1258 !important
 
 a
   font-family: "Gill Sans"
   text-decoration: none
   color: #fb1258
   &:first-letter
-    :color #fb1258
+    color: #fb1258
   &:hover
-    :color #04a5f6
+    color: #04a5f6
 
 h1, h2, h3, h4, h5, h6
   margin: 8px 0
@@ -56,17 +56,16 @@ h1, h2, h3, h4, h5, h6
   width: 600px
   font-size: 10pt
   .body
-    color: #fff
+    color: white
     pre
       +rounded
-      :overflow auto
-      :text-shadow none
-      :padding 6px
-      :max-width 588px
-      :font-size 8pt
-
+      overflow: auto
+      text-shadow: none
+      padding: 6px
+      max-width: 588px
+      font-size: 8pt
   .date
-    text-shadow: 0px 1px 0px #000
+    text-shadow: 0px 1px 0px black
     float: right
-    color: #666
+    color: #666666
     font-size: 9pt
