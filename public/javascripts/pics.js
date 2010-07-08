@@ -149,7 +149,6 @@ AdamElliot.Pics = (function() {
 
       $.getJSON(FLICKR_PATH, function(data) {
         images = data.items;
-        console.log(data);
         images.sort(function() { return Math.random() - 0.5; });
 
         var initialPics = 9, i = 0;

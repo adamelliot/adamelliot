@@ -124,7 +124,7 @@ AdamElliot.Router = (function() {
           break;
       }
 
-      if (id) params["id"] = id;
+      if (id) params[resource.dataKey] = id;
       action = resource[action];
       if (action) action.call(resource, params);
       else AdamElliot.frameManager.hideFrame();
@@ -666,6 +666,26 @@ AdamElliot.ResourceController = (function() {
     this.formHandler = function(data) { return data; };
     this.dataMangler = function(data) { return data; };
 
+    // This is kinda a hack function to get the form data into
+    // a format that is expected on the backend. It allows for simpler
+    // and cleaner forms as they are always scoped to the local form object.
+    this.scopedFormData = function(scope, data) {
+      if (!scope) return data;
+      var result = [];
+
+      for (var i = 0; i < data.length; i++) {
+        var o = data[i];
+        if (o.name.indexOf(scope + "[") != 0) {
+          result.push({
+            name: scope + '[' + o.name + ']',
+            value: o.value
+          });
+        }
+      }
+
+      return result;
+    };
+
     // TODO: Resorting every time is a crappy way of doing things
     var indexData = function() {
       dataIndex = [];
@@ -748,7 +768,7 @@ AdamElliot.ResourceController = (function() {
         return;
       }
       
-      data = self.formHandler(data);
+      data = self.scopedFormData(modelName, self.formHandler(data));
 
       $.ajax({
         url: '/' + modelName + '.json',
@@ -777,7 +797,7 @@ AdamElliot.ResourceController = (function() {
         return;
       }
 
-      data = self.formHandler(data);
+      data = self.scopedFormData(modelName, self.formHandler(data));
 
       $.ajax({
         url: '/' + modelName + '/' + id + '.json',

@@ -20,6 +20,7 @@ AdamElliot.PostsController = function() {
   AdamElliot.ResourceController.call(this, "post");
   var _super = $.extend({}, this);
 
+  this.dataKey = 'slug';
   this.dataOrderKey = 'posted_on';
   this.descendingOrder = true;
 
@@ -58,7 +59,7 @@ AdamElliot.PostsController = function() {
       'post<-posts': {
         '@data-route': function(arg) {
           var post = arg.item;
-          return 'post/' + post.id;
+          return 'post/' + post.slug;
         },
         '.title': 'post.title',
         '.date': function(arg) {
@@ -86,7 +87,7 @@ AdamElliot.PostsController = function() {
   });
 
   this.templateManager.defineTemplate('form', {
-    'input[name=id]@value': 'id',
+    'input[name=slug]@value': 'slug',
     'input[name=title]@value': 'title',
     'textarea[name=markdown]': 'markdown',
     'input[name=tags]@value': 'tags',
@@ -157,8 +158,8 @@ AdamElliot.PostsController = function() {
     buttons['index'] = 'posts';
 
     if (AdamElliot.session.authenticated) {
-      buttons['edit'] = 'post/update/' + post.id;
-      buttons['delete'] = 'post/remove/' + post.id;
+      buttons['edit'] = 'post/update/' + post.slug;
+      buttons['delete'] = 'post/remove/' + post.slug;
     }
 
     var frame = this.render('show', post, buttons);
@@ -177,6 +178,7 @@ AdamElliot.ToysController = function() {
   AdamElliot.ResourceController.call(this, "toys");
   var _super = $.extend({}, this);
 
+  this.dataKey = 'slug';
   this.dataOrderKey = 'posted_on';
   this.descendingOrder = true;
 
@@ -215,7 +217,7 @@ AdamElliot.ToysController = function() {
       'toy<-toys': {
         '@data-route': function(arg) {
           var toy = arg.item;
-          return 'toy/' + toy.id;
+          return 'toy/' + toy.slug;
         },
         '.title': 'toy.title',
         '.date': function(arg) {
@@ -237,7 +239,7 @@ AdamElliot.ToysController = function() {
   });
 
   this.templateManager.defineTemplate('form', {
-    'input[name=id]@value': 'id',
+    'input[name=slug]@value': 'slug',
     'input[name=title]@value': 'title',
     'input[name=javascript]@value': 'javascript',
     'input[name=tags]@value': 'tags',
@@ -315,8 +317,8 @@ AdamElliot.ToysController = function() {
     var buttons = {};
 
     if (AdamElliot.session.authenticated) {
-      buttons['edit'] = 'toy/update/' + toy.id;
-      buttons['delete'] = 'toy/remove/' + toy.id;
+      buttons['edit'] = 'toy/update/' + toy.slug;
+      buttons['delete'] = 'toy/remove/' + toy.slug;
     }
 
     buttons['index'] = 'toys';
@@ -347,22 +349,22 @@ AdamElliot.SessionController = (function() {
 
     this.templateManager.defineTemplate('form');
 
-    var enableAdmin = function() {
+    var enableAdmin = function(username) {
       AdamElliot.dashboard.showAdminPanel();
       if (AdamElliot.session.authenticated) return;
-      AdamElliot.session.authenticated = true;
+      AdamElliot.session.authenticated = username;
       AdamElliot.frameManager.closeFrame();
     };
     
     var disableAdmin = function() {
       AdamElliot.dashboard.hideAdminPanel();
       if (!AdamElliot.session.authenticated) return;
-      AdamElliot.session.authenticated = false;
+      AdamElliot.session.authenticated = null;
       AdamElliot.frameManager.closeAllFrames();
     };
 
-    var setAdminOnResponse = function(data) {
-      if (data && data.authenticated) enableAdmin();
+    var setAdminOnResponse = function(username, data) {
+      if (data && data.authenticated) enableAdmin(data.username);
       else disableAdmin();
     };
 
@@ -372,13 +374,13 @@ AdamElliot.SessionController = (function() {
       this.remoteRemove();
     };
 
-    this.index();
+    this.remoteShow(AdamElliot.session.authenticated);
   };
   Klass.prototype = new AdamElliot.ResourceController;
   
-  AdamElliot.session = {
-    authenticated: document.cookie.indexOf('authenticated=true') > -1
-  };
+  var match = document.cookie.match(/authenticated=(.*)(;|$)/);
+  var username = match && match[1];
+  AdamElliot.session = {authenticated: username};
 
   return Klass;
 })();

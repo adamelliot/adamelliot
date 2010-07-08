@@ -8,9 +8,9 @@ Factory.define(:post) do |post|
   post.body "*Post body*"
   post.tags "one two three"
 
-  post.draft true
-  post.posted_on Date.today
-  post.closed false
+  post.draft "on"
+  post.posted_on "Mon Jun 06 2010 04:22:42 GMT-0600 (MDT)"
+  post.closed nil
 end
 
 Factory.define(:toy) do |toy|
@@ -18,9 +18,9 @@ Factory.define(:toy) do |toy|
   toy.description "*Toy description*"
   toy.tags "one two three"
 
-  toy.draft true
-  toy.posted_on Date.today
-  toy.closed false
+  toy.draft "on"
+  toy.posted_on "Mon Jun 14 2010 04:22:42 GMT-0600 (MDT)"
+  toy.closed "on"
 end
 
 Factory.define(:session) do |session|

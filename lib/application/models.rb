@@ -9,6 +9,9 @@ require 'active_support/inflector'
 MongoMapper.connection = Mongo::Connection.new('localhost')
 MongoMapper.database = 'adamelliot'
 
+# Allow form value of on to be set to true
+MongoMapper::Extensions::Boolean::Mapping['on'] = true
+
 module Application
   module Models
     class Post

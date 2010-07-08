@@ -1,16 +1,13 @@
 source "http://rubygems.org"
 
 gem "sinatra"
-gem "nokogiri"
 gem "rack"
 gem "activesupport"
-gem "nokogiri"
 gem "haml"
 gem "jsmin"
 gem 'mongo_mapper'
 gem 'resource_mapper'
-gem 'bson_ext'
-gem 'json_pure'
+gem 'bson_ext', '= 1.0.1'
 
 group :development do
   gem "thin"
