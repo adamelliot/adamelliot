@@ -14,6 +14,33 @@ describe Application::Server do
   def logout
     delete "/session/#{ENV['username']}"
   end
+
+  describe "Stylesheets" do
+    it "returns application.css" do
+      get '/application.css'
+      last_response.should be_ok
+    end
+
+    it "returns ipad.css" do
+      get '/ipad.css'
+      last_response.should be_ok
+    end
+
+    it "returns iphone.css" do
+      get '/iphone.css'
+      last_response.should be_ok
+    end
+
+    it "returns simple.css" do
+      get '/simple.css'
+      last_response.should be_ok
+    end
+
+    it "returns 404.css" do
+      get '/404.css'
+      last_response.should be_ok
+    end
+  end
   
   describe "Post resrouce" do
     before :each do

@@ -71,7 +71,7 @@ module Application
       end
     end
 
-    sass_routes %w(application ipad iphone simple 404)
+    sass_routes *%w(application ipad iphone simple 404)
 
     not_found do
       haml :"404", :layout => false
