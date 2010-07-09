@@ -14,13 +14,11 @@ module Application
     
     enable :logging, :static
     set :root, APP_ROOT
-    
+
     configure do
       enable :sessions
       set :haml, {:format => :html5, :ugly => true}
       set :sass, {:style => :compressed}
-
-      Application::Javascripts::generate_scripts
 
       # Load configuration (just stores password for now)
       begin
@@ -151,123 +149,6 @@ module Application
         set_authenticated false
       end
     end
-
-#    get '/posts.json' do
-#      options = session[:authenticated] ? {} : {:draft => false, :posted_on.lte => Date.today}
-#      @posts = Application::Models::Post.all(options)
-#      @posts.to_json
-#    end
-#
-#    get '/post/:id.json' do |id|
-#      @post = Application::Models::Post.get(id)
-#      @post.to_json
-#    end
-#
-#    def brighten(markdown, theme = 'idle')
-#      Net::HTTP.post_form(URI.parse("http://brightly.warptube.com/brighten"), {:markdown => markdown, :theme => theme}).body
-#    end
-
-#    post '/post.json' do
-#      protected!
-#      params.delete("id")
-#      params[:draft] = params[:draft] == "on" ? true : false
-#      params[:closed] = params[:closed] == "on" ? true : false
-#      params[:body] = brighten(params[:markdown])
-#      params[:slug] = params[:title]
-#      @post = Application::Models::Post.new(params)
-#      halt 400, "Something went wrong..." unless @post.save
-#      @post.to_json
-#    end
-
-#    put '/post/:id.json' do |id|
-#      protected!
-#      params.delete("id")
-#      params[:draft] = params[:draft] == "on" ? true : false
-#      params[:closed] = params[:closed] == "on" ? true : false
-#      params[:body] = brighten(params[:markdown])
-#      params.delete('slug')
-#      @post = Application::Models::Post.get(id)
-#      @post.attributes = params
-#      halt 400, "Something went wrong..." unless @post.save
-#      @post.to_json
-#    end
-
-#    delete '/post/:id.json' do |id|
-#      protected!
-#      @post = Application::Models::Post.get(id)
-#      halt 404, "Nothing to delete." if @post.nil?
-#      halt 401, "Something went wrong..." unless @post.destroy
-#    end
-
-    # Toy Routes
-
-#    get '/toys.json' do
-#      options = session[:authenticated] ? {} : {:draft => false, :posted_on.lte => Date.today}
-#      @toys = Application::Models::Toy.all(options)
-#      @toys.to_json
-#    end
-#
-#    get '/toy/:id.json' do |id|
-#      @toy = Application::Models::Toy.get(id)
-#      @toy.to_json
-#    end
-#
-#    post '/toy.json' do
-#      protected!
-#      params.delete("id")
-#      params[:draft] = params[:draft] == "on" ? true : false
-#      params[:closed] = params[:closed] == "on" ? true : false
-#      params[:description] = brighten(params[:markdown])
-#      params[:slug] = params[:title]
-#      @toy = Application::Models::Toy.new(params)
-#      halt 400, "Something went wrong..." unless @toy.save
-#      @toy.to_json
-#    end
-#
-#    put '/toy/:id.json' do |id|
-#      protected!
-#      params.delete("id")
-#      params[:draft] = params[:draft] == "on" ? true : false
-#      params[:closed] = params[:closed] == "on" ? true : false
-#      params[:description] = brighten(params[:markdown])
-#      params.delete('slug')
-#      @toy = Application::Models::Toy.get(id)
-#      @toy.attributes = params
-#      halt 400, "Something went wrong..." unless @toy.save
-#      @toy.to_json
-#    end
-#
-#    delete '/toy/:id.json' do |id|
-#      protected!
-#      @toy = Application::Models::Toy.get(id)
-#      halt 404, "Nothing to delete." if @toy.nil?
-#      halt 401, "Something went wrong..." unless @toy.destroy
-#    end
-
-    # Session Routes
-
-#    get '/sessions.json' do
-#      session[:authenticated] ? '{"authenticated":"true", "username":"' + ENV['username'] + '"}' : "{}"
-#    end
-#
-#    post '/session.json' do
-#      halt 401, "Nope." unless ENV['username'] == params[:username] && ENV['password'] == params[:password]
-#      session[:authenticated] = true
-#      response.set_cookie("authenticated", {
-#        :value => true,
-#        :path => '/'
-#      })
-#      '{"authenticated":"true", "username":"' + ENV['username'] + '"}'
-#    end
-#    
-#    delete '/session/:id.json' do
-#      response.set_cookie("authenticated", {
-#        :value => false,
-#        :path => '/'
-#      })
-#      session[:authenticated] = false
-#    end
-    
 
   end
 end

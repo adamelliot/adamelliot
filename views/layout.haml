@@ -32,10 +32,9 @@
       %script{:src => "/javascripts/canvas_object/motion.js"}
       %script{:src => "/javascripts/canvas_object/canvas_object.js"}
 
-    - if Application::Server.environment == :development
       %script{:src => "/javascripts/inflection.js"}
       %script{:src => "/javascripts/pure_packed.js"}
-      %script{:src => "/javascripts/modernizr-1.5.min.js"}
+      %script{:src => "/javascripts/modernizr-1.1.min.js"}
       %script{:src => "/javascripts/jquery.tweet.js"}
       %script{:src => "/javascripts/jquery.ba-hashchange.min.js"}
 
@@ -46,7 +45,7 @@
       %script{:src => "/javascripts/controllers.js"}
       %script{:src => "/javascripts/application.js"}
     - else
-      %script{:src => "/javascripts/application.min.js"}
+      %script{:src => "/javascripts/app.js"}
 
     - if Application::Server.environment == :production
       %script{:type => "text/javascript"}

@@ -1,3 +1,9 @@
+
+//= require "color"
+//= require "events"
+//= require "geometry"
+//= require "motion"
+
 window.CanvasObject = window.CanvasObject || {};
 
 /**

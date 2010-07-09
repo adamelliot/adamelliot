@@ -61,3 +61,8 @@ rescue LoadError
 end
 
 task :default => :examples
+
+desc "Generate and install the Sprockets concatenated JavaScript file"
+task :install_javascripts do
+  Application::Javascripts::install_script
+end

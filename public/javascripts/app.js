@@ -1,3 +1,9 @@
+/**
+ * Application framework for adamelliot.com
+ *
+ * Uses jQuery and Pure. Backend is Sinatra and Datamapper, everything thin =)
+ */
+
 /*
 Copyright (c) 2007 Ryan Schuft (ryan.schuft@gmail.com)
 
@@ -77,7 +83,7 @@ THE SOFTWARE.
       renders a class name (camel cased singular noun) into a foreign key
       defaults to seperating the class from the id with an underbar unless
       you pass true
-      
+
     String.ordinalize() == String
       renders all numbers found in the string into their sequence like "22nd"
 */
@@ -105,7 +111,7 @@ if(!String.prototype.pluralize)String.prototype.pluralize=function(plural)
     var uncountable=false;
     for(var x=0;!uncountable&&x<this._uncountable_words.length;x++)
       uncountable=(this._uncountable_words[x]==str.toLowerCase());
-    if(!uncountable) 
+    if(!uncountable)
     {
       var matched=false;
       for(var x=0;!matched&&x<this._plural_rules.length;x++)
@@ -509,7 +515,6 @@ if(!String.prototype.ordinalize)
     return str;
   };
 
-
 /*!
     PURE Unobtrusive Rendering Engine for HTML
 
@@ -551,7 +556,7 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
  g.appendChild(b[A]("div"));a.attachEvent("onbeforeprint",function(){for(var f,k=b.getElementsByTagName("*"),l,q,x=new RegExp("^"+w+"$","i"),B=-1;++B<k.length;)if((f=k[B])&&(q=f.nodeName.match(x))){l=new RegExp("^\\s*<"+q+"(.*)\\/"+q+">\\s*$","i");g.innerHTML=f.outerHTML.replace(/\r|\n/g," ").replace(l,f.currentStyle.display=="block"?"<div$1/div>":"<span$1/span>");l=g.childNodes[0];l.className+=" iepp_"+q;l=p[p.length]=[f,l];f.parentNode.replaceChild(l[1],l[0])}h(b.styleSheets,"all")});a.attachEvent("onafterprint",
  function(){for(var f=-1,k;++f<p.length;)p[f][1].parentNode.replaceChild(p[f][0],p[f][1]);for(k in o)t[G].removeChild(o[k]);o={};p=[]})}(this,e);j._enableHTML5=true;j._version="1.5";s.className=s.className.replace(/\bno-js\b/,"")+" js";s.className+=" "+N.join(" ");return j}(this,this.document);
 (function($) {
- 
+
   $.fn.tweet = function(o){
     var s = {
       username: ["seaofclouds"],              // [string]   required, unless you want to display our tweets. :) it can be an array, just do ["username1","username2","etc"]
@@ -569,9 +574,9 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
       loading_text: null,                     // [string]   optional loading text, displayed while tweets load
       query: null                             // [string]   optional search query
     };
-    
+
     if(o) $.extend(s, o);
-    
+
     $.fn.extend({
       linkUrl: function() {
         var returning = [];
@@ -621,9 +626,6 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
     });
 
     function parse_date(date_str) {
-      // The non-search twitter APIs return inconsistently-formatted dates, which Date.parse
-      // cannot handle in IE. We therefore perform the following transformation:
-      // "Wed Apr 29 08:53:31 +0000 2009" => "Wed, Apr 29 2009 08:53:31 +0000"
       return Date.parse(date_str.replace(/^([a-z]{3})( [a-z]{3} \d\d?)(.*)( \d{4})$/i, '$1,$2$4$3'));
     }
 
@@ -673,7 +675,6 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
         if (s.intro_text) list.before(intro);
         var tweets = (data.results || data);
         $.each(tweets, function(i,item){
-          // auto join text based on verb tense and content
           if (s.join_text == "auto") {
             if (item.text.match(/^(@([A-Za-z0-9-_]+)) .*/i)) {
               var join_text = s.auto_join_text_reply;
@@ -699,7 +700,6 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
           var date = '<span class="tweet_time"><a href="http://twitter.com/'+from_user+'/statuses/'+item.id+'" title="view tweet on twitter">'+relative_time(item.created_at)+'</a></span>';
           var text = '<span class="tweet_text">' +$([item.text]).linkUrl().linkUser().linkHash().makeHeart().capAwesome().capEpic()[0]+ '</span>';
 
-          // until we create a template option, arrange the items below to alter a tweet's display.
           list.append('<li>' + avatar + date + join + text + '</li>');
 
           list.children('li:first').addClass('tweet_first');
@@ -716,23 +716,796 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 /*
  * jQuery hashchange event - v1.2 - 2/11/2010
  * http://benalman.com/projects/jquery-hashchange-plugin/
- * 
+ *
  * Copyright (c) 2010 "Cowboy" Ben Alman
  * Dual licensed under the MIT and GPL licenses.
  * http://benalman.com/about/license/
  */
 (function($,i,b){var j,k=$.event.special,c="location",d="hashchange",l="href",f=$.browser,g=document.documentMode,h=f.msie&&(g===b||g<8),e="on"+d in i&&!h;function a(m){m=m||i[c][l];return m.replace(/^[^#]*#?(.*)$/,"$1")}$[d+"Delay"]=100;k[d]=$.extend(k[d],{setup:function(){if(e){return false}$(j.start)},teardown:function(){if(e){return false}$(j.stop)}});j=(function(){var m={},r,n,o,q;function p(){o=q=function(s){return s};if(h){n=$('<iframe src="javascript:0"/>').hide().insertAfter("body")[0].contentWindow;q=function(){return a(n.document[c][l])};o=function(u,s){if(u!==s){var t=n.document;t.open().close();t[c].hash="#"+u}};o(a())}}m.start=function(){if(r){return}var t=a();o||p();(function s(){var v=a(),u=q(t);if(v!==t){o(t=v,u);$(i).trigger(d)}else{if(u!==t){i[c][l]=i[c][l].replace(/#.*/,"")+"#"+u}}r=setTimeout(s,$[d+"Delay"])})()};m.stop=function(){if(!n){r&&clearTimeout(r);r=0}};return m})()})(jQuery,this);
+
+
+window.CanvasObject = window.CanvasObject || {};
+
+/**
+ * Color Helper Class
+ */
+CanvasObject.Color = (function() {
+  var Klass = function(r, g, b, a) {
+    this.red      = Math.round(r || (isNaN(r) && 0));
+    this.green    = Math.round(g || (isNaN(g) && 0));
+    this.blue     = Math.round(b || (isNaN(b) && 255));
+    this.alpha    = a || (isNaN(a) && 1.0);
+
+    this.r = function(val) {
+      this.red = parseInt(val);
+      return this;
+    };
+
+    this.g = function(val) {
+      this.green = parseInt(val);
+      return this;
+    }
+
+    this.b = function(val) {
+      this.blue = parseInt(val);
+      return this;
+    }
+
+    this.a = function(val) {
+      this.alpha = parseFloat(val);
+      return this;
+    }
+  };
+
+  Klass.prototype.toString = function() {
+    return "rgba(" + this.red + "," + this.green + "," + this.blue + "," + this.alpha + ")";
+  };
+
+  Klass.fromHex = function(hex, alpha) {
+    return new Klass(hex >> 16, (hex >> 8) & 0xff, hex & 0xff, alpha || 1.0);
+  };
+
+  Klass.random = function(alpha) {
+    return Klass.fromHex(Math.floor(Math.random() * 0xffffff), alpha);
+  };
+
+  Klass.randomGrey = function(alpha) {
+    var color = Math.floor(Math.random() * 128) + 120;
+    return new Klass(color, color, color, alpha || 1.0);
+  };
+
+  var COLOR_SETS = {
+    'black':  [  0,   0,   0],
+    'clear':  [  0,   0,   0, 0.0],
+    'blue':   [  0,   0, 255],
+    'red':    [255,   0,   0],
+    'green':  [  0, 255,   0],
+    'yellow': [255, 255,   0],
+    'orange': [255, 128,   0]
+  };
+
+  for (var color in COLOR_SETS)
+    (function() {
+      var arr = COLOR_SETS[color];
+      Klass[color] = function() { return new Klass(arr[0], arr[1], arr[2], arr[3]); };
+    })();
+
+  return Klass;
+})();
+
+window.CanvasObject = window.CanvasObject || {};
+CanvasObject.Events = CanvasObject.Events || {};
+
+/**
+ * Allows for a chain of methods to be associated and executed when a
+ * specified method (or event name) is called or send to the object.
+ */
+CanvasObject.Events.EventListener = (function() {
+  var Klass = function() {
+    var events = {};
+
+    /**
+     * Merges another EventListener into this one.
+     */
+/*    this.inheritMerge = function(from) {
+      events = from.events();
+      for (var name in events)
+        (function() {
+          var n = name;
+          this[n] = function(fn) { events[n].push(fn); };
+        })();
+    };*/
+
+    /**
+     * Used to create a short hand hook for setting events that objects
+     * would listen to inherently.
+     */
+    this.defineHook = function(name) {
+      if (events[name]) return;
+
+      events[name] = [];
+      this[name] = function(fn) { events[name].push(fn); };
+    };
+    this.events = function() { return events; };
+
+    this.trigger = function(event) {
+      var target = events[event];
+      for (var i = 0; i < target.length; i++) target[i].apply(this, arguments);
+    };
+
+    this.removeHandler = function(event, handler) {
+      if (!events[event]) return;
+      for (var i = 0; i < events[event].length; i++)
+        if (events[event][i] == handler) events[event].splice(i--, 1);
+    };
+
+    this.bind = function(event, fn) {};
+    this.unbind = function(event, fn) {};
+  };
+
+  return Klass;
+})();
+window.CanvasObject = window.CanvasObject || {};
+CanvasObject.Geometry = CanvasObject.Geometry || {};
+
+CanvasObject.Geometry.Point = (function() {
+
+  var Klass = function(x, y) {
+    this.x = x || 0;
+    this.y = y || 0;
+
+    this.equals = function(other) {
+      return (other.x == this.x && other.y == this.y);
+    };
+
+    this.clone = function() { return new CanvasObject.Geometry.Point(this.x, this.y); };
+
+    this.add = function(vec) {
+      this.x += vec.x;
+      this.y += vec.y;
+      return this;
+    };
+
+    this.subtract = function(vec) {
+      this.x -= vec.x;
+      this.y -= vec.y;
+      return this;
+    }
+
+    this.distanceTo = function(pt) {
+      var x = this.x - pt.x;
+      var y = this.y - pt.y;
+      return Math.sqrt(x * x + y * y);
+    };
+
+    this.length = function() {
+      return Math.sqrt(this.x * this.x + this.y * this.y);
+    };
+  };
+
+  Klass.random = function(x, y) {
+    return new Klass(Math.random() * x, Math.random() * y);
+  }
+
+  Klass.distance = function(p1, p2) {
+    var x = p1.x - p2.x;
+    var y = p1.y - p2.y;
+    return Math.sqrt(x * x + y * y);
+  };
+
+  Klass.interpolate = function(p1, p2, weight) {
+    weight = weight || 0.5;
+    return new CanvasObject.Geometry.Point(p1.x * (1 - weight) + p2.x * weight,
+      p1.y * (1 - weight) + p2.y * weight);
+  };
+
+  Klass.add = function(pt, vec) {
+    return pt.clone().add(vec);
+  };
+
+  Klass.subtract = function(pt, vec) {
+    return pt.clone().subtract(vec);
+  };
+
+  return Klass;
+})();
+
+CanvasObject.Geometry.Vector = (function() {
+  var Klass = function(x, y) {
+    this.x = x || 0;
+    this.y = y || 0;
+
+    this.equals = function(other) {
+      return (other.x == this.x && other.y == this.y);
+    };
+    this.eq = this.equals;
+
+    this.clone = function() { return new CanvasObject.Geometry.Vector(this.x, this.y); };
+    this.dot = function(vec) { return vec.x * this.x + vec.y * this.y; };
+
+    this.multiply = function(s) {
+      this.x *= s;
+      this.y *= s;
+      return this;
+    };
+    this.mul = this.multiply;
+
+    this.divide = function(s) {
+      this.x /= s;
+      this.y /= s;
+      return this;
+    };
+    this.div = this.divide;
+
+    this.add = function(vec) {
+      this.x += vec.x;
+      this.y += vec.y;
+      return this;
+    };
+
+    this.subtract = function(vec) {
+      this.x -= vec.x;
+      this.y -= vec.y;
+      return this;
+    };
+    this.sub = this.subtract;
+
+    this.angle = function() { return Math.atan2(this.y, this.x); };
+
+    this.length = function() {
+      return Math.sqrt(this.x * this.x + this.y * this.y);
+    };
+
+    this.perpendicular = function() {
+      return new CanvasObject.Geometry.Vector(-this.y, this.x);
+    };
+  };
+
+  Klass.add = function(v1, v2) {
+    return v1.clone().add(v2);
+  };
+
+  Klass.subtract = function(v1, v2) {
+    return v1.clone().subtract(v2);
+  };
+  Klass.sub = Klass.subtract;
+
+  Klass.fromAngle = function(angle) {
+    var ret = new CanvasObject.Geometry.Vector;
+    ret.x = Math.cos(angle);
+    ret.y = Math.sin(angle);
+    return ret;
+  };
+
+  return Klass;
+})();
+
+CanvasObject.Geometry.Size = (function() {
+  var Klass = function(width, height) {
+    this.width = width || 0;
+    this.height = height || 0;
+  };
+
+  return Klass;
+})();
+
+CanvasObject.Geometry.Matrix = (function() {
+  var Klass = function() {
+    var m = [[1, 0], [0, 1]];
+
+    this.rotate = function(angle) {
+      m[0][0] =  Math.cos(angle);
+      m[0][1] =  Math.sin(angle);
+      m[1][0] = -Math.sin(angle);
+      m[1][1] =  Math.cos(angle);
+    };
+
+    /**
+     * Applies this matrix to a point
+     */
+    this.transform = function(pt) {
+      var x = pt.x * m[0][0] + pt.y * m[1][0];
+      var y = pt.x * m[0][1] + pt.y * m[1][1];
+
+      pt.x = x;
+      pt.y = y;
+
+      return pt;
+    };
+  };
+
+  Klass.rotatePoint = function(pt, angle) {
+    var mat = new Klass();
+    mat.rotate(angle);
+    return mat.transform(pt);
+  };
+
+  return Klass;
+})();
+
+CanvasObject.Geometry.Rectangle = (function() {
+  var Klass = function(left, top, right, bottom) {
+    if (arguments.length == 0) this.empty = true;
+    else {
+      this.empty = false;
+      if (left <= right) {
+        this.left = left;
+        this.right = right;
+      } else {
+        this.left = right;
+        this.right = left;
+      }
+      if (top <= bottom) {
+        this.top = top;
+        this.bottom = bottom;
+      } else {
+        this.top = bottom;
+        this.bottom = top;
+      }
+    }
+
+    this.clone = function() {
+      return new Klass(this.left, this.top, this.right, this.bottom);
+    };
+
+    this.width = function() { return this.right - this.left; };
+    this.height = function() { return this.bottom - this.top; };
+
+    this.includePoint = function(pt) {
+      if (this.empty) {
+        this.empty = false;
+        this.left = this.right = pt.x;
+        this.top = this.bottom = pt.y;
+        return;
+      }
+      if (this.left > pt.x) this.left = pt.x;
+      else if (this.right < pt.x) this.right = pt.x;
+      if (this.top > pt.y) this.top = pt.y;
+      else if (this.bottom < pt.y) this.bottom = pt.y;
+    };
+  };
+
+  Klass.fromRotated = function(rect, angle) {
+    if (angle == 0) return rect.clone();
+    var mat = new CanvasObject.Geometry.Matrix();
+    mat.rotate(angle);
+
+    var pt1 = mat.transform({x: rect.left, y: rect.top});
+    var pt2 = mat.transform({x: rect.right, y: rect.bottom});
+
+    var r = new Klass(pt1.x, pt1.y, pt2.x, pt2.y);
+
+    r.includePoint(mat.transform({x: rect.right, y: rect.top}));
+    r.includePoint(mat.transform({x: rect.left, y: rect.bottom}));
+
+    return r;
+  };
+
+  return Klass;
+})();
+window.CanvasObject = window.CanvasObject || {};
+CanvasObject.Motion = CanvasObject.Motion || {};
+/*
+CanvasObject.Motion.MovingBody = (function() {
+  var Klass = function() {
+    Object.extend(CanvasObject.Geometry.Point);
+    Object.extend(events.EventListener);
+
+    this.defineHook('update');
+
+    this.acc = new CanvasObject.Geometry.Vector();
+    this.vel = new CanvasObject.Geometry.Vector();
+
+    this.update(function() {
+      this.add(this.vel);
+      this.vel.add(this.acc);
+    });
+  };
+
+  return Klass;
+})();
+*/
+
+window.CanvasObject = window.CanvasObject || {};
+
+/**
+ * Common base to allow for object heirachy maintenance, used internally.
+ */
+CanvasObject.Base = (function() {
+  var Klass = function() {
+    CanvasObject.Events.EventListener.call(this);
+    CanvasObject.Geometry.Point.call(this);
+    CanvasObject.Geometry.Rectangle.call(this);
+
+    var parent;
+    this.x = 0;
+    this.y = 0;
+    this.rotation = 0;
+    this.scale = 1.0;
+
+    this.defineHook('enterFrame');
+    this.defineHook('afterRemove');
+
+    this.draw = function() {};
+    this.drawInto = function(context) {};
+
+    this.setParent = function(value) { parent = value; };
+    this.parent = function() { return parent; };
+    this.context = function() { return null; };
+
+    this.remove = function() {
+      if (parent) {
+        parent.removeChild(this);
+        this.trigger('afterRemove');
+      }
+    };
+
+    this.applyTransform = function(context) {
+      context.translate(this.x, this.y);
+      context.rotate(this.rotation);
+      context.scale(this.scale, this.scale);
+    };
+  };
+  Klass.prototype = new CanvasObject.Events.EventListener;
+
+  return Klass;
+})();
+
+/**
+ * Represents a canvas context that has bitmap data. Bitmaps can be drawn
+ * on each other to create cached graphics that are quick to draw.
+ *
+ * All CanvasObjects can be converted to a bitmap.
+ */
+CanvasObject.Bitmap = (function() {
+  var Klass = function(width, height) {
+    CanvasObject.Base.call(this);
+
+    var canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    var context = canvas.getContext('2d');
+
+    this.canvas = function() { return canvas; };
+    this.context = function() { return context; };
+
+    this.drawInto = function(context) {
+      context.drawImage(this.canvas(), this.x, this.y);
+    };
+
+    this.addBitmap = function(bitmap) {
+      bitmap.drawInto(context);
+    };
+
+    this.width = function() { return canvas.width; };
+    this.height = function() { return canvas.height; };
+  };
+  Klass.prototype = new CanvasObject.Base;
+
+  Klass.withImage = function(path, callback) {
+    var image = new Image;
+    image.onload = function() {
+      var bitmap = new Klass(image.width, image.height);
+      bitmap.context().drawImage(image, 0, 0);
+      callback(bitmap);
+    }
+    image.src = path;
+  };
+
+  Klass.withCanvasObject = function(canvasObject) {
+    var rect = CanvasObject.Geometry.Rectangle.fromRotated(canvasObject, canvasObject.rotation);
+/*
+    rect.left   += -canvasObject.shadowBlur + canvasObject.shadowOffsetX;
+    rect.top    += -canvasObject.shadowBlur + canvasObject.shadowOffsetY;
+    rect.right  +=  canvasObject.shadowBlur + canvasObject.shadowOffsetX;
+    rect.bottom +=  canvasObject.shadowBlur + canvasObject.shadowOffsetY;
+*/
+    var bitmap = new CanvasObject.Bitmap(rect.width(), rect.height());
+
+    bitmap.x = rect.left + canvasObject.x;
+    bitmap.y = rect.top + canvasObject.y;
+
+    var x = canvasObject.x;
+    var y = canvasObject.y;
+
+    canvasObject.x = -rect.left;
+    canvasObject.y = -rect.top;
+
+    canvasObject.drawInto(bitmap.context());
+
+    canvasObject.x = x;
+    canvasObject.y = y;
+
+    var ctx = bitmap.context();
+
+    return bitmap;
+  };
+
+  return Klass;
+})();
+
+/**
+ * Basic object used to contain graphics, will need to be placed in a
+ * container to be used. Does all the abstraction of methods.
+ */
+CanvasObject.Path = (function() {
+  var METHODS = ['beginPath', 'closePath', 'moveTo', 'lineTo',
+    'bezierCurveTo', 'quadraticCurveTo', 'arc', 'drawImage',
+    'fillRect', 'strokeRect', 'fill', 'stroke'];
+  var PROPS = ['fillStyle', 'strokeStyle', 'shadowOffsetX',
+    'shadowOffsetY', 'shadowBlur', 'shadowColor'];
+
+  var Klass = function() {
+    CanvasObject.Base.call(this);
+
+    var commands = [];
+
+    for (var i = 0; i < METHODS.length; i++) {
+      (function() {
+        var command = METHODS[i];
+        this[command] = function() {
+          commands.push([command, arguments]);
+          return commands.length - 1;
+        };
+        this[command + 'At'] = function() {
+          var arr = Array.prototype.slice.call(arguments);
+          commands[arr.shift()] = [command, arr];
+          return commands.length - 1;
+        };
+      }).call(this);
+    }
+
+
+
+    this.moveTo = function(x, y) {
+      this.includePoint({x:x, y:y});
+      commands.push(['moveTo', arguments]);
+      return commands.length - 1;
+    };
+
+    this.lineTo = function(x, y) {
+      this.includePoint({x:x, y:y});
+      commands.push(['lineTo', arguments]);
+      return commands.length - 1;
+    };
+
+    this.bezierCurveTo = function(px1, py1, px2, py2, x, y) {
+      this.includePoint({x:px1, y:py1});
+      this.includePoint({x:px2, y:py2});
+      this.includePoint({x:x, y:y});
+      commands.push(['bezierCurveTo', arguments]);
+      return commands.length - 1;
+    };
+
+    this.quadraticCurveTo = function(px, py, x, y) {
+      this.includePoint({x:px, y:py});
+      this.includePoint({x:x, y:y});
+      commands.push(['quadraticCurveTo', arguments]);
+      return commands.length - 1;
+    };
+
+
+    this.commands = function() { return commands; };
+    this.removeCommandAt = function(index) { commands[index] = null; };
+
+    /**
+     * Clears the command stack
+     */
+    this.clear = function() { commands = []; };
+
+    /**
+     * Returns this object drawn into a Bitmap
+     */
+    this.toBitmap = function() {
+      return CanvasObject.Bitmap.withCanvasObject(this);
+    };
+
+    /**
+     * Draws this canvas object into a context
+     */
+    this.drawInto = function(context, boundingBox) {
+      context.save();
+      this.applyState(context);
+
+      var commands = this.commands();
+      for (var j = 0; j < commands.length; j++)
+        if (commands[j])
+          context[commands[j][0]].apply(context, commands[j][1]);
+
+      context.restore();
+    };
+
+    /**
+     * Set the context to the relevant state for drawing this object.
+     */
+    this.applyState = function(context) {
+      this.applyTransform(context);
+
+      for (var i = 0; i < PROPS.length; i++) {
+        if (this[PROPS[i]])
+          context[PROPS[i]] = this[PROPS[i]];
+      }
+    };
+  };
+  Klass.prototype = new CanvasObject.Base;
+
+  return Klass;
+})();
+
+/**
+ * Contains a set of canvas objects
+ */
+CanvasObject.Container = (function() {
+  var Klass = function() {
+    CanvasObject.Base.call(this);
+
+    var children = [];
+
+    this.addChild = function(child) {
+      children.push(child);
+      child.setParent(this);
+
+      child._enterFrame = function() {
+        child.trigger('enterFrame');
+      }
+
+      this.enterFrame(child._enterFrame);
+    };
+    this.children = function() { return children; };
+
+    this.removeChild = function(child) {
+      for (var i = 0; i < children.length; i++)
+        if (children[i] == child) break;
+
+      if (i == children.length) return;
+      children.splice(i, 1);
+
+      this.removeHandler('enterFrame', child._enterFrame);
+    };
+
+    /**
+     * Draws this object into a specified context.
+     */
+    this.drawInto = function(context) {
+      context.save();
+      this.applyTransform(context);
+      for (var i = 0; i < children.length; i++)
+        children[i].drawInto(context);
+      context.restore();
+    }
+  };
+  Klass.prototype = new CanvasObject.Base;
+
+  return Klass;
+})();
+
+/**
+ * Wrapper for the root canvas attached to the dom. Handles frame rates
+ * and the like.
+ */
+CanvasObject.Stage = (function() {
+  var Klass = function(target, _fps) {
+    var self = this;
+    var origin = new CanvasObject.Geometry.Point(0, 0);
+    CanvasObject.Container.call(this);
+
+    var interval, fps, currentFps = 0, canvas, context;
+    var noClearDraw, clearDraw, updateFps, drawFunc;
+
+    var initialize = function() {
+      if (!target) return;
+
+      canvas = typeof target == 'string' ? document.getElementById(target) : target;
+      if (!canvas.getContext) throw "Uh oh! Can't get a context.";
+
+      context = canvas.getContext('2d');
+      if (!context) throw "Uh oh! Can't get a context.";
+
+      drawFunc = clearDraw;
+      this.enterFrame(drawFunc);
+      this.setFrameRate(_fps);
+    };
+
+    noClearDraw = function() {
+      self.drawInto(context);
+    };
+
+    this.clearFunc = function() {
+      context.clearRect(-origin.x, -origin.y, canvas.width, canvas.height);
+    };
+
+    clearDraw = function() {
+      self.clearFunc();
+      self.drawInto(context);
+    };
+
+    /**
+     * FPS Counter
+     */
+    var updateFps = function() {
+      var lastTime = 0, lastDiff = 0;
+      var i = 0;
+
+      updateFps = function() {
+        var time = (new Date()).getTime();
+        var diff = (time - lastTime);
+
+        lastDiff = diff * 0.5 + lastDiff * 0.5;
+        lastTime = time;
+
+        currentFps = Math.round(1000 / lastDiff);
+      };
+    };
+    updateFps();
+
+    this.setUpdateMethod = function(clear, calcFps) {
+      this.removeHandler('enterFrame', drawFunc);
+      this.removeHandler('enterFrame', updateFps);
+
+      if (clear) this.enterFrame(drawFunc = clearDraw);
+      else this.enterFrame(drawFunc = noClearDraw);
+
+      if (calcFps) this.enterFrame(updateFps);
+    };
+
+    /**
+     * Sets the center point for this stage. Default is top left.
+     */
+    this.setOrigin = function(_origin) {
+      if (typeof _origin == 'number')
+        _origin = new CanvasObject.Geometry.Point(arguments[0], arguments[1]);
+
+      origin = _origin;
+      context.translate(origin.x, origin.y);
+    };
+
+    /**
+     * Creates a interval that automatically redraws our objects via timer.
+     */
+    this.setFrameRate = function(value) {
+      if (!value || interval != undefined) return;
+
+      var ms = 1000 / (fps = value);
+      interval = setInterval(function() { self.trigger('enterFrame'); }, ms);
+    };
+
+    this.width = function() { return canvas.width; };
+    this.height = function() { return canvas.height; };
+
+    this.resize = function(width, height) {
+      canvas.width = width;
+      canvas.height = height;
+      this.trigger('enterFrame');
+    };
+
+    /**
+     * Toggle the playing of the stage.
+     */
+    this.stop = function() { clearInterval(interval); interval = undefined; };
+    this.play = function() { this.setFrameRate(fps); };
+
+    this.fps = function() { return currentFps; };
+    this.context = function() { return context; };
+
+    initialize.call(this);
+  };
+  Klass.prototype = new CanvasObject.Container;
+
+  return Klass;
+})();
+
 /**
  * Code base for adamelliot.com
  * Copyright (c) Adam Elliot 2010
  */
 
 window.AdamElliot = window.AdamElliot || {};
- 
+
 /**
  * Map any element into the router to create browser history and map into
  * the desired controller.
- * 
+ *
  * Assumes AdamElliot.Router statically points to the router.
  */
 (function($) {
@@ -747,7 +1520,7 @@ window.AdamElliot = window.AdamElliot || {};
       $(this).attr('target', '_blank');
     });
   };
-  
+
   $.fn.bindDataRoute = function() {
     $(this).find("[data-route]").each(function() {
       $(this).linkTo($(this).attr('data-route'));
@@ -759,7 +1532,7 @@ window.AdamElliot = window.AdamElliot || {};
 /**
  * Operates similar to other routers on ruby backends, maps url paths after
  * the hash into controllers.
- * 
+ *
  * Route matching is very basic, there's static matching and resource style
  * matching. That's all I need right now.
  */
@@ -782,13 +1555,11 @@ AdamElliot.Router = (function() {
       return params;
     };
 
-    // Creates static mappings.
     this.map = function(path, controller, action) {
       action = action || controller[path];
       mappings[path] = {controller:controller, action:action};
     };
-    
-    // Maps basic routes
+
     this.resource = function(path, controller) {
       var target = path.pluralize().capitalize() + "Controller";
       resources[path] = controller || AdamElliot[target];
@@ -797,7 +1568,7 @@ AdamElliot.Router = (function() {
     /**
      * Causes the router to read the path and execute the route if one a
      * route exists. If routed returns true, otherwise returns false.
-     * 
+     *
      * TODO: Refactor this into smaller parts
      */
     this.route = function() {
@@ -810,10 +1581,8 @@ AdamElliot.Router = (function() {
       var params = getParams(route);
       route = route.split("?")[0];
 
-      // Check static mappings, if nothing matches, then check resources
       var target = mappings[route];
       if (target) {
-        // Short cut for static routes to templates
         if (!target.action) {
           AdamElliot.frameManager.hideFrame();
           return false;
@@ -856,7 +1625,7 @@ AdamElliot.Router = (function() {
       return true;
     }
   };
-  
+
   return Klass;
 })();
 
@@ -870,15 +1639,11 @@ AdamElliot.Frame = (function() {
 
   var Klass = function(block) {
     var self = this;
-    // jQuery object for the frame on the page.
     var frame = $(AdamElliot.TemplateManager.sharedTemplate('frame')({block:block}));
     var visible = false;
 
     var adjustContent = function() {
-      // Any forms added should not obey submit policy
       frame.find("form").submit(function(e) { return false; });
-      // Any selecte fiels with value attr set get translated to the option
-      // TODO: Fix this in a better way (dates are complicated...)
       frame.find("select[value]").each(function() {
         if (this.getAttribute('value'))
           $(this).val(this.getAttribute('value'));
@@ -888,7 +1653,6 @@ AdamElliot.Frame = (function() {
       frame.targetBlank();
 
       if ($.browser.mozilla && parseFloat($.browser.version.substr(0,3)) < 1.9) {
-        // FF2 fix: Set the toolbar and nav bar's width to the same as the content
         var w = frame.find('.block').innerWidth() - 44;
         frame.find('.toolbar').css('width', w);
         frame.find('.navbar').css('width', w);
@@ -897,11 +1661,11 @@ AdamElliot.Frame = (function() {
 
     var init = function() {
       $("#frames").append(frame);
-      
+
       frame.find(".close").click(function() {
         AdamElliot.frameManager.closeFrame();
       });
-      
+
       if ($.browser.msie ||
         ($.browser.mozilla && parseFloat($.browser.version.substr(0,3))))
         frame.css({paddingBottom: "120px"});
@@ -918,12 +1682,11 @@ AdamElliot.Frame = (function() {
       adjustContent();
     };
 
-    // This is the delegate that recieves messages this frame posts
     this.delegate = null;
 
     this.setContent = function(block) {
       frame.find('.block').empty().append(block);
-      
+
       adjustContent();
     }
 
@@ -942,13 +1705,13 @@ AdamElliot.Frame = (function() {
       for (var key in buttons) {
         var button = $("<div class='button'>" + key + "</div>");
         buttonElements[key] = button;
-        
+
         if (typeof buttons[key] == "string")
           button.linkTo(buttons[key]);
         else button.click(buttons[key]);
         toolbar.append(button);
       }
-      
+
       return buttonElements;
     };
 
@@ -976,7 +1739,6 @@ AdamElliot.Frame = (function() {
       frame.css("left", w);
     }
 
-    // Shake the frame left and right
     this.shake = function(callback) {
       var right, left, times = 2;
       right = function() {
@@ -1028,7 +1790,6 @@ AdamElliot.Frame = (function() {
       });
     };
 
-    // Place the frame where it should be to slide in
     this.prepairToShow = function() {
       var w = $(window).width() / 4 * dir;
       var left = (($(window).width() - frame.width()) / 2) - w;
@@ -1039,25 +1800,20 @@ AdamElliot.Frame = (function() {
       if (self.delegate && self.delegate.beforeFrameDestroy)
         self.delegate.beforeFrameDestroy(self);
 
-//      frame.css({position: 'fixed'});
       frame.animate({top:"+=60", opacity:0}, 300, function() {
         if (self.delegate && self.delegate.afterFrameDestroy)
           self.delegate.afterFrameDestroy(self);
 
         if (callback) callback();
-        // Do the remove second as it can be slow, this may create
-        // an interface bug, so watch for it.
         $(this).remove();
       });
     };
 
-    // Return the jQuery frame object;
-    // TODO: Name this better
     this.getFrame = function() { return frame; };
 
     init.call(this);
   };
-  
+
   return Klass;
 })();
 
@@ -1072,7 +1828,6 @@ AdamElliot.FrameManager = (function() {
 
     var currentFrame;
     var dir = 1;
-    // Frames start at 100 and keep moving up on show to keep them forward
     var zIndex = 100;
 
     var getCurrentRoute = function() { return location.hash.split("#")[1]; };
@@ -1149,7 +1904,6 @@ AdamElliot.FrameManager = (function() {
       currentFrame = null;
     };
 
-    // Shake the current frame a bit
     this.shakeFrame = function() {
       if (currentFrame) currentFrame.shake();
     };
@@ -1227,7 +1981,7 @@ AdamElliot.FrameManager = (function() {
     });
 
   };
-  
+
   return Klass;
 })();
 
@@ -1243,12 +1997,11 @@ AdamElliot.TemplateManager = (function() {
     this.defineTemplate = function(type, binding) {
       templates[type] = $('#templates .' + controllerName + '.' + type).compile(binding);
     };
-    
+
     this.template = function(type) {
       return templates[type];
     };
 
-    // Renders the specified action and shows it in the frame manager
     this.render = function(action, data, navbar, preserveBlock) {
       var block = templates[action](data);
       return AdamElliot.frameManager.showFrame(block, navbar, preserveBlock);
@@ -1259,7 +2012,7 @@ AdamElliot.TemplateManager = (function() {
   Klass.sharedTemplate = function(name) {
     return sharedTemplates[name];
   };
-  
+
   Klass.renderShared = function(name, data, navbar) {
     var block = sharedTemplates[name](data);
     return AdamElliot.frameManager.showFrame(block, navbar);
@@ -1290,7 +2043,6 @@ AdamElliot.TemplateManager = (function() {
     });
   };
 
-  // Define the shared templates. (Needs to be done post load)
   $(function() {
     sharedTemplates.error = $("#templates .shared .error").compile({
       '.title': 'title',
@@ -1334,7 +2086,7 @@ AdamElliot.Controller = (function() {
         triggered = true;
       };
     };
-    
+
     this.render = function(name, data, buttons, preserveBlock) {
       var frame = this.templateManager.render(name, data, buttons, preserveBlock);
       activeBlock = frame.getFrame();
@@ -1345,7 +2097,7 @@ AdamElliot.Controller = (function() {
       location.hash = route;
     };
   };
-  
+
   return Klass;
 })();
 
@@ -1358,14 +2110,12 @@ AdamElliot.ResourceController = (function() {
     var self = this;
     AdamElliot.Controller.call(this, modelName);
 
-    // The chunk where model are stored.
     var data = {};
     var dataIndex = [];
     this.dataKey = 'id';
     this.dataOrderKey = 'id';
     this.descendingOrder = false;
 
-    // Data management functions
 
     this.orderCompare = function(o1, o2) {
       return (data[o1][self.dataOrderKey] - data[o2][self.dataOrderKey]) *
@@ -1390,9 +2140,6 @@ AdamElliot.ResourceController = (function() {
     this.formHandler = function(data) { return data; };
     this.dataMangler = function(data) { return data; };
 
-    // This is kinda a hack function to get the form data into
-    // a format that is expected on the backend. It allows for simpler
-    // and cleaner forms as they are always scoped to the local form object.
     this.scopedFormData = function(scope, data) {
       if (!scope) return data;
       var result = [];
@@ -1410,7 +2157,6 @@ AdamElliot.ResourceController = (function() {
       return result;
     };
 
-    // TODO: Resorting every time is a crappy way of doing things
     var indexData = function() {
       dataIndex = [];
       for (var key in data) dataIndex.push(key);
@@ -1419,7 +2165,6 @@ AdamElliot.ResourceController = (function() {
         data[dataIndex[i]]._index = i;
     };
 
-    // Insert array of objects or single objects into the data store
     var insert = function(objects) {
       if (!objects) return null;
       if (objects instanceof Array)
@@ -1437,16 +2182,14 @@ AdamElliot.ResourceController = (function() {
       AdamElliot.frameManager.closeFrameByRoute(modelName + "/" + id);
     };
 
-    // Default event handlers
     this.afterCreate = this.afterUpdate = this.afterRemove = function() {
       AdamElliot.frameManager.closeFrame();
     };
-    
+
     this.failedCreate = this.failedUpdate = this.failedRemove = function() {
       AdamElliot.frameManager.shakeFrame();
     };
 
-    // Remote calls. These are the methods executed on the server.
 
     this.remoteIndex = function() {
       if (self.beforeData) self.beforeData();
@@ -1491,7 +2234,7 @@ AdamElliot.ResourceController = (function() {
         if (self.failedCreate) self.failedCreate();
         return;
       }
-      
+
       data = self.scopedFormData(modelName, self.formHandler(data));
 
       $.ajax({
@@ -1555,7 +2298,6 @@ AdamElliot.ResourceController = (function() {
       });
     };
 
-    // Handles the situation where show is called without an id
     this.showFirst = function(params) {
       if (dataIndex.length == 0) {
         if (!params._noFetch) {
@@ -1569,7 +2311,6 @@ AdamElliot.ResourceController = (function() {
       self.redirect(modelName + "/" + data[dataIndex[0]][self.dataKey]);
     };
 
-    // Local routes. These are bound to resource routes.
 
     this.index = function(params) {
       self.remoteIndex();
@@ -1595,14 +2336,14 @@ AdamElliot.ResourceController = (function() {
         'save': self.remoteCreate
       }, true);
     };
-    
+
     this.update = function(params) {
       var id = params[self.dataKey];
       self.render('form', data[id], {
         'save': function() { self.remoteUpdate(id); }
       }, true);
     };
-    
+
     this.remove = function(params) {
       var id = params[self.dataKey];
       AdamElliot.TemplateManager.showNotice("Confirm Delete",
@@ -1616,7 +2357,6 @@ AdamElliot.ResourceController = (function() {
 
   return Klass;
 })();
-
 /**
  * Handle manipulating and moving of the menu, the actual buttons of the menu
  * are bound in the main application
@@ -1629,16 +2369,14 @@ window.AdamElliot = window.AdamElliot || {};
  */
 AdamElliot.Menu = (function() {
   var Klass = function () {
-    // Load our players.
     var adamelliot = $("#adamelliot");
     var blog = $("#blog");
     var pics = $("#pics");
     var bio = $("#bio");
     var toyz = $("#toyz")
     var collection = adamelliot.add(blog).add(pics).add(bio).add(toyz);
-    
+
     var atTop = false;
-    // Set initial placement and settings for the intro sequence
     var setup = function() {
       this.centerMenu();
       adamelliot.css({opacity: 0.0});
@@ -1648,7 +2386,6 @@ AdamElliot.Menu = (function() {
       toyz.css({opacity: 0.0, top:toyz.offset().top - 600});
     };
 
-    // Run the intro sequence
     var introSequence = function() {
       adamelliot.animate({opacity: 1}, 1000);
       setTimeout(function() {
@@ -1665,7 +2402,6 @@ AdamElliot.Menu = (function() {
       }, 1100);
     }
 
-    // Centres the menu based on the window frame.
     this.centerMenu = function() {
       var pos = adamelliot.offset();
       xOffset = ($(window).width() - adamelliot.width()) / 2 - pos.left;
@@ -1676,7 +2412,6 @@ AdamElliot.Menu = (function() {
         y: yOffset});
     };
 
-    // Moves the menu to a point
     this.moveBy = function(pt) {
       collection.animate({
         left: "+=" + pt.x,
@@ -1692,7 +2427,7 @@ AdamElliot.Menu = (function() {
         top: "-=" + h
       }, 250);
     };
-    
+
     this.moveToCenter = function() {
       if (!atTop) return;
       var h = ($(window).height() - 190) / 2;
@@ -1702,7 +2437,6 @@ AdamElliot.Menu = (function() {
       }, 250);
     };
 
-    // Setup and run the intro sequence, intro breaks in IE don't run it
     if (location.href.indexOf("#") == -1 && $.support.opacity) {
       setup.call(this);
       introSequence.call(this);
@@ -1723,8 +2457,6 @@ AdamElliot.Menu = (function() {
  */
 AdamElliot.Dashboard = (function() {
   var Klass = function() {
-    // Use a collection of elements as fixed positioning doesn't work well
-    // with container styling.
     var tweet = $("#tweet");
     var admin = $("#admin");
     var social = $("#social");
@@ -1732,7 +2464,6 @@ AdamElliot.Dashboard = (function() {
 
     var loadDashboard = function() {
       dashboard.css({opacity:0});
-      // Hook up twitter to it's block
       if (navigator.userAgent.indexOf('iPad') == -1)
         tweet.tweet({
           username: "adam_elliot",
@@ -1742,7 +2473,7 @@ AdamElliot.Dashboard = (function() {
     };
 
     var showDashboard = function() {
-      setTimeout(function() { 
+      setTimeout(function() {
         dashboard.animate({opacity:1}, 1500);
       }, 2500);
     };
@@ -1760,7 +2491,7 @@ AdamElliot.Dashboard = (function() {
       showingAdminPanel = true;
       toggleAdminPanel();
     };
-    
+
     this.hideAdminPanel = function() {
       if (!showingAdminPanel) return;
       showingAdminPanel = false;
@@ -1773,11 +2504,10 @@ AdamElliot.Dashboard = (function() {
 
   return Klass;
 })();
-
 /**
  * toy.js
- * 
- * Base toy object which provides hooks for the actual toys back to the 
+ *
+ * Base toy object which provides hooks for the actual toys back to the
  * frame and the pieces it provides.
  */
 window.AdamElliot = window.AdamElliot || {};
@@ -1790,7 +2520,7 @@ AdamElliot.Toy = (function() {
     var fps = _fps || 24;
     if (frame && CanvasObject)
       CanvasObject.Stage.call(this, frame.getFrame().find("canvas")[0], fps);
-    
+
     var initialize = function() {
       if (!frame) return;
 
@@ -1843,7 +2573,7 @@ AdamElliot.Toy = (function() {
 })();
 /**
  * pics.js
- * 
+ *
  * The file that handles the pics section of the site.
  */
 window.AdamElliot = window.AdamElliot || {};
@@ -1904,7 +2634,7 @@ AdamElliot.Pics = (function() {
 
     CanvasObject.Bitmap.withImage(path, function(_bitmap) {
       bitmap = _bitmap;
-      
+
       if (bitmap.width() > SIZE) offsetX = (bitmap.width() - SIZE) / 2;
       if (bitmap.height() > SIZE) offsetY = (bitmap.height() - SIZE) / 2;
 
@@ -1912,7 +2642,7 @@ AdamElliot.Pics = (function() {
       var fade = 0.0;
       self.enterFrame(func = function() {
         fade += 0.005;
-        self.fillStyle = 'rgba(0,0,0,' + fade + ')'; 
+        self.fillStyle = 'rgba(0,0,0,' + fade + ')';
         self.fillRectAt(0, 0, 0, SIZE, SIZE);
 
         var moveForward = !scaleSection(order[startTargetIndex]);
@@ -1944,7 +2674,7 @@ AdamElliot.Pics = (function() {
     var frame = _frame, buttons;
     var canvas = frame.getFrame().find("canvas");
     CanvasObject.Stage.call(this, canvas[0], FRAME_RATE);
-    
+
     var images, imageIndex = 0;
     var pictures = [], pictureIndex = 0;
     var frameDelay = FRAME_DELAY;
@@ -1969,7 +2699,7 @@ AdamElliot.Pics = (function() {
       var picture = new Picture(images[imageIndex].media.m);
       picture.url = images[imageIndex].link;
       self.addChild(picture);
-      
+
       imageIndex++;
 
       var index = order[pictureIndex];
@@ -1978,7 +2708,7 @@ AdamElliot.Pics = (function() {
       picture.y = Math.floor(index / 3) * (SIZE + 5);
 
       pictures[pictureIndex++] = picture;
-      
+
       picture.finshedDisplay(function() {
         self.removeChild(picture);
       });
@@ -2012,7 +2742,7 @@ AdamElliot.Pics = (function() {
         });
       });
     };
-    
+
     this.clearFunc = function() {
       self.context().fillStyle = 'rgba(0, 0, 0, 0.02)';
       self.context().fillRect(0, 0, 550, 550);
@@ -2028,8 +2758,6 @@ AdamElliot.Pics = (function() {
  * Copyright (c) Adam Elliot 2010
  */
 
-// TODO: Make Disqus helper object
-// Make sure that disqus comments don't hash link
 $("a[href*=comment-]").live('mousedown click', function() {
   $(this).attr('onclick', null);
   return false;
@@ -2137,7 +2865,7 @@ AdamElliot.PostsController = function() {
 
   this.index = function(params) {
     this.remoteIndex();
-    
+
     this.afterData = this.triggerOnce(function() {
       this.render('index', {posts:this.getSortedData()});
     });
@@ -2161,7 +2889,7 @@ AdamElliot.PostsController = function() {
     window.disqus_identifier = post['slug'];
 
     thread.attr('id', "disqus_thread");
-    
+
     if (!addCommentScript()) return;
   };
 
@@ -2314,7 +3042,7 @@ AdamElliot.ToysController = function() {
     window.disqus_identifier = toy['slug'];
 
     thread.attr('id', "disqus_thread");
-    
+
     if (!addCommentScript()) return;
   };
 
@@ -2329,7 +3057,7 @@ AdamElliot.ToysController = function() {
   this.beforeFrameDestroy = function(frame) {
     if (frame.toy) frame.toy.stop();
   };
-  
+
   this.show = function(params) {
     if (!Modernizr.canvas) {
       AdamElliot.TemplateManager.showUnsupported();
@@ -2342,8 +3070,8 @@ AdamElliot.ToysController = function() {
     var buttons = {};
 
     if (AdamElliot.session.authenticated) {
-      buttons['edit'] = 'toy/update/' + toy.id;
-      buttons['delete'] = 'toy/remove/' + toy.id;
+      buttons['edit'] = 'toy/update/' + toy.slug;
+      buttons['delete'] = 'toy/remove/' + toy.slug;
     }
 
     buttons['index'] = 'toys';
@@ -2374,22 +3102,22 @@ AdamElliot.SessionController = (function() {
 
     this.templateManager.defineTemplate('form');
 
-    var enableAdmin = function() {
+    var enableAdmin = function(username) {
       AdamElliot.dashboard.showAdminPanel();
       if (AdamElliot.session.authenticated) return;
-      AdamElliot.session.authenticated = true;
+      AdamElliot.session.authenticated = username;
       AdamElliot.frameManager.closeFrame();
     };
-    
+
     var disableAdmin = function() {
       AdamElliot.dashboard.hideAdminPanel();
       if (!AdamElliot.session.authenticated) return;
-      AdamElliot.session.authenticated = false;
+      AdamElliot.session.authenticated = null;
       AdamElliot.frameManager.closeAllFrames();
     };
 
-    var setAdminOnResponse = function(data) {
-      if (data && data.authenticated) enableAdmin();
+    var setAdminOnResponse = function(username, data) {
+      if (data && data.authenticated) enableAdmin(data.username);
       else disableAdmin();
     };
 
@@ -2399,13 +3127,13 @@ AdamElliot.SessionController = (function() {
       this.remoteRemove();
     };
 
-    this.index();
+    this.remoteShow(AdamElliot.session.authenticated);
   };
   Klass.prototype = new AdamElliot.ResourceController;
-  
-  AdamElliot.session = {
-    authenticated: document.cookie.indexOf('authenticated=true') > -1
-  };
+
+  var match = document.cookie.match(/authenticated=(.*)(;|$)/);
+  var username = match && match[1];
+  AdamElliot.session = {authenticated: username};
 
   return Klass;
 })();
@@ -2449,12 +3177,6 @@ AdamElliot.GeneralController = (function() {
   return Klass;
 })();
 
-/**
- * Application framework for adamelliot.com
- * 
- * Uses jQuery and Pure. Backend is Sinatra and Datamapper, everything thin =)
- */
-
 window.AdamElliot = window.AdamElliot || {};
 AdamElliot.dev = true;
 
@@ -2469,10 +3191,8 @@ AdamElliot.loadScripts = function(scripts, callback) {
 };
 
 $(function() {
-  // Show the application once we're loaded
   $("#application").css({display:'block'});
 
-  // Bind basic html to routes and targets
   $("body").bindDataRoute();
   $("body").targetBlank();
 
@@ -2497,4 +3217,3 @@ $(function() {
     AdamElliot.router.route();
   });
 });
-

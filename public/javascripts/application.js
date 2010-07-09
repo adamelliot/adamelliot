@@ -4,6 +4,20 @@
  * Uses jQuery and Pure. Backend is Sinatra and Datamapper, everything thin =)
  */
 
+//= require "inflection"
+//= require "pure_packed"
+//= require "modernizr-1.5.min"
+//= require "jquery.tweet"
+//= require "jquery.ba-hashchange.min"
+
+//= require "canvas_object/canvas_object.js"
+
+//= require "framework"
+//= require "menu"
+//= require "toy"
+//= require "pics"
+//= require "controllers"
+
 window.AdamElliot = window.AdamElliot || {};
 AdamElliot.dev = true;
 

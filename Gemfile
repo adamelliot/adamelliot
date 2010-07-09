@@ -8,6 +8,7 @@ gem "jsmin"
 gem 'mongo_mapper'
 gem 'resource_mapper'
 gem 'bson_ext', '= 1.0.1'
+gem 'sprockets'
 
 group :development do
   gem "thin"
