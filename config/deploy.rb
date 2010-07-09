@@ -11,6 +11,14 @@ set :branch, "origin/master"
 
 set :use_sudo, true
 
+set :default_environment, {
+  'PATH' => "/home/deploy/.rvm/gems/ruby-1.9.1-p378/bin:/home/deploy/.rvm/bin:/home/deploy/.rvm/ruby-1.9.1-p378/bin:$PATH",
+  'RUBY_VERSION' => 'ruby 1.9.1',
+  'GEM_HOME'     => '/home/deploy/.rvm/gems/ruby-1.9.1-p378',
+  'GEM_PATH'     => '/home/deploy/.rvm/gems/ruby-1.9.1-p378',
+  'BUNDLE_PATH'  => '/home/deploy/.rvm/gems/ruby-1.9.1-p378'
+}
+
 role :web, "lynx.local"
 role :app, "lynx.local"
 

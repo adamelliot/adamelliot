@@ -11,7 +11,7 @@ God.watch do |w|
     'BUNDLE_PATH'  => '/home/deploy/.rvm/gems/ruby-1.9.1-p378'
   }  
   
-  w.name = "unicorn"
+  w.name = "adamelliot"
   w.interval = 30.seconds # default
 
   # unicorn needs to be run from the app root
