@@ -1,111 +1,100 @@
+require 'san_juan'
+
 default_run_options[:pty] = true
 
 set :application, "adamelliot"
-set :repository, "git@git.warptube.com:adamelliot.git"
 set :user, 'deploy'
 set :scm, 'git'
 
-set :server_name, "#{application}.com"
-set :server_alias, "*.#{application}.* astrobombastic.com"
+set :repository, "git@git.warptube.com:adamelliot.git"
+set :branch, "origin/master"
 
-#set :branch, "origin/master"
-
-set :deploy_via, :remote_cache
-set :git_shallow_clone, 1
-
-set :apache_site_folder, "/etc/apache2/sites-enabled"
 set :use_sudo, true
 
-role :web, "icarus.warptube.com"
-role :app, "icarus.warptube.com"
-role :db,  "icarus.warptube.com", :primary => true
+role :web, "lynx.local"
+role :app, "lynx.local"
 
-after "deploy:setup", "config:set_permissions"
+san_juan.role :app, %w(unicorn)
+san_juan.role :web, %w(nginx)
+
+before "deploy:setup", "setup:directories"
+after "deploy:setup", "setup:nginx"
 after "deploy:setup", "deploy"
-after "deploy:setup", "apache:create_vhost"
-after "deploy:setup", "config:create_config_yaml"
-after "deploy:setup", "db:auto_migrate"
-after "deploy:setup", "apache:enable_site"
-after "deploy:setup", "apache:reload_apache"
-
-after "deploy", "deploy:restart"
-
-after "deploy:update_code", "config:copy_shared_configurations"
-after "config:create_config_yaml", "deploy:restart"
+after 'deploy:update_code', 'bundler:bundle_new_release'
 
 namespace :deploy do
-  [:start, :restart].each do |t|
-    desc "Restarting mod_rails with restart.txt"
-    task t, :roles => :app, :except => {:no_release => true} do
-      run "touch #{current_path}/tmp/restart.txt"
+  desc "Deploy the MFer"
+  task :default do
+    update
+    restart
+    cleanup
+  end
+
+  desc "Setup a GitHub-style deployment."
+  task :setup, :except => { :no_release => true } do
+    run "mkdir -p #{current_path} && git clone #{repository} #{current_path}"
+  end
+
+  desc "Update the deployed code."
+  task :update_code, :except => { :no_release => true } do
+    run "cd #{current_path}; git fetch origin; git reset --hard #{branch}"
+  end
+
+  namespace :rollback do
+    desc "Rollback a single commit."
+    task :default, :except => { :no_release => true } do
+      set :branch, "HEAD^"
+      default
     end
+    
+    task :code do ; end
   end
 
-  desc "Stop task is a no-op with mod_rails"
-  task :stop, :roles => :app do ; end
+  task :symlink do ; end
+
+  desc "Use god to restart the app"
+  task :restart do
+    god.app.unicorn.restart
+  end
+
+  desc "Use god to start the app"
+  task :start do
+    god.all.start
+  end
+
+  desc "Use god to stop the app"
+  task :stop do
+    god.all.terminate
+  end
+
 end
 
-namespace :apache do
-  desc "reloads apache configuration to make site active"
-  task :reload_apache do
-    sudo "/etc/init.d/apache2 reload"
+namespace :bundler do
+  task :create_symlink, :roles => :app do
+    shared_dir = File.join(shared_path, 'bundle')
+    release_dir = File.join(current_path, '.bundle')
+    run("mkdir -p #{shared_dir} && ln -s #{shared_dir} #{release_dir}")
   end
-
-  desc "enable site"
-  task :enable_site do
-    sudo "ln -nsf #{shared_path}/config/apache_site.conf #{apache_site_folder}/#{application}"
-  end
-
-  desc "disable site"
-  task :disable_site do
-    sudo "rm #{apache_site_folder}/#{application}"
-  end
-
-  desc "create vhost file"
-  task :create_vhost do
-    vhost_configuration = <<-VHOST
-<VirtualHost *:80>
-  ServerName #{server_name}
-  #{"ServerAlias #{server_alias}" if exists?(:server_alias)}
-  DocumentRoot "#{deploy_to}/current/public"
-  RailsEnv production
-  RailsAllowModRewrite off
-  <directory "#{deploy_to}/current/public">
-    Order allow,deny
-    Allow from all
-  </directory>
-</VirtualHost>
-VHOST
-
-    run "mkdir -p #{shared_path}/config"
-    put vhost_configuration, "#{shared_path}/config/apache_site.conf"
+ 
+  task :bundle_new_release, :roles => :app do
+    bundler.create_symlink
+    run "cd #{current_path} && bundle install"
   end
 end
-
-namespace :db do
-  desc "Runs the auto migration for datamapper (dumps data)"
-  task :auto_migrate do
-    run("cd #{current_path}; rake db:auto_migrate")
+ 
+namespace :setup do
+  desc "Create root directories"
+  task :directories do
+    run "mkdir -p #{shared_path}/log && mkdir -p #{shared_path}/tmp/pids && mkdir -p #{shared_path}/tmp/sockets"
+  end
+  
+  desc "setting proper permissions for deploy user"
+  task :nginx do
+    sudo "ln -s #{current_path}/config/nginx.conf /etc/nginx/sites-enabled/#{application}.conf"
   end
 end
 
 namespace :config do
-  desc "setting proper permissions for deploy user"
-  task :set_permissions do
-    sudo "chmod -R g+rw #{deploy_to}"
-    sudo "chown -R #{user}:admin #{deploy_to}"
-  end
-
-  desc "copy shared configurations to current"
-  task :copy_shared_configurations, :roles => [:app] do
-    %w[config.yml db.sqlite3].each do |f|
-      run "ln -nsf #{shared_path}/config/#{f} #{release_path}/config/#{f}"
-    end
-    
-    run "mkdir -p #{shared_path}/system"
-    run "ln -nsf #{shared_path}/system #{release_path}/public/system"
-  end
-
   desc "Update the config.yml"
   task :create_config_yaml do
     set(:auth_username) do

@@ -1,4 +1,4 @@
-APP_ROOT = "/u/apps/bombastic_apps"
+APP_ROOT = "/u/apps/adamelliot"
 
 worker_processes 4
 

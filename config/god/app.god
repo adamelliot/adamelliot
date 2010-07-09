@@ -1,5 +1,5 @@
 app_env = ENV['APP_ENV'] || 'production'
-app_root = ENV['APP_ROOT'] || "/u/apps/bombastic_apps"
+app_root = ENV['APP_ROOT'] || "/u/apps/adamelliot"
 unicorn = "/home/deploy/.rvm/gems/ruby-1.9.1-p378/bin/unicorn"
 
 God.watch do |w|
