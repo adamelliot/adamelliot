@@ -12,17 +12,17 @@ set :branch, "origin/master"
 set :use_sudo, true
 
 set :default_environment, {
-  'PATH' => "/home/deploy/.rvm/gems/ruby-1.9.1-p378/bin:/home/deploy/.rvm/bin:/home/deploy/.rvm/ruby-1.9.1-p378/bin:$PATH",
-  'RUBY_VERSION' => 'ruby 1.9.1',
-  'GEM_HOME'     => '/home/deploy/.rvm/gems/ruby-1.9.1-p378',
-  'GEM_PATH'     => '/home/deploy/.rvm/gems/ruby-1.9.1-p378',
-  'BUNDLE_PATH'  => '/home/deploy/.rvm/gems/ruby-1.9.1-p378'
+  'PATH' => "/home/deploy/.rvm/gems/ruby-1.9.2-p0/bin:/home/deploy/.rvm/bin:/home/deploy/.rvm/ruby-1.9.2-p0/bin:$PATH",
+  'RUBY_VERSION' => 'ruby 1.9.2',
+  'GEM_HOME'     => '/home/deploy/.rvm/gems/ruby-1.9.2-p0',
+  'GEM_PATH'     => '/home/deploy/.rvm/gems/ruby-1.9.2-p0',
+  'BUNDLE_PATH'  => '/home/deploy/.rvm/gems/ruby-1.9.2-p0'
 }
 
 role :web, "lynx.local"
 role :app, "lynx.local"
 
-san_juan.role :app, %w(unicorn)
+san_juan.role :app, %w(adamelliot)
 san_juan.role :web, %w(nginx)
 
 before "deploy:setup", "setup:directories"
@@ -58,11 +58,12 @@ namespace :deploy do
     task :code do ; end
   end
 
+  task :cleanup do ; end
   task :symlink do ; end
 
   desc "Use god to restart the app"
   task :restart do
-    god.app.unicorn.restart
+    god.app.adamelliot.restart
   end
 
   desc "Use god to start the app"
@@ -85,7 +86,6 @@ namespace :bundler do
   end
  
   task :bundle_new_release, :roles => :app do
-    bundler.create_symlink
     run "cd #{current_path} && bundle install"
   end
 end
@@ -94,6 +94,7 @@ namespace :setup do
   desc "Create root directories"
   task :directories do
     run "mkdir -p #{shared_path}/log && mkdir -p #{shared_path}/tmp/pids && mkdir -p #{shared_path}/tmp/sockets"
+    bundler.create_symlink
   end
   
   desc "setting proper permissions for deploy user"

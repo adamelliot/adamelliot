@@ -1,16 +1,13 @@
 require 'date'
-require 'active_support'
 require 'net/http'
-
 require 'mongo_mapper'
-require 'active_support/json'
-require 'active_support/inflector'
 
 MongoMapper.connection = Mongo::Connection.new('localhost')
 MongoMapper.database = 'adamelliot'
 
 # Allow form value of on to be set to true
 MongoMapper::Extensions::Boolean::Mapping['on'] = true
+ActiveSupport::JSON::Encoding.use_standard_json_time_format = false
 
 module Application
   module Models

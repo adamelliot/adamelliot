@@ -767,7 +767,7 @@ AdamElliot.ResourceController = (function() {
         if (self.failedCreate) self.failedCreate();
         return;
       }
-      
+
       data = self.scopedFormData(modelName, self.formHandler(data));
 
       $.ajax({

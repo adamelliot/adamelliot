@@ -3,11 +3,12 @@ source "http://rubygems.org"
 gem "sinatra"
 gem "rack"
 gem "activesupport"
+gem 'i18n'
 gem "haml"
 gem "jsmin"
 gem 'mongo_mapper'
 gem 'resource_mapper'
-gem 'bson_ext', '= 1.0.1'
+gem 'bson_ext'
 gem 'sprockets'
 
 group :development do
