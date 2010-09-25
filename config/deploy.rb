@@ -23,6 +23,7 @@ san_juan.role :app, %w(adamelliot)
 san_juan.role :web, %w(nginx)
 
 before "deploy:setup", "setup:directories"
+after "deploy:setup", "config:create_config_yaml"
 after "deploy:setup", "setup:nginx"
 after "deploy:setup", "deploy"
 after 'deploy:update_code', 'bundler:bundle_new_release'
