@@ -1,3 +1,8 @@
+$:.unshift(File.expand_path('./lib', ENV['rvm_path']))
+require "rvm/capistrano"
+set :rvm_ruby_string, 'ruby-1.9.2'
+set :rvm_type, :user
+
 require 'san_juan'
 
 default_run_options[:pty] = true
@@ -11,16 +16,8 @@ set :branch, "origin/master"
 
 set :use_sudo, true
 
-set :default_environment, {
-  'PATH' => "/home/deploy/.rvm/gems/ruby-1.9.2-p0/bin:/home/deploy/.rvm/bin:/home/deploy/.rvm/ruby-1.9.2-p0/bin:$PATH",
-  'RUBY_VERSION' => 'ruby 1.9.2',
-  'GEM_HOME'     => '/home/deploy/.rvm/gems/ruby-1.9.2-p0',
-  'GEM_PATH'     => '/home/deploy/.rvm/gems/ruby-1.9.2-p0',
-  'BUNDLE_PATH'  => '/home/deploy/.rvm/gems/ruby-1.9.2-p0'
-}
-
-role :web, "lynx.local"
-role :app, "lynx.local"
+role :web, "icarus.warptube.com"
+role :app, "icarus.warptube.com"
 
 san_juan.role :app, %w(adamelliot)
 san_juan.role :web, %w(nginx)
@@ -79,12 +76,6 @@ namespace :deploy do
 end
 
 namespace :bundler do
-  task :create_symlink, :roles => :app do
-    shared_dir = File.join(shared_path, 'bundle')
-    release_dir = File.join(current_path, '.bundle')
-    run("mkdir -p #{shared_dir} && ln -s #{shared_dir} #{release_dir}")
-  end
- 
   task :bundle_new_release, :roles => :app do
     run "cd #{current_path} && bundle install"
   end
@@ -94,7 +85,6 @@ namespace :setup do
   desc "Create root directories"
   task :directories do
     run "mkdir -p #{shared_path}/log && mkdir -p #{shared_path}/tmp/pids && mkdir -p #{shared_path}/tmp/sockets"
-    bundler.create_symlink
   end
   
   desc "setting proper permissions for deploy user"
