@@ -108,7 +108,7 @@ namespace :config do
 username: #{auth_username}
 password: #{auth_password}
 CONFIG_YML
-    run "mkdir -p #{shared_path}/config"
-    put config, "#{shared_path}/config/config.yml"
+    run "mkdir -p #{current_path}/config"
+    put config, "#{current_path}/config/config.yml"
   end
 end

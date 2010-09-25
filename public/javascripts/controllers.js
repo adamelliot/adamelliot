@@ -67,9 +67,12 @@ AdamElliot.PostsController = function() {
         },
         '.description': function(arg) {
           var post = arg.item;
-          var firstChunk = post.body.match(/>([^<]*)</)[1];
-          var firstWords = firstChunk.match(/([^\s]+\s){0,34}[^\s]+/)[0];
-          return firstWords + (firstWords == firstChunk ? "" : "...");
+          var match = post.body.match(/>([^<]*)</);
+          if (match) {
+            var firstChunk = match[1];
+            var firstWords = firstChunk.match(/([^\s]+\s){0,34}[^\s]+/)[0];
+            return firstWords + (firstWords == firstChunk ? "" : "...");
+          } else return post.body;
         }
       }
     }
