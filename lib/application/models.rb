@@ -1,5 +1,6 @@
 require 'date'
-require 'net/http'
+require 'rdiscount'
+require 'uv'
 require 'mongo_mapper'
 
 MongoMapper.connection = Mongo::Connection.new('localhost')
@@ -94,7 +95,37 @@ module Application
 
     protected
       def self.brighten(markdown, theme = 'idle')
-        Net::HTTP.post_form(URI.parse("http://brightly.warptube.com/brighten"), {:markdown => markdown, :theme => theme}).body
+        output = ""
+        embeds = ""
+      
+        while !(open = markdown.index(/<code [^>]*language=/m, 0)).nil?
+          output << RDiscount.new(markdown[0, open]).to_html
+
+          close = n = open
+          begin
+            close = markdown.index(/<\/\s*code\s*>/m, close + 1)
+            n = markdown.index(/<code [^>]*language=/m, n + 1)
+          end while !n.nil? && n < close
+
+          inner_open = open + markdown[/<code[^>]*>/m].length
+          inner_close = close
+          close = markdown.index(">", close) + 1
+
+          language = markdown[/<code [^>]*language\s*=\s*(['"])([^\1]*?)\1[^>]*>/m, 2]
+          embed = markdown[/<code [^>]*embed\s*=\s*(['"])([^\1]*?)\1[^>]*>/m, 2]
+
+          code = markdown[inner_open, inner_close - inner_open]
+
+          output << Uv.parse(code, "xhtml", language, false, theme)
+          embeds << embed_code(code, language) unless embed.nil?
+          markdown = markdown[close, markdown.length]
+        end
+
+        output << RDiscount.new(markdown).to_html
+
+        embeds + output
+      rescue
+        "There was an error parsing your file, please check it..."
       end
   end
 end

@@ -1,3 +1,10 @@
+GIT
+  remote: http://github.com/yabawock/ultraviolet.git
+  revision: 0a466b9af09dbe9de30919f534f167c71363b494
+  specs:
+    ultraviolet (0.11.0)
+      textpow19 (>= 0.11.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -19,13 +26,17 @@ GEM
       activesupport (>= 2.3.4)
       jnunemaker-validatable (~> 1.8.4)
       plucky (~> 0.3.5)
+    plist (3.1.0)
     plucky (0.3.5)
       mongo (~> 1.0.8)
     rack (1.2.1)
+    rdiscount (1.6.5)
     resource_mapper (0.0.1)
     sinatra (1.0)
       rack (>= 1.0)
     sprockets (1.0.2)
+    textpow19 (0.11.0)
+      plist (>= 3.0.1)
     thin (1.2.7)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -44,7 +55,9 @@ DEPENDENCIES
   micronaut
   mongo_mapper
   rack
+  rdiscount
   resource_mapper
   sinatra
   sprockets
   thin
+  ultraviolet!
