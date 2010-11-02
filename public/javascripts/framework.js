@@ -114,7 +114,7 @@ AdamElliot.Router = (function() {
         action = "index";
       else switch (action) {
         case "update":
-        case "remove":
+        case "destroy":
           id = parts[2];
         case "create":
           break;
@@ -707,18 +707,18 @@ AdamElliot.ResourceController = (function() {
       indexData();
     };
 
-    var remove = function(id) {
+    var destroy = function(id) {
       delete data[id];
       dataIndex.splice(dataIndex.indexOf(id), 1);
       AdamElliot.frameManager.closeFrameByRoute(modelName + "/" + id);
     };
 
     // Default event handlers
-    this.afterCreate = this.afterUpdate = this.afterRemove = function() {
+    this.afterCreate = this.afterUpdate = this.afterDestroy = function() {
       AdamElliot.frameManager.closeFrame();
     };
     
-    this.failedCreate = this.failedUpdate = this.failedRemove = function() {
+    this.failedCreate = this.failedUpdate = this.failedDestroy = function() {
       AdamElliot.frameManager.shakeFrame();
     };
 
@@ -814,19 +814,19 @@ AdamElliot.ResourceController = (function() {
       });
     };
 
-    this.remoteRemove = function(id) {
-      if (self.beforeRemove) self.beforeRemove(id);
+    this.remoteDestroy = function(id) {
+      if (self.beforeDestroy) self.beforeDestroy(id);
 
       $.ajax({
         url: '/' + modelName.pluralize() + '/' + id + '.json',
         type: 'DELETE',
         dataType: 'json',
         success: function() {
-          remove(id);
-          if (self.afterRemove) self.afterRemove(id);
+          destroy(id);
+          if (self.afterDestroy) self.afterDestroy(id);
         },
         error: function() {
-          if (self.failedRemove) self.failedRemove(id);
+          if (self.failedDestroy) self.failedDestroy(id);
         }
       });
     };
@@ -879,12 +879,12 @@ AdamElliot.ResourceController = (function() {
       }, true);
     };
     
-    this.remove = function(params) {
+    this.destroy = function(params) {
       var id = params[self.dataKey];
       AdamElliot.TemplateManager.showNotice("Confirm Delete",
         'Are you sure you want to delete?', {
         'no': function() { AdamElliot.frameManager.closeFrame(); },
-        'yes': function() { self.remoteRemove(id); }
+        'yes': function() { self.remoteDestroy(id); }
       });
     };
   };

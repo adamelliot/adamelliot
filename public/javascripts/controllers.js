@@ -163,7 +163,7 @@ AdamElliot.PostsController = function() {
 
     if (AdamElliot.session.authenticated) {
       buttons['edit'] = 'posts/update/' + post.slug;
-      buttons['delete'] = 'posts/remove/' + post.slug;
+      buttons['delete'] = 'posts/destroy/' + post.slug;
     }
 
     var frame = this.render('show', post, buttons);
@@ -322,7 +322,7 @@ AdamElliot.ToysController = function() {
 
     if (AdamElliot.session.authenticated) {
       buttons['edit'] = 'toys/update/' + toy.slug;
-      buttons['delete'] = 'toys/remove/' + toy.slug;
+      buttons['delete'] = 'toys/destroy/' + toy.slug;
     }
 
     buttons['index'] = 'toys';
@@ -372,10 +372,10 @@ AdamElliot.SessionController = (function() {
       else disableAdmin();
     };
 
-    this.afterRemove = this.afterData = this.afterCreate = setAdminOnResponse;
+    this.afterDestroy = this.afterData = this.afterCreate = setAdminOnResponse;
 
-    this.remove = function(params) {
-      this.remoteRemove();
+    this.destroy = function(params) {
+      this.remoteDestroy();
     };
 
     this.remoteShow(AdamElliot.session.authenticated);
