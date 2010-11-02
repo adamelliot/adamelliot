@@ -744,7 +744,7 @@ AdamElliot.ResourceController = (function() {
       if (self.beforeData) self.beforeData();
 
       $.ajax({
-        url: '/' + modelName + '/' + id + '.json',
+        url: '/' + modelName.pluralize() + '/' + id + '.json',
         dataType: 'json',
         success: function(data) {
           insert(data);
@@ -771,7 +771,7 @@ AdamElliot.ResourceController = (function() {
       data = self.scopedFormData(modelName, self.formHandler(data));
 
       $.ajax({
-        url: '/' + modelName + '.json',
+        url: '/' + modelName.pluralize() + '.json',
         type: 'POST',
         dataType: 'json',
         data: data,
@@ -800,7 +800,7 @@ AdamElliot.ResourceController = (function() {
       data = self.scopedFormData(modelName, self.formHandler(data));
 
       $.ajax({
-        url: '/' + modelName + '/' + id + '.json',
+        url: '/' + modelName.pluralize() + '/' + id + '.json',
         type: 'PUT',
         dataType: 'json',
         data: data,
@@ -818,7 +818,7 @@ AdamElliot.ResourceController = (function() {
       if (self.beforeRemove) self.beforeRemove(id);
 
       $.ajax({
-        url: '/' + modelName + '/' + id + '.json',
+        url: '/' + modelName.pluralize() + '/' + id + '.json',
         type: 'DELETE',
         dataType: 'json',
         success: function() {
@@ -842,7 +842,7 @@ AdamElliot.ResourceController = (function() {
         return null;
       }
 
-      self.redirect(modelName + "/" + data[dataIndex[0]][self.dataKey]);
+      self.redirect(modelName.pluralize() + "/" + data[dataIndex[0]][self.dataKey]);
     };
 
     // Local routes. These are bound to resource routes.

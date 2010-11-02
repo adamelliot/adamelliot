@@ -106,8 +106,8 @@ module Application
 
     resource Post do
       key :slug
-      read_params :title, :slug, :body, :markdown, :tags, :draft, :posted_on, :closed
-      write_params :title, :markdown, :tags, :draft, :posted_on, :closed
+      read_attrs :title, :slug, :body, :markdown, :tags, :draft, :posted_on, :closed
+      write_attrs :title, :markdown, :tags, :draft, :posted_on, :closed
       
       before :create, :update, :destroy do
 #        protected!
@@ -116,8 +116,8 @@ module Application
     
     resource Toy do
       key :slug
-      read_params :title, :slug, :description, :markdown, :tags, :javascript, :url, :draft, :posted_on, :closed
-      write_params :title, :markdown, :tags, :javascript, :url, :draft, :posted_on, :closed
+      read_attrs :title, :slug, :description, :markdown, :tags, :javascript, :url, :draft, :posted_on, :closed
+      write_attrs :title, :markdown, :tags, :javascript, :url, :draft, :posted_on, :closed
 
       before :create, :update, :destroy do
         protected!
