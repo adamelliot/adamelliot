@@ -3,8 +3,8 @@
   #dashbaord
     #admin
       .button{'data-route' => 'session/create'} login
-      .button.hidden{'data-route' => 'post/create'} create post
-      .button.hidden{'data-route' => 'toy/create'} create toy
+      .button.hidden{'data-route' => 'posts/create'} create post
+      .button.hidden{'data-route' => 'toys/create'} create toy
       .button.hidden{'data-route' => 'session/remove'} logout
     #tweet
     #social
@@ -31,7 +31,7 @@
       adamelliot
     #toyz{'data-route' => 'toys'}
       toyz
-    #blog{'data-route' => 'post'}
+    #blog{'data-route' => 'posts'}
       blog
     #pics{'data-route' => 'pics'}
       pics
@@ -132,13 +132,13 @@
   .general.pics
     %canvas
 
-  .post.index
+  .posts.index
     .row
       .date
       %h1.title
       .description
 
-  .post.show
+  .posts.show
     .date
     %h1.title
     .permalink
@@ -147,7 +147,7 @@
     .body
     .comments.disqus_thread
 
-  .post.form
+  .posts.form
     %form
       %input{:type => 'hidden', :name => 'slug'}
       %h3 title:
@@ -171,13 +171,13 @@
       %input{:name => 'closed', :type => 'checkbox'}
       %label{:for => 'closed'} comments closed
 
-  .toy.index
+  .toys.index
     .row
       .date
       %h1.title
       .description
 
-  .toy.show
+  .toys.show
     .date
     %h1.title
     %canvas{:width => 300, :height => 190}
@@ -186,7 +186,7 @@
     .clear
     .comments.disqus_thread
 
-  .toy.form
+  .toys.form
     %form
       %input{:type => 'hidden', :name => 'slug'}
       %h3 title:

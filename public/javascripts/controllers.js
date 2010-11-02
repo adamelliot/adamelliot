@@ -17,7 +17,7 @@ window.disqus_developer = (location.hostname != "adamelliot.com") ? 1 : 0;
  */
 AdamElliot.PostsController = function() {
   var self = this;
-  AdamElliot.ResourceController.call(this, "post");
+  AdamElliot.ResourceController.call(this, "posts");
   var _super = $.extend({}, this);
 
   this.dataKey = 'slug';
@@ -56,12 +56,12 @@ AdamElliot.PostsController = function() {
 
   this.templateManager.defineTemplate('index', {
     '.row': {
-      'post<-posts': {
+      'posts<-posts': {
         '@data-route': function(arg) {
           var post = arg.item;
-          return 'post/' + post.slug;
+          return 'posts/' + post.slug;
         },
-        '.title': 'post.title',
+        '.title': 'posts.title',
         '.date': function(arg) {
           return arg.item['posted_on'].toDateString();
         },
@@ -70,7 +70,8 @@ AdamElliot.PostsController = function() {
           var match = post.body.match(/>([^<]*)</);
           if (match) {
             var firstChunk = match[1];
-            var firstWords = firstChunk.match(/([^\s]+\s){0,34}[^\s]+/)[0];
+            var match = firstChunk.match(/([^\s]+\s){0,34}[^\s]+/);
+            var firstWords = (match && match[0]) || "";
             return firstWords + (firstWords == firstChunk ? "" : "...");
           } else return post.body;
         }
@@ -154,15 +155,15 @@ AdamElliot.PostsController = function() {
     var buttons = {};
 
     if (this.getDataByIndex(post._index + 1))
-      buttons['older'] = "post/" + this.getDataByIndex(post._index + 1)[this.dataKey];
+      buttons['older'] = "posts/" + this.getDataByIndex(post._index + 1)[this.dataKey];
     if (post._index > 0)
-      buttons['newer'] = "post/" + this.getDataByIndex(post._index - 1)[this.dataKey];
+      buttons['newer'] = "posts/" + this.getDataByIndex(post._index - 1)[this.dataKey];
 
     buttons['index'] = 'posts';
 
     if (AdamElliot.session.authenticated) {
-      buttons['edit'] = 'post/update/' + post.slug;
-      buttons['delete'] = 'post/remove/' + post.slug;
+      buttons['edit'] = 'posts/update/' + post.slug;
+      buttons['delete'] = 'posts/remove/' + post.slug;
     }
 
     var frame = this.render('show', post, buttons);
@@ -220,7 +221,7 @@ AdamElliot.ToysController = function() {
       'toy<-toys': {
         '@data-route': function(arg) {
           var toy = arg.item;
-          return 'toy/' + toy.slug;
+          return 'toys/' + toy.slug;
         },
         '.title': 'toy.title',
         '.date': function(arg) {
@@ -320,8 +321,8 @@ AdamElliot.ToysController = function() {
     var buttons = {};
 
     if (AdamElliot.session.authenticated) {
-      buttons['edit'] = 'toy/update/' + toy.slug;
-      buttons['delete'] = 'toy/remove/' + toy.slug;
+      buttons['edit'] = 'toys/update/' + toy.slug;
+      buttons['delete'] = 'toys/remove/' + toy.slug;
     }
 
     buttons['index'] = 'toys';

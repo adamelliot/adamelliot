@@ -100,7 +100,7 @@ AdamElliot.Router = (function() {
       }
 
       var parts = route.split("/");
-      var controller = parts[0].singularize();
+      var controller = parts[0];
       var action = parts[1]; // May be the id
       var id;
 
@@ -110,7 +110,7 @@ AdamElliot.Router = (function() {
         return false;
       }
 
-      if (parts[0] == controller.pluralize())
+      if (parts[0] == controller && action == null)
         action = "index";
       else switch (action) {
         case "update":
@@ -513,7 +513,7 @@ AdamElliot.FrameManager = (function() {
  */
 AdamElliot.TemplateManager = (function() {
   var Klass = function (_controllerName) {
-    var controllerName = _controllerName.singularize();
+    var controllerName = _controllerName + "";
     var templates = {};
 
     this.defineTemplate = function(type, binding) {
@@ -592,10 +592,10 @@ AdamElliot.TemplateManager = (function() {
  */
 AdamElliot.Controller = (function() {
   var Klass = function(_controllerName) {
-    var modelName = (_controllerName || "").singularize();
+    var modelName = (_controllerName || "").singularize() + "";
     var activeBlock;
 
-    this.templateManager = new AdamElliot.TemplateManager(modelName);
+    this.templateManager = new AdamElliot.TemplateManager(_controllerName);
     this.activeBlock = function() { return activeBlock; };
 
     this.triggerOnce = function(func) {
@@ -632,7 +632,7 @@ AdamElliot.ResourceController = (function() {
   var Klass = function(_controllerName) {
     var modelName = (_controllerName || "").singularize();
     var self = this;
-    AdamElliot.Controller.call(this, modelName);
+    AdamElliot.Controller.call(this, _controllerName);
 
     // The chunk where model are stored.
     var data = {};
