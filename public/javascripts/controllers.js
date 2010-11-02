@@ -366,7 +366,7 @@ AdamElliot.SessionController = (function() {
       AdamElliot.frameManager.closeAllFrames();
     };
 
-    var setAdminOnResponse = function(data) {
+    var setAdminOnResponse = function(id, data) {
       if (data && data.authenticated) enableAdmin(data.username);
       else disableAdmin();
     };

@@ -777,7 +777,7 @@ AdamElliot.ResourceController = (function() {
         data: data,
         success: function(data) {
           insert(data);
-          if (self.afterCreate) self.afterCreate(data);
+          if (self.afterCreate) self.afterCreate(data[self.dataKey], data);
         },
         error: function() {
           if (self.failedCreate) self.failedCreate();

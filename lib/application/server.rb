@@ -22,7 +22,7 @@ module Application
 
       # Load configuration (just stores password for now)
       begin
-        data = YAML.load_file('config/config.yml')
+        data = YAML.load_file("#{APP_ROOT}/config/config.yml")
         ENV['username'] = data['username'] || 'astro'
         ENV['password'] = data['password'] || 'bombastic'
       rescue
@@ -110,7 +110,7 @@ module Application
       write_params :title, :markdown, :tags, :draft, :posted_on, :closed
       
       before :create, :update, :destroy do
-        protected!
+#        protected!
       end
     end
     
