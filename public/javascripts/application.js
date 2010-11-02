@@ -6,8 +6,7 @@
 
 //= require "inflection"
 //= require "pure_packed"
-//= require "modernizr-1.6
-// .min"
+//= require "modernizr-1.6.min"
 //= require "jquery.tweet"
 //= require "jquery.ba-hashchange.min"
 

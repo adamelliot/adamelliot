@@ -7,7 +7,7 @@
 	Copyright (c) 2010 Michael Cvilic - BeeBole.com
 
 	Thanks to Rog Peppe for the functional JS jump
-	revision: 2.45
+	revision: 2.56
 */
 
 var $p, pure = $p = function(){
@@ -34,10 +34,10 @@ $p.core = function(sel, ctxt, plugins){
 			}
 		break;
 		case 'undefined':
-			error('The template root is undefined, check your selector');
+			error('The root of the template is undefined, check your selector');
 		break;
 		default:
-			templates = [sel];
+			templates = sel;
 	}
 	
 	for(var i = 0, ii = templates.length; i < ii; i++){
@@ -78,7 +78,7 @@ $p.core = function(sel, ctxt, plugins){
 		if(typeof console !== 'undefined'){
 			console.log(e);
 			debugger;
-		}else{ alert(e); }
+		}
 		throw('pure error: ' + e);
 	}
 	
@@ -103,21 +103,13 @@ $p.core = function(sel, ctxt, plugins){
 	
 	// returns the outer HTML of a node
 	function outerHTML(node){
-		// if IE take the internal method otherwise build one
-		return node.outerHTML || (
-			function(n){
-        		var div = document.createElement('div'), h;
-	        	div.appendChild( n.cloneNode(true) );
-				h = div.innerHTML;
-				div = null;
-				return h;
-			})(node);
+		return node.outerHTML || new XMLSerializer().serializeToString(node);
 	}
 	
 	// returns the string generator function
 	function wrapquote(qfn, f){
 		return function(ctxt){
-			return qfn('' + f.call(ctxt.context, ctxt));
+			return qfn('' + f.call(this, ctxt));
 		};
 	}
 
@@ -147,13 +139,13 @@ $p.core = function(sel, ctxt, plugins){
 				fnVal, pVal, attLine, pos;
 
 			for(var i = 1; i < n; i++){
-				fnVal = fns[i]( ctxt );
+				fnVal = fns[i].call( this, ctxt );
 				pVal = parts[i];
 				
 				// if the value is empty and attribute, remove it
 				if(fnVal === ''){
 					attLine = strs[ strs.length - 1 ];
-					if( ( pos = attLine.search( /[\w]+=\"?$/ ) ) > -1){
+					if( ( pos = attLine.search( /[^\s]+=\"?$/ ) ) > -1){
 						strs[ strs.length - 1 ] = attLine.substring( 0, pos );
 						pVal = pVal.substr( 1 );
 					}
@@ -188,7 +180,7 @@ $p.core = function(sel, ctxt, plugins){
 			return sel;
 		}
 		//check for a valid js variable name with hyphen(for properties only), $, _ and :
-		var m = sel.match(/^[a-zA-Z\$_][\w\$:-]*(\.[\w\$:-]*[^\.])*$/);
+		var m = sel.match(/^[a-zA-Z\$_\@][\w\$:-]*(\.[\w\$:-]*[^\.])*$/);
 		if(m === null){
 			var found = false, s = sel, parts = [], pfns = [], i = 0, retStr;
 			// check if literal
@@ -214,15 +206,17 @@ $p.core = function(sel, ctxt, plugins){
 		}
 		m = sel.split('.');
 		return function(ctxt){
-			var data = ctxt.context;
-			if(!data){
-				return '';
-			}
-			var	v = ctxt[m[0]],
+			var data = ctxt.context || ctxt,
+				v = ctxt[m[0]],
 				i = 0;
 			if(v && v.item){
-				data = v.item;
 				i += 1;
+				if(m[i] === 'pos'){
+					//allow pos to be kept by string. Tx to Adam Freidin
+					return v.pos;
+				}else{
+					data = v.item;
+				}
 			}
 			var n = m.length;
 			for(; i < n; i++){
@@ -254,7 +248,7 @@ $p.core = function(sel, ctxt, plugins){
 				target = plugins.find(dom, selector);
 			}
 			if(!target || target.length === 0){
-				return error('The node "' + sel + '" was not found in the template');
+				return error('The node "' + sel + '" was not found in the template:\n' + outerHTML(dom).replace(/\t/g,'  '));
 			}
 		}else{
 			// autoRender node
@@ -351,17 +345,25 @@ $p.core = function(sel, ctxt, plugins){
 				length,
 				strs = [],
 				buildArg = function(idx, temp, ftr, len){
+					//keep the current loop. Tx to Adam Freidin
+					var save_pos = ctxt.pos,
+						save_item = ctxt.item,
+						save_items = ctxt.items;
 					ctxt.pos = temp.pos = idx;
 					ctxt.item = temp.item = a[ idx ];
 					ctxt.items = a;
 					//if array, set a length property - filtered items
 					typeof len !== 'undefined' &&  (ctxt.length = len);
 					//if filter directive
-					if(typeof ftr === 'function' && ftr(ctxt) === false){
+					if(typeof ftr === 'function' && ftr.call(ctxt.item, ctxt) === false){
 						filtered++;
 						return;
 					}
-					strs.push( inner.call(temp, ctxt ) );
+					strs.push( inner.call(ctxt.item, ctxt ) );
+					//restore the current loop
+					ctxt.pos = save_pos;
+					ctxt.item = save_item;
+					ctxt.items = save_items;
 				};
 			ctxt[name] = temp;
 			if( isArray(a) ){
@@ -486,9 +488,9 @@ $p.core = function(sel, ctxt, plugins){
 			}
 			// not found check first level of data
 			if(typeof val === 'undefined'){
-				val = isArray(data) ? data[0][cspec.prop] : data[cspec.prop];
+				val = dataselectfn(cspec.prop)(isArray(data) ? data[0] : data);
 				// nothing found return
-				if(typeof val === 'undefined'){
+				if(val === ''){
 					return false;
 				}
 			}
@@ -538,15 +540,21 @@ $p.core = function(sel, ctxt, plugins){
 			}
 		}
 		// read directives
-		var target, dsel;
+		var target, dsel, sels, sl, i;
 		for(var sel in directive){
 			if(directive.hasOwnProperty(sel)){
+				i = 0;
 				dsel = directive[sel];
 				if(typeof(dsel) === 'function' || typeof(dsel) === 'string'){
-					// set the value for the node/attr
-					target = gettarget(dom, sel, false);
-					setsig(target, fns.length);
-					fns[fns.length] = wrapquote(target.quotefn, dataselectfn(dsel));
+					sels = sel.split(/\s*,\s*/); //allow selector separation by quotes
+					sl = sels.length;
+					do{
+						// set the value for the node/attr
+						sel = sels[i];
+						target = gettarget(dom, sel, false);
+						setsig(target, fns.length);
+						fns[fns.length] = wrapquote(target.quotefn, dataselectfn(dsel));
+					}while(++i < sl);
 				}else{
 					// loop on node
 					loopgen(dom, sel, dsel, fns);
@@ -587,9 +595,9 @@ $p.core = function(sel, ctxt, plugins){
 	// return an HTML string 
 	// should replace the template and return this
 	function render(ctxt, directive){
-		var fn = typeof directive === 'function' ? directive : plugins.compile( directive, false, this[0] );
-		for(var i = 0, ii = this.length; i < ii; i++){
-			this[i] = replaceWith( this[i], fn( ctxt, false ));
+		var fn = typeof directive === 'function' && directive, i = 0, ii = this.length;
+		for(; i < ii; i++){
+			this[i] = replaceWith( this[i], (fn || plugins.compile( directive, false, this[i] ))( ctxt, false ));
 		}
 		context = null;
 		return this;
@@ -661,21 +669,36 @@ $p.libs = {
 		}
 		DOMAssistant.attach({ 
 			publicMethods : [ 'compile', 'render', 'autoRender'],
-			compile:function(directive, ctxt){ return $p(this).compile(directive, ctxt); },
-			render:function(ctxt, directive){ return $( $p(this).render(ctxt, directive) )[0]; },
-			autoRender:function(ctxt, directive){ return $( $p(this).autoRender(ctxt, directive) )[0]; }
+			compile:function(directive, ctxt){
+				return $p([this]).compile(directive, ctxt);
+			},
+			render:function(ctxt, directive){
+				return $( $p([this]).render(ctxt, directive) )[0];
+			},
+			autoRender:function(ctxt, directive){
+				return $( $p([this]).autoRender(ctxt, directive) )[0];
+			}
 		});
 	},
 	jquery:function(){
 		if(typeof document.querySelector === 'undefined'){
 			$p.plugins.find = function(n, sel){
-				return $(n).find(sel);
+				return jQuery(n).find(sel);
 			};
 		}
 		jQuery.fn.extend({
-			compile:function(directive, ctxt){ return $p(this[0]).compile(directive, ctxt); },
-			render:function(ctxt, directive){ return jQuery( $p( this[0] ).render( ctxt, directive ) ); },
-			autoRender:function(ctxt, directive){ return jQuery( $p( this[0] ).autoRender( ctxt, directive ) ); }
+			directives:function(directive){
+				this._pure_d = directive; return this;
+			},
+			compile:function(directive, ctxt){
+				return $p(this).compile(this._pure_d || directive, ctxt);
+			},
+			render:function(ctxt, directive){
+				return jQuery( $p( this ).render( ctxt, this._pure_d || directive ) );
+			},
+			autoRender:function(ctxt, directive){
+				return jQuery( $p( this ).autoRender( ctxt, this._pure_d || directive ) );
+			}
 		});
 	},
 	mootools:function(){
@@ -685,9 +708,15 @@ $p.libs = {
 			};
 		}
 		Element.implement({
-			compile:function(directive, ctxt){ return $p(this).compile(directive, ctxt); },
-			render:function(ctxt, directive){ return $p(this).render(ctxt, directive); },
-			autoRender:function(ctxt, directive){ return $p(this).autoRender(ctxt, directive); }
+			compile:function(directive, ctxt){ 
+				return $p(this).compile(directive, ctxt);
+			},
+			render:function(ctxt, directive){
+				return $p(this).render(ctxt, directive);
+			},
+			autoRender:function(ctxt, directive){
+				return $p(this).autoRender(ctxt, directive);
+			}
 		});
 	},
 	prototype:function(){
@@ -698,9 +727,15 @@ $p.libs = {
 			};
 		}
 		Element.addMethods({
-			compile:function(element, directive, ctxt){ return $p(element).compile(directive, ctxt); }, 
-			render:function(element, ctxt, directive){ return $p(element).render(ctxt, directive); }, 
-			autoRender:function(element, ctxt, directive){ return $p(element).autoRender(ctxt, directive); }
+			compile:function(element, directive, ctxt){ 
+				return $p([element]).compile(directive, ctxt);
+			}, 
+			render:function(element, ctxt, directive){
+				return $p([element]).render(ctxt, directive);
+			}, 
+			autoRender:function(element, ctxt, directive){
+				return $p([element]).autoRender(ctxt, directive);
+			}
 		});
 	},
 	sizzle:function(){
