@@ -491,7 +491,7 @@ AdamElliot.FrameManager = (function() {
       for (var i = 0; i < frameStack.length; i++) {
         var route = frameStack[i]
         var frame = frames[route];
-        if (currentFrame != frame) frame.remove();
+        if (currentFrame != frame) frame.destroy();
       }
       frames = {};
       frameStack = [];
