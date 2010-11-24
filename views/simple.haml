@@ -38,9 +38,13 @@
       /%img{:target => '_blank', :src => "/images/social/feed.png"}
       %a{:href => 'mailto:adam@adamelliot.com?subject=Hello'}
         %img{:target => '_blank', :src => "/images/social/email.png", :alt => "Email"}
-  
+
     #title
-      %a{:href => "/"} adamelliot
+      %a{:href => "/"}
+        %span.first-letter> a
+        %span> dam
+        %span.first-letter> e
+        %span> lliot
 
     #post
       .date=@post.posted_on
