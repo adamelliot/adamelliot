@@ -8,6 +8,7 @@ MongoMapper.database = 'adamelliot'
 
 # Allow form value of on to be set to true
 MongoMapper::Extensions::Boolean::Mapping['on'] = true
+MongoMapper::Extensions::Boolean::Mapping['null'] = false
 ActiveSupport::JSON::Encoding.use_standard_json_time_format = false
 
 module Application
@@ -21,9 +22,9 @@ module Application
       key :body,     String
       key :tags,     String
 
-      key :draft,      Boolean
+      key :draft,      Boolean, :default => false
       key :posted_on,  Date
-      key :closed,     Boolean
+      key :closed,     Boolean, :default => false
 
       timestamps!
 
@@ -51,9 +52,9 @@ module Application
       key :url,          String
       key :tags,         String
 
-      key :draft,      Boolean
+      key :draft,      Boolean, :default => false
       key :posted_on,  Date
-      key :closed,     Boolean
+      key :closed,     Boolean, :default => false
 
       timestamps!
 

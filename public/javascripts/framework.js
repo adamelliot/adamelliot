@@ -792,6 +792,11 @@ AdamElliot.ResourceController = (function() {
         return;
       }
       var data = self.activeBlock().find('form').serializeArray();
+
+      self.activeBlock().find('form input:checkbox:not(:checked)').each(function() {
+        data.push({name:$(this).attr('name'), value:false});
+      });
+
       if (!data) {
         if (self.failedUpdate) self.failedUpdate(id);
         return;

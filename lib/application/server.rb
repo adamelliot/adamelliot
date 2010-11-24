@@ -55,8 +55,8 @@ module Application
       # to the right place
       redirect '/simple' if request.env["HTTP_USER_AGENT"] =~ /iPhone/
       redirect '/simple' if request.env["HTTP_USER_AGENT"] =~ /MSIE/ &&
-        !(request.env["HTTP_USER_AGENT"] =~ /MSIE (8|9)/)
-      
+        !(request.env["HTTP_USER_AGENT"] =~ /MSIE (8|9|10)/)
+
       haml :index
     end
 
@@ -83,19 +83,23 @@ module Application
       begin
         model = Application::Models.const_get(type.classify).first(:slug => slug)
         raise Sinatra::NotFound if model.nil?
-        redirect "/\##{type}/#{model.id}"
+        redirect "/\##{type.pluralize}/#{model.id}"
       rescue
         raise Sinatra::NotFound
       end
     end
-    
+
     # Simpler page for the iPhone
-    get %r{/simple(/\w+)?} do |id|
-      @post = id && Post.get(id) ||
-        Post.first({
+    get %r{/simple(/(\w+))?} do |_, id|
+      @post = id && Application::Models::Post.first({:slug => id}) ||
+        Application::Models::Post.first({
           :draft => false, 
-          :posted_on.lte => Date.today,
+          :posted_on.lte => Time.now + 1.day,
           :order => [:posted_on]})
+          
+      @post = Post.first({:draft => false})
+
+     throw(:halt, [404, "Not found\n"]) if @post.nil?
 
       haml :simple, :layout => false
     end
