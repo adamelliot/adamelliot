@@ -2261,6 +2261,11 @@ AdamElliot.ResourceController = (function() {
         return;
       }
       var data = self.activeBlock().find('form').serializeArray();
+
+      self.activeBlock().find('form input:checkbox:not(:checked)').each(function() {
+        data.push({name:$(this).attr('name'), value:false});
+      });
+
       if (!data) {
         if (self.failedUpdate) self.failedUpdate(id);
         return;
@@ -2837,7 +2842,7 @@ AdamElliot.PostsController = function() {
   this.templateManager.defineTemplate('show', {
     '.title': 'title',
     '.permalink a@href': function(arg) {
-      return '/permalink/post/' + arg.context['slug'];
+      return '/permalink/posts/' + arg.context['slug'];
     },
     '.body': 'body',
     '.date': function(arg) {
@@ -2890,7 +2895,7 @@ AdamElliot.PostsController = function() {
 
     $("#disqus_thread").remove();
 
-    window.disqus_url = location.href.split('#')[0] + 'permalink/post/' + post['slug'];
+    window.disqus_url = location.href.split('#')[0] + 'permalink/posts/' + post['slug'];
     window.disqus_skip_auth = true;
     window.disqus_identifier = post['slug'];
 
@@ -2990,7 +2995,7 @@ AdamElliot.ToysController = function() {
   this.templateManager.defineTemplate('show', {
     '.title': 'title',
     '.permalink a@href': function(arg) {
-      return '/permalink/toy/' + arg.context['slug'];
+      return '/permalink/toys/' + arg.context['slug'];
     },
     '.date': function(arg) {
       return arg.context['posted_on'].toDateString();
@@ -3043,7 +3048,7 @@ AdamElliot.ToysController = function() {
 
     $("#disqus_thread").remove();
 
-    window.disqus_url = location.href.split('#')[0] + 'permalink/toy/' + toy['slug'];
+    window.disqus_url = location.href.split('#')[0] + 'permalink/toys/' + toy['slug'];
     window.disqus_skip_auth = true;
     window.disqus_identifier = toy['slug'];
 
