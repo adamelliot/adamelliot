@@ -1,9 +1,9 @@
 GIT
-  remote: http://github.com/yabawock/ultraviolet.git
-  revision: 0a466b9af09dbe9de30919f534f167c71363b494
+  remote: http://github.com/spox/ultraviolet.git
+  revision: 5591ac27784b783cd1a4dbe941f6e7f3a4eff65b
   specs:
-    ultraviolet (0.11.0)
-      textpow19 (>= 0.11.0)
+    ultraviolet (0.10.5)
+      spox-textpow
 
 GEM
   remote: http://rubygems.org/
@@ -41,9 +41,10 @@ GEM
     sinatra (1.1.0)
       rack (~> 1.1)
       tilt (~> 1.1)
+    spox-plist (3.0.1)
+    spox-textpow (0.10.3)
+      spox-plist
     sprockets (1.0.2)
-    textpow19 (0.11.0)
-      plist (>= 3.0.1)
     thin (1.2.7)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)

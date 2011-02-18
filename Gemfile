@@ -11,7 +11,7 @@ gem 'resource_mapper'
 gem 'bson_ext'
 gem 'sprockets'
 gem 'rdiscount'
-gem 'ultraviolet', :git => 'http://github.com/yabawock/ultraviolet.git'
+gem 'ultraviolet', :git => 'http://github.com/spox/ultraviolet.git'
 
 group :development do
   gem "thin"

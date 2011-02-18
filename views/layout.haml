@@ -23,7 +23,10 @@
   %body
     = yield
 
-    %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"}
+    - if Application::Server.environment == :development
+      %script{:src => "/javascripts/jquery.min.js"}
+    - else
+      %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"}
 
     - if Application::Server.environment == :development
       %script{:src => "/javascripts/canvas_object/color.js"}

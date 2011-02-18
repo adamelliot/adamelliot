@@ -14,7 +14,7 @@ AdamElliot.Pics = (function() {
   var Picture = function(path) {
     var self = this;
     CanvasObject.Path.call(this);
-
+    
     var SUB_SIZE = [20, 30, 36, 45][Math.floor(Math.random() * 4)];
     var SUB_SIZE_2 = SUB_SIZE / 2;
     var COLS = (SIZE / SUB_SIZE);
@@ -49,20 +49,26 @@ AdamElliot.Pics = (function() {
       var s = SUB_SIZE * sectionScale[index], s_2 = s / 2;
       var x = (index % COLS) * SUB_SIZE + (SUB_SIZE_2 - s_2);
       var y = Math.floor(index / COLS) * SUB_SIZE + (SUB_SIZE_2 - s_2);
+      
+      var s_x = x + offsetX, s_y = y + offsetY;
+      var clampX = 0, clampY = 0;
+
+      if (s_x + s > bitmap.width())   clampX = (s_x + s) - bitmap.width();
+      if (s_y + s > bitmap.height())  clampY = (s_y + s) - bitmap.height();
 
       var ds = Math.min(SUB_SIZE, s + PIXEL_BORDER);
       var bp = (ds - s) / 2;
 
       self.fillRectAt((index << 1) + 1, x - bp, y - bp, ds, ds);
-      self.drawImageAt((index << 1) + 2, bitmap.canvas(), x + offsetX, y + offsetY, s, s, x, y, s, s);
+      self.drawImageAt((index << 1) + 2, bitmap.canvas(), x + offsetX, y + offsetY, s - clampX, s - clampY, x, y, s, s);
 
       return true;
     };
 
     CanvasObject.Bitmap.withImage(path, function(_bitmap) {
       bitmap = _bitmap;
-      
-      if (bitmap.width() > SIZE) offsetX = (bitmap.width() - SIZE) / 2;
+
+      if (bitmap.width() > SIZE)  offsetX = (bitmap.width() - SIZE) / 2;
       if (bitmap.height() > SIZE) offsetY = (bitmap.height() - SIZE) / 2;
 
       var func, count = 0;

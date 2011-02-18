@@ -89,7 +89,7 @@ module Application
       end
     end
 
-    # Simpler page for the iPhone
+    # Simpler page for the iPhone and brutal browsers
     get %r{/simple(/(\w+))?} do |_, id|
       @post = id && Application::Models::Post.first({:slug => id}) ||
         Application::Models::Post.first({
@@ -99,9 +99,13 @@ module Application
           
       @post = Post.first({:draft => false})
 
-     throw(:halt, [404, "Not found\n"]) if @post.nil?
+      throw(:halt, [404, "Not found\n"]) if @post.nil?
 
       haml :simple, :layout => false
+    end
+
+    get '/simple/' do
+      haml :simple_index
     end
 
     # Data routes

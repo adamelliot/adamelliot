@@ -219,8 +219,13 @@ CanvasObject.Path = (function() {
 
       var commands = this.commands();
       for (var j = 0; j < commands.length; j++)
-        if (commands[j])
-          context[commands[j][0]].apply(context, commands[j][1]);
+        if (commands[j]) {
+          try {
+            context[commands[j][0]].apply(context, commands[j][1]);
+          } catch(e) {
+//            console.log(commands[j][0], commands[j][1]);
+          }
+        }
 
       context.restore();
     };
