@@ -1,7 +1,7 @@
 = Adam Elliot
 
-Blah!
+Codebase for my personal website, http://adamelliot.com
 
 == Copyright
 
-Copyright (c) 2010 Adam Elliot. See LICENSE for details.
+Copyright (c) 2012 Adam Elliot.
